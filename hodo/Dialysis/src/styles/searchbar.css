@@ -1,0 +1,26 @@
+.searchbar-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-input {
+  max-width: 250px;
+  padding-left: 40px !important; /* Make space for the icon */
+}
+
+.search-icon {
+  position: absolute;
+  left: calc(100% - 240px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none; /* Icon won't block clicks */
+  font-size: 18px;
+}
+
+.form-control.search-input:focus {
+  box-shadow: none;
+  border-color: #86b6fe;
+}

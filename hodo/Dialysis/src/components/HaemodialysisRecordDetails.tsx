@@ -1,6 +1,6 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, type ChangeEvent } from 'react';
 import { patientsApi } from '../api/patientsApi';
-import { Patient } from '../types';
+import type { Patient } from '../types';
 import { haemodialysisRecordApi } from '../api/haemodialysisRecordApi';
 import ButtonWithGradient from './ButtonWithGradient';
 import './HaemodialysisRecordDetails.css';

@@ -68,7 +68,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     <>
       {/* <div className={`history-container ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
       {/* <Container fluid className={`history-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
-      <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
         <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         <PageContainer>
           {/* <div className="main-container"> */}
@@ -147,7 +147,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           {/* </div> */}
         </PageContainer>
         <Footer />
-      </Container >
+      {/* </Container > */}
     </>
   );
 };

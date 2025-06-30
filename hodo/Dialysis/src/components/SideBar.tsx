@@ -58,7 +58,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
         <ul>
           <li className="sidebar-title">
             <NavLink
-              to="/dashboard"
+              to="/"
               className={({ isActive }) =>
                 isActive ? "sidebar-heading2 active" : "sidebar-heading2"
               }
@@ -70,7 +70,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
           <ul className="sidebar-sublist">
             <li>
               <NavLink
-                to="/"
+                to="/dashboard"
                 style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"

@@ -147,7 +147,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
 
   return (
     <>
-      <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
         <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         {/* <div className="main-container" style={{ height: '100%' }}> */}
         <PageContainer>
@@ -292,7 +292,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
           {/* </div> */}
         </PageContainer>
         <Footer />
-      </Container>
+      {/* </Container> */}
     </>
   );
 };

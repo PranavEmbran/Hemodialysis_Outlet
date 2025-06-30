@@ -70,7 +70,7 @@ const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: 
   return (
     <>
 
-      <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
         {/* <div className={`patient-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
         <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         <PageContainer>
@@ -246,7 +246,7 @@ const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: 
           {/* </div> */}
         </PageContainer>
         <Footer />
-      </Container>
+      {/* </Container> */}
     </>
   );
 };

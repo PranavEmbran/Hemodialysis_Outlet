@@ -36,8 +36,7 @@
     justify-content: center;
     transition: all 0.3s ease;
 }
-
-.sidebar-toggle-btn:hover {
+.sidebar-toggle-btn:hover{
     border: none;
     background-color: transparent;
 }
@@ -91,18 +90,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.header-span {
+.header-span{
     color: #888888;
     font-size: 14px;
     font-weight: 600;
     width: 100%;
 }
-
-.header-icon {
+.header-icon{
     background-color: white;
     color: black !important;
-    font-size: 16px;
+    font-size: 26px;
     width: 26px;
     padding: 5px;
     border-radius: 7px;

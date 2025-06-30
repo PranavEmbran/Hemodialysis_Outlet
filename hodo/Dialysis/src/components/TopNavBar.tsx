@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import "../styles/topbar.css";
 import logo from "../assets/logo.png";
 import { Plus } from "lucide-react";
+import { FaSearch, FaBell, FaCog, FaChevronDown, FaBars, FaCaretDown} from 'react-icons/fa';
+
 // import { vehicleAPI, Vehicle } from "../services/api";
 
 const TopNavBar: React.FC = () => {
@@ -206,12 +208,13 @@ const TopNavBar: React.FC = () => {
           </div>
           <div className="nav-buttons">
             <li className='nav-list-button'><NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''} style={{fontWeight:400}}>New Sale</NavLink></li>
-            <li className='nav-list-button'><NavLink to="/register-vehicle" className={({ isActive }) => isActive ? 'active' : ''} style={{fontWeight:400}}> <Plus size={16} /> Add Patient</NavLink></li>
+            <li className='nav-list-button'><NavLink to="/registration" className={({ isActive }) => isActive ? 'active' : ''} style={{fontWeight:400}}> <Plus size={16} /> Add Patient</NavLink></li>
           </div>
           <div className="nav-div-main">
             <div className="nav-div">
-              <a href="/vehicle-list" className="nav-link text-white" title="Vehicle List">
-                <i className="fa-solid fa-magnifying-glass "></i>
+              <a href="#" className="nav-link text-white" title="Alert">
+                {/* <i className="fa-solid fa-magnifying-glass "></i> */}
+                <FaSearch />
               </a>
             </div>
             <div className="nav-div" style={{ position: "relative" }}>
@@ -223,7 +226,8 @@ const TopNavBar: React.FC = () => {
                   setNotificationOpen((v) => !v);
                 }}
               >
-                <i className="fas fa-bell  mt-1"></i>
+                {/* <i className="fas fa-bell  mt-1"></i> */}
+                <FaBell />
                 {/* {getVisibleNotifications().length > 0 && (
                   <span className="notification-badge">{getVisibleNotifications().length}</span>
                 )} */}
@@ -232,7 +236,7 @@ const TopNavBar: React.FC = () => {
                 <div className="notification-dropdown" ref={notificationRef}>
                   <div className="notification-header">
                     <div className="notification-title">
-                      Insurance Expiry Alerts
+                      Alerts
                     </div>
                     {/* {getVisibleNotifications().length > 0 && (
                       <button 
@@ -274,7 +278,8 @@ const TopNavBar: React.FC = () => {
                 e.preventDefault();
                 alert('Settings Disabled');
               }}>
-                <i className="fas fa-cog  mt-1"></i>
+                {/* <i className="fas fa-cog  mt-1"></i> */}
+                <FaCog />
               </a>
             </div>
           </div>

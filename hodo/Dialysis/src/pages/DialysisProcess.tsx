@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { historyApi } from '../api/historyApi';
@@ -8,7 +9,7 @@ import './DialysisProcess.css';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import Header from '../components/Header';
-import { Patient } from '../types';
+import type { Patient } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 
@@ -144,7 +145,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   return (
     <>
       {/* <Container fluid className={`dialysis-process-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
-      <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
         <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         <PageContainer>
           {/* <div className="main-container"> */}
@@ -440,7 +441,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
           {/* </div> */}
         </PageContainer>
         <Footer />
-      </Container>
+      {/* </Container> */}
     </>
   );
 };

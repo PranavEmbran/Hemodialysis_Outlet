@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './header.css';
-import { ChevronLeftIcon, ChevronRightIcon } from '@primer/octicons-react';
-import rightarrow from '../assets/righthand.png'
+import '../styles/header.css';
+// import { ChevronLeftIcon, ChevronRightIcon } from '@primer/octicons-react';
 import leftarrow from '../assets/lefthand.png'
-import { Calendar, Clock, Calculator } from 'lucide-react';
+import rightarrow from '../assets/righthand.png'
+// import { Calendar, Clock, Calculator } from 'lucide-react';
+import { FaCalculator, FaCalendarAlt, FaClock } from 'react-icons/fa';
+
 
 interface HeaderProps {
     sidebarCollapsed?: boolean;
@@ -63,19 +65,22 @@ const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDa
                     <div className="icons-div">
                         {showDate && (
                             <div className="icon-item">
-                                <i className="header-icon fa-solid fa-calendar-days"></i>
+                                {/* <i className="header-icon fa-solid fa-calendar-days"></i> */}
+                                <FaCalendarAlt className="header-icon" />
                                 <span className="header-span">{currentDate}</span>
                             </div>
                         )}
                         {showTime && (
                             <div className="icon-item">
-                                <i className="header-icon fa-solid fa-clock custom-clock"></i>
+                                {/* <i className="header-icon fa-solid fa-clock custom-clock"></i> */}
+                                <FaClock className="header-icon" />
                                 <span className="header-span">{formattedTime}</span>
                             </div>
                         )}
                         {showCalculator && (
                             <div className="icon-item">
-                                <i className="header-icon fa-solid fa-calculator"></i>
+                                {/* <i className="header-icon fa-solid fa-calculator"></i> */}
+                                <FaCalculator className="header-icon" />
                             </div>
                         )}
                     </div>
