@@ -241,57 +241,57 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   const filteredData = getFilteredData();
 
   // Pagination logic
-  const patientsTotalPages = Math.ceil(filteredData.patients.length / patientsRowsPerPage);
-  const appointmentsTotalPages = Math.ceil(filteredData.appointments.length / appointmentsRowsPerPage);
-  const paginatedPatients = filteredData.patients.slice((patientsPage - 1) * patientsRowsPerPage, patientsPage * patientsRowsPerPage);
-  const paginatedAppointments = filteredData.appointments.slice((appointmentsPage - 1) * appointmentsRowsPerPage, appointmentsPage * appointmentsRowsPerPage);
+  // const patientsTotalPages = Math.ceil(filteredData.patients.length / patientsRowsPerPage);
+  // const appointmentsTotalPages = Math.ceil(filteredData.appointments.length / appointmentsRowsPerPage);
+  // const paginatedPatients = filteredData.patients.slice((patientsPage - 1) * patientsRowsPerPage, patientsPage * patientsRowsPerPage);
+  // const paginatedAppointments = filteredData.appointments.slice((appointmentsPage - 1) * appointmentsRowsPerPage, appointmentsPage * appointmentsRowsPerPage);
 
-  const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
-    // Show a window of 5 page numbers
-    const pageWindow = 2;
-    let start = Math.max(1, currentPage - pageWindow);
-    let end = Math.min(totalPages, currentPage + pageWindow);
-    if (end - start < 4) {
-      if (start === 1) end = Math.min(totalPages, start + 4);
-      if (end === totalPages) start = Math.max(1, end - 4);
-    }
-    const pageNumbers = [];
-    for (let i = start; i <= end; i++) pageNumbers.push(i);
+  // const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
+  //   // Show a window of 5 page numbers
+  //   const pageWindow = 2;
+  //   let start = Math.max(1, currentPage - pageWindow);
+  //   let end = Math.min(totalPages, currentPage + pageWindow);
+  //   if (end - start < 4) {
+  //     if (start === 1) end = Math.min(totalPages, start + 4);
+  //     if (end === totalPages) start = Math.max(1, end - 4);
+  //   }
+  //   const pageNumbers = [];
+  //   for (let i = start; i <= end; i++) pageNumbers.push(i);
 
-    return (
-      <div className="pagination-container">
-        <div className="pagination-info">
-          Rows per page:
-          <select
-            value={rowsPerPage}
-            onChange={e => setRowsPerPage(Number(e.target.value))}
-            style={{ margin: '0 8px', padding: '2px 8px', borderRadius: 4 }}
-          >
-            {[5, 10, 20, 50].map(n => <option key={n} value={n}>{n}</option>)}
-          </select>
-          Page {currentPage} of {totalPages}
-        </div>
-        <div className="pagination-controls">
-          <button className="pagination-btn" onClick={() => setPage(1)} disabled={currentPage === 1}>&#171; First</button>
-          <button className="pagination-btn" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1}>&#8249; Prev</button>
-          <div className="page-numbers">
-            {pageNumbers.map(page => (
-              <button
-                key={page}
-                className={`page-number${page === currentPage ? ' active' : ''}`}
-                onClick={() => setPage(page)}
-                disabled={page === currentPage}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-          <button className="pagination-btn" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages}>Next &#8250;</button>
-          <button className="pagination-btn" onClick={() => setPage(totalPages)} disabled={currentPage === totalPages}>Last &#187;</button>
-        </div>
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="pagination-container">
+  //       <div className="pagination-info">
+  //         Rows per page:
+  //         <select
+  //           value={rowsPerPage}
+  //           onChange={e => setRowsPerPage(Number(e.target.value))}
+  //           style={{ margin: '0 8px', padding: '2px 8px', borderRadius: 4 }}
+  //         >
+  //           {[5, 10, 20, 50].map(n => <option key={n} value={n}>{n}</option>)}
+  //         </select>
+  //         Page {currentPage} of {totalPages}
+  //       </div>
+  //       <div className="pagination-controls">
+  //         <button className="pagination-btn" onClick={() => setPage(1)} disabled={currentPage === 1}>&#171; First</button>
+  //         <button className="pagination-btn" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1}>&#8249; Prev</button>
+  //         <div className="page-numbers">
+  //           {pageNumbers.map(page => (
+  //             <button
+  //               key={page}
+  //               className={`page-number${page === currentPage ? ' active' : ''}`}
+  //               onClick={() => setPage(page)}
+  //               disabled={page === currentPage}
+  //             >
+  //               {page}
+  //             </button>
+  //           ))}
+  //         </div>
+  //         <button className="pagination-btn" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages}>Next &#8250;</button>
+  //         <button className="pagination-btn" onClick={() => setPage(totalPages)} disabled={currentPage === totalPages}>Last &#187;</button>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   if (loading) {
     return (
@@ -340,99 +340,67 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
           </Row>
 
 
-          <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}> */}
             <div className='dashboard-table-heading'>Registered Patients: {filteredData.patients.length}</div>
-            <table className="vehicles-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Gender</th>
-                  <th>Mobile</th>
-                  <th>Blood Group</th>
-                  <th>DOB</th>
-                  <th>Last Visit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedPatients.length > 0 ? (
-                  paginatedPatients.map(p => {
-                    // Find last visit date
-                    const lastVisit = history
-                      .filter(h => h.patientId === p.id)
-                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-                    return (
-                      <tr key={p.id}>
-                        <td>{(p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : '')}</td>
-                        <td>{p.gender}</td>
-                        <td>{p.mobileNo}</td>
-                        <td>{p.bloodGroup}</td>
-                        <td>{p.dateOfBirth}</td>
-                        <td>{lastVisit ? lastVisit.date : 'No visits'}</td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="text-center text-muted">
-                      No patients found matching the current filters
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            {patientsTotalPages > 1 && renderPagination(patientsPage, patientsTotalPages, setPatientsPage, patientsRowsPerPage, setPatientsRowsPerPage)}
-          </div>
+            <Table
+              columns={[
+                { key: 'name', header: 'Name' },
+                { key: 'gender', header: 'Gender' },
+                { key: 'mobileNo', header: 'Mobile' },
+                { key: 'bloodGroup', header: 'Blood Group' },
+                { key: 'dateOfBirth', header: 'DOB' },
+                { key: 'lastVisit', header: 'Last Visit' },
+              ]}
+              data={filteredData.patients.map((p) => {
+                const lastVisit = history
+                  .filter(h => h.patientId === p.id)
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+                return {
+                  id: p.id,
+                  name: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
+                  gender: p.gender,
+                  mobileNo: p.mobileNo,
+                  bloodGroup: p.bloodGroup,
+                  dateOfBirth: p.dateOfBirth,
+                  lastVisit: lastVisit ? lastVisit.date : 'No visits',
+                };
+              })}
+            />
+          {/* </div> */}
           {/* </Col> */}
           {/* </Row> */}
           {/* <Row> */}
           {/* <Col> */}
-          <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}> */}
             <div className='dashboard-table-heading'>Scheduled Appointments: {filteredData.appointments.length}</div>
-            <table className="vehicles-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Patient Name</th>
-                  <th>Doctor</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Unit</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedAppointments.length > 0 ? (
-                  paginatedAppointments.map(apt => (
-                    <tr key={apt.id}>
-                      <td><Button size="sm" variant="outline-primary">+</Button></td>
-                      <td>{apt.patientName}</td>
-                      <td>{apt.admittingDoctor || 'Dr. Smith'}</td>
-                      <td>{apt.date}</td>
-                      <td>{apt.time}</td>
-                      <td>{apt.dialysisUnit}</td>
-                      <td>
-                        <span className={`badge bg-${apt.status === 'Completed' ? 'success' : apt.status === 'Scheduled' ? 'primary' : 'warning'}`}>
-                          {apt.status}
-                        </span>
-                      </td>
-                      <td>
-                        <Button size="sm" variant="outline-secondary">View</Button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={8} className="text-center text-muted">
-                      No appointments found matching the current filters
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            {appointmentsTotalPages > 1 && renderPagination(appointmentsPage, appointmentsTotalPages, setAppointmentsPage, appointmentsRowsPerPage, setAppointmentsRowsPerPage)}
-          </div>
+            <Table
+              columns={[
+                { key: 'expand', header: '' },
+                { key: 'patientName', header: 'Patient Name' },
+                { key: 'admittingDoctor', header: 'Doctor' },
+                { key: 'date', header: 'Date' },
+                { key: 'time', header: 'Time' },
+                { key: 'dialysisUnit', header: 'Unit' },
+                { key: 'status', header: 'Status' },
+                { key: 'action', header: 'Action' },
+              ]}
+              data={filteredData.appointments.map((apt) => ({
+                id: apt.id,
+                expand: <Button size="sm" variant="outline-primary">+</Button>,
+                patientName: apt.patientName,
+                admittingDoctor: apt.admittingDoctor || 'Dr. Smith',
+                date: apt.date,
+                time: apt.time,
+                dialysisUnit: apt.dialysisUnit,
+                status: (
+                  <span className={`badge bg-${apt.status === 'Completed' ? 'success' : apt.status === 'Scheduled' ? 'primary' : 'warning'}`}>
+                    {apt.status}
+                  </span>
+                ),
+                action: <Button size="sm" variant="outline-secondary">View</Button>,
+              }))}
+            />
+          {/* </div> */}
           {/* </Col> */}
           {/* </Row> */}
           {/* </div> */}

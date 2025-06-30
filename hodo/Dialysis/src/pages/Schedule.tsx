@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import SectionHeading from '../components/SectionHeading';
 import PageContainer from '../components/PageContainer';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import Table from '../components/Table';
 
 
 interface ScheduleFormValues {
@@ -266,41 +267,27 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
 
           <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             <div className='dashboard-table-heading'>Scheduled Sessions: {schedules.length}</div>
-            <table className="vehicles-table">
-              <thead>
-                <tr>
-                  <th>Patient</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Unit</th>
-                  <th>Technician</th>
-                  <th>Doctor</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedSchedules.length > 0 ? (
-                  paginatedSchedules.map(schedule => (
-                    <tr key={schedule.id}>
-                      <td>{schedule.patientName}</td>
-                      <td>{schedule.date}</td>
-                      <td>{schedule.time}</td>
-                      <td>{schedule.dialysisUnit}</td>
-                      <td>{schedule.technician}</td>
-                      <td>{schedule.admittingDoctor}</td>
-                      <td>{schedule.status}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="text-center text-muted">
-                      No scheduled sessions found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            {schedulesTotalPages > 1 && renderPagination(schedulesPage, schedulesTotalPages, setSchedulesPage, schedulesRowsPerPage, setSchedulesRowsPerPage)}
+            <Table
+              columns={[
+                { key: 'patientName', header: 'Patient' },
+                { key: 'date', header: 'Date' },
+                { key: 'time', header: 'Time' },
+                { key: 'dialysisUnit', header: 'Unit' },
+                { key: 'technician', header: 'Technician' },
+                { key: 'admittingDoctor', header: 'Doctor' },
+                { key: 'status', header: 'Status' },
+              ]}
+              data={schedules.map(schedule => ({
+                id: schedule.id,
+                patientName: schedule.patientName,
+                date: schedule.date,
+                time: schedule.time,
+                dialysisUnit: schedule.dialysisUnit,
+                technician: schedule.technician,
+                admittingDoctor: schedule.admittingDoctor,
+                status: schedule.status,
+              }))}
+            />
           </div>
           {/* </div> */}
         </PageContainer>

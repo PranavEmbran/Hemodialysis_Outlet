@@ -11,7 +11,6 @@ interface PaginationProps {
   setRowsPerPage: (rows: number) => void;
 }
 
-
 const Pagination: React.FC<PaginationProps> = ({
   page,
   totalPages,
@@ -24,14 +23,12 @@ const Pagination: React.FC<PaginationProps> = ({
     setPage(1);
   };
 
-
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
 
   return (
     <div className="pagination-container">
       <div className="pagination-left">
-        <span>Rows per page:</span>
+        <span id="span3">Rows per page:</span>
         <select value={rowsPerPage} onChange={handleChangeRows} className="pagination-select">
           {[5, 10, 20, 50].map((opt) => (
             <option key={opt} value={opt}>
@@ -39,11 +36,10 @@ const Pagination: React.FC<PaginationProps> = ({
             </option>
           ))}
         </select>
-        <span className="pagination-page-label">
+        <span id="span4" className="pagination-page-label">
           Page {page} of {totalPages}
         </span>
       </div>
-
 
       <div className="pagination-buttons">
         <button onClick={() => setPage(1)} disabled={page === 1} title="First Page">
@@ -51,8 +47,8 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
         <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} title="Previous Page">
           <ChevronLeft size={16} style={{ verticalAlign: 'middle' }} />
+          
         </button>
-
 
         {pageNumbers.map((p) =>
           p === 1 || p === totalPages || Math.abs(p - page) <= 1 ? (
@@ -68,7 +64,6 @@ const Pagination: React.FC<PaginationProps> = ({
           ) : null
         )}
 
-
         <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} title="Next Page">
           <ChevronRight size={16} style={{ verticalAlign: 'middle' }} />
         </button>
@@ -80,6 +75,4 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-
 export default Pagination;
-

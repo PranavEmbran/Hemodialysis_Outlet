@@ -122,7 +122,7 @@
 .dashboard-table-heading {
   font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .home-stats-grid {

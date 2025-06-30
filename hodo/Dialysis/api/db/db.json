@@ -272,6 +272,17 @@
       "remarks": "555",
       "patientName": "Shiva Kumar",
       "id": "1750928843385"
+    },
+    {
+      "patientId": "20250630/002",
+      "dialysisUnit": "Unit B",
+      "technician": "Dr. Brown",
+      "admittingDoctor": "Dr. Johnson",
+      "date": "2025-06-30",
+      "time": "16:12",
+      "remarks": "",
+      "patientName": "Parvathi Devi",
+      "id": "1751280137331"
     }
   ],
   "billing": [
@@ -285,6 +296,17 @@
       "status": "PAID",
       "date": "2025-06-26",
       "id": "1750927228786"
+    },
+    {
+      "patientId": "20250629/001",
+      "sessionDate": "2025-06-30",
+      "sessionDuration": 120,
+      "amount": 1000,
+      "patientName": "Prabhavati A",
+      "totalAmount": 1000,
+      "status": "PAID",
+      "date": "2025-06-30",
+      "id": "1751280084297"
     }
   ],
   "history": [

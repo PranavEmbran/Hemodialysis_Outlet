@@ -11,6 +11,7 @@ import Header from '../components/Header';
 import type { Patient, History } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import { Row, Col, Container } from 'react-bootstrap';
+import Table from '../components/Table';
 
 const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [history, setHistory] = useState<History[]>([]);
@@ -121,32 +122,24 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                 No dialysis history found.
               </div>
             ) : (
-              // <div className="table-responsive">
-              //   <table className="table">
               <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <table className="vehicles-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Patient</th>
-                      <th>Parameters</th>
-                      <th>Notes</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {history.map((h, i) => (
-                      <tr key={h.id || i}>
-                        <td>{h.date}</td>
-                        <td>{h.patientName}</td>
-                        <td>{h.parameters || h.treatmentParameters?.dialyzer || '-'}</td>
-                        <td>{h.notes || h.nursingNotes || '-'}</td>
-                        <td>{h.amount || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
+                <Table
+                  columns={[
+                    { key: 'date', header: 'Date' },
+                    { key: 'patientName', header: 'Patient' },
+                    { key: 'parameters', header: 'Parameters' },
+                    { key: 'notes', header: 'Notes' },
+                    { key: 'amount', header: 'Amount' },
+                  ]}
+                  data={history.map((h, i) => ({
+                    id: h.id || i,
+                    date: h.date,
+                    patientName: h.patientName,
+                    parameters: h.parameters || h.treatmentParameters?.dialyzer || '-',
+                    notes: h.notes || h.nursingNotes || '-',
+                    amount: h.amount || '-',
+                  }))}
+                />
               </div>
             )}
           </div>

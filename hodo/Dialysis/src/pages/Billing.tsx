@@ -14,6 +14,7 @@ import Header from '../components/Header';
 import type { Patient, Billing as BillingType } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import Table from '../components/Table';
 
 interface BillingFormValues {
   patientId: string;
@@ -238,54 +239,40 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
           {/* <h3 className="home-title mb-4">Recent Bills</h3> */}
           <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             <div className='dashboard-table-heading'>Recent Bills: {bills.length}</div>
-            <table className="vehicles-table">
-              <thead>
-                <tr>
-                  <th>Patient</th>
-                  <th>Date</th>
-                  <th>Duration</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedBills.length > 0 ? (
-                  paginatedBills.map(b => (
-                    <tr key={b.id}>
-                      <td>{b.patientName}</td>
-                      <td>{b.sessionDate}</td>
-                      <td>{b.sessionDuration} minutes</td>
-                      <td>₹{b.totalAmount}</td>
-                      <td>
-                        <span className={`badge bg-${b.status === 'PAID' ? 'success' : 'warning'}`}>
-                          {b.status}
-                        </span>
-                      </td>
-                      <td>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedBill(b);
-                            setShowPrintModal(true);
-                          }}
-                        >
-                          View Bill
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="text-center text-muted">
-                      No bills found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            {billsTotalPages > 1 && renderPagination(billsPage, billsTotalPages, setBillsPage, billsRowsPerPage, setBillsRowsPerPage)}
+            <Table
+              columns={[
+                { key: 'patientName', header: 'Patient' },
+                { key: 'sessionDate', header: 'Date' },
+                { key: 'sessionDuration', header: 'Duration' },
+                { key: 'totalAmount', header: 'Amount' },
+                { key: 'status', header: 'Status' },
+                { key: 'actions', header: 'Actions' },
+              ]}
+              data={bills.map(b => ({
+                id: b.id,
+                patientName: b.patientName,
+                sessionDate: b.sessionDate,
+                sessionDuration: b.sessionDuration ? `${b.sessionDuration} minutes` : '-',
+                totalAmount: b.totalAmount ? `₹${b.totalAmount}` : '-',
+                status: (
+                  <span className={`badge bg-${b.status === 'PAID' ? 'success' : 'warning'}`}>
+                    {b.status}
+                  </span>
+                ),
+                actions: (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedBill(b);
+                      setShowPrintModal(true);
+                    }}
+                  >
+                    View Bill
+                  </Button>
+                ),
+              }))}
+            />
           </div>
           {/* </Card.Body>
             </Card>
