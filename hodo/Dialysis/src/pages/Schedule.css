@@ -1,0 +1,244 @@
+.home-title {
+  /* color: #2c3e50; */
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  /* color: #495057; */
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #B3E5FC;
+  box-shadow: 0 0 0 2px rgba(179, 229, 252, 0.2);
+}
+
+.btn-primary {
+  background-color: #B3E5FC;
+  color: #333;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #81d4fa;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* --- Vehicles Table Custom Styles for Schedule Table (copied from Home.css) --- */
+.table-container {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: white;
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  padding: 10px;
+}
+
+.vehicles-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.vehicles-table th,
+.vehicles-table td {
+  padding: 0.75rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.vehicles-table thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.vehicles-table th {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #0d92ae;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.vehicles-table td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid #f1f3f4;
+  color: #333;
+  vertical-align: middle;
+}
+
+.vehicles-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.vehicles-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vehicles-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem 1rem 1.5rem;
+  background-color: white;
+  border-radius: 0 0 4px 4px;
+  box-shadow: none;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #0d92ae;
+  color: white;
+  border-color: #0d92ae;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.page-number {
+  padding: 0.5rem 0.75rem;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.page-number:hover {
+  background-color: #0d92ae;
+  color: white;
+  border-color: #0d92ae;
+}
+
+.page-number.active {
+  background-color: #0d92ae;
+  color: white;
+  border-color: #0d92ae;
+}
+
+.page-number.active:hover {
+  background-color: #0d92ae;
+  color: white;
+  border-color: #0d92ae;
+}
+
+@media (max-width: 768px) {
+  /* .home-container {
+    width: 100%;
+    left: 0;
+    padding: 1rem;
+  } */
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .table-responsive {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,82 @@
+.footer-container{
+/* position: fixed; */
+    /* bottom: 40px;
+    right: 50px;
+    left: 50px; */
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-top: 10px;
+    background-color: transparent;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+    /* max-width: calc(100% - 100px); */
+}
+
+.footer-left {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+
+#span1{
+    width: 60px;
+}
+
+#span2{
+    width: 300px;
+}
+
+span{
+    width: fit-content;
+}
+.footer-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+
+.footer-container span {
+    font-size: 14px;
+    color: #5a5a5a;
+}
+
+
+.footer-container a {
+    font-size: 14px;
+    color: rgb(3, 139, 164);
+    /* text-decoration: none; */
+}
+
+
+.footer-container a:hover {
+    text-decoration: underline;
+}
+
+
+.fullscreen-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #5a5a5a;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 1px #5a5a5a; /* Adds thickness to the symbol */
+    font-weight: bold; /* Makes the symbol bolder */
+}
+
+
+.fullscreen-btn:hover {
+    background: none;
+    color: #5a5a5a;
+}

@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  /* width: 235px; */
+  width: 255px;
+  /* width: 319.984px; */
+  z-index: 1000;
+  height: 100vh !important;
+  background-color: black;
+  /* padding: 20px; */
+  overflow-y: auto;
+  /* overflow-y: scroll; */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease;
+}
+
+.sidebar-title {
+  background-color: #80def7;
+  font-size: 14px;
+  border-right: 6px solid #0d92ae;
+  margin-bottom: 1rem;
+  /* color: black !important; */
+  padding: 8px 15px;
+}
+
+.sidebar-heading2 {
+  background-color: #80def7;
+  /* font-weight: 700; */
+  /* font-weight: bold; */
+  font-size: 12px;
+  /* margin-bottom: 1rem; */
+  color: black !important;
+  padding: 10px 10px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  /* border: 1px solid red; */
+  padding: 1px;
+  /* padding-left: 20px; */
+  /* padding-top: 10px; */
+}
+
+.sidebar li {
+  /* padding: 10px; */
+  margin-bottom: 1px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #fffafa;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding: 3px;
+  margin: 0;
+  text-decoration: none;
+  /* font-size: 12px; */
+  color: #333;
+  /* border-radius: 6px; */
+  /* transition: background-color 0.2s ease; */
+}
+
+.nav-item:hover {
+  background-color: #b2e4f1;
+  border-right: 4px solid #0d92ae;
+  /* padding: 10px 10px; */
+  color: black !important;
+}
+
+.nav-item.active {
+  background-color: #b2e4f1;
+  color: black !important;
+  border-right: 4px solid #0d92ae;
+}
+
+.nav-item svg {
+  margin-left: 20px;
+  padding: 5px;
+  /* margin-right: 8px; */
+  flex-shrink: 0;
+}
+
+/* Collapsed Sidebar Styles */
+.sidebar.collapsed {
+  width: 0px;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 15px 10px;
+}
+
+.sidebar.collapsed .nav-item svg {
+  margin-right: 0;
+}
+
+.sidebar.collapsed .sidebar-title {
+  display: none;
+}
+
+.sidebar.collapsed .nav-item:hover {
+  background-color: transparent;
+  border-right: 4px solid #0d92ae;
+  color: black;
+}
+
+.sidebar.collapsed .nav-item.active {
+  background-color: transparent;
+  color: black;
+  border-right: 4px solid transparent;
+}
+
+span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  /* background-color: #007bff; */
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.icon-caret-right {
+  font-size: 18px;
+  color: white;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar-top {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-profile {
+  margin-top: -20px;
+  padding: 0;
+  margin-left: 20px;
+  transition: all 0.3s ease;
+  text-align: center;
+  /* border: 1px solid yellow; */
+}
+
+.sidebar-profile img {
+  width: 60px;
+  height: 60px;
+  filter: blur(0.7px);
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2.5pt solid #0d92ae;
+  border-collapse: collapse;
+  transition: all 0.3s ease;
+}
+
+.sidebar-profile.collapsed img {
+  display: none;
+}
+
+.sidebar-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  font-size: 12px;
+  margin-left: 0;
+  margin-top: 12px;
+  /* border: 1px solid red; */
+}
+
+.sidebar-text h4,
+p {
+  color: rgb(3, 139, 164);
+}
+
+.searchbar {
+  margin: 0px 3px 0 auto;
+  padding: 6px 12px 6px 12px;
+  /* border: 1px solid red; */
+  line-height: 17.5px;
+  width: 100%;
+  max-width: 99%;
+  /* or set a fixed width */
+  background-color: transparent;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px 0px inset;
+  outline: none;
+}
+
+.searchbar input {
+  width: 100%;
+  padding: 8px 6px 6px 10px;
+  border: 1px solid rgb(128, 222, 247);
+  color: white;
+}
+
+.searchbar::placeholder {
+  color: white;
+}
+
+.searchbar.collapsed {
+  display: hidden;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.sidebar-para {
+  font-family: Geneva, Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: -10px;
+}
+
+.sidebar-para2 {
+  font-family: Geneva, Arial, Helvetica, sans-serif;
+  /* font-size: 18px; */
+  font-weight: 700;
+  margin-top: -15px;
+}
+
+.sidebar-heading {
+  font-weight: 600;
+  font-stretch: 100%;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.sidebar-date {
+  margin: 0;
+  margin-top: -5px;
+  padding: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.sidebar-date-heading {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-weight: 600;
+}
+
+.sidebar-sublist {
+  width: 100%;
+}

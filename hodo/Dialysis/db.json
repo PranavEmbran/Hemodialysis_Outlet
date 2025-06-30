@@ -1,0 +1,1369 @@
+{
+  "vehicles": [
+    {
+      "id": "a4e4",
+      "make": "toyota",
+      "model": "innova",
+      "purchaseDate": "2004-02-03",
+      "registrationNumber": "KL28UH231",
+      "purchasePrice": "800000",
+      "fuelType": "Diesel",
+      "engineNumber": "47a47b47c47d",
+      "chassisNumber": "32s32d32rf23",
+      "kilometers": "60000",
+      "color": "black",
+      "owner": "siva",
+      "phone": "9865784963",
+      "address": "tvm",
+      "insurance": {
+        "policyNumber": "2454",
+        "insurer": "tata",
+        "policytype": "Third Party",
+        "startDate": "2025-06-01",
+        "endDate": "2026-06-02",
+        "payment": "cash",
+        "issueDate": "2025-06-12",
+        "premiumAmount": "15000"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-02-04",
+          "claimAmount": "12000",
+          "reason": "accident",
+          "status": "Rejected"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.973036698956918,
+        "longitude": 77.6015152850183,
+        "timestamp": "2025-06-25T06:47:55.797Z",
+        "address": "St. Marks Circle, St. Mark's Circle Plaza, Shanthala Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-13T08:21:17.340Z"
+    },
+    {
+      "id": "6b1e",
+      "make": "suzuki",
+      "model": "swift",
+      "purchaseDate": "2004-02-03",
+      "registrationNumber": "tn01tb2323",
+      "purchasePrice": "6500000",
+      "fuelType": "Electric",
+      "engineNumber": "ied9322rn084sa",
+      "chassisNumber": "32s32d32rf32f",
+      "kilometers": "68000",
+      "color": "white",
+      "owner": "Jane Smith",
+      "phone": "9748569785",
+      "address": "adsff",
+      "insurance": {
+        "policyNumber": "692356",
+        "insurer": "abcd",
+        "policytype": "Comprehensive",
+        "startDate": "2025-06-11",
+        "endDate": "2025-06-23",
+        "payment": "upi",
+        "issueDate": "2025-06-12",
+        "premiumAmount": "7500",
+        "hasInsurance": true
+      },
+      "claims": [
+        {
+          "claimDate": "2025-06-12",
+          "claimAmount": "12500",
+          "reason": "accident",
+          "status": "Approved"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.964354253569049,
+        "longitude": 77.59554324710415,
+        "timestamp": "2025-06-17T04:37:21.928Z",
+        "address": "Woodlands, Sri Ram Mandir Road, Sampangi Rama Nagara, Shanti Nagar, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:41:33.406Z"
+    },
+    {
+      "id": "c8f2",
+      "make": "honda",
+      "model": "city",
+      "purchaseDate": "2018-05-15",
+      "registrationNumber": "MH02AB4545",
+      "purchasePrice": "950000",
+      "fuelType": "Petrol",
+      "engineNumber": "honda123xyz789",
+      "chassisNumber": "honda456def012",
+      "kilometers": "45000",
+      "color": "silver",
+      "owner": "Rajesh Kumar",
+      "phone": "9876543210",
+      "address": "Mumbai, Maharashtra",
+      "insurance": {
+        "policyNumber": "789456",
+        "insurer": "ICICI Lombard",
+        "policytype": "Comprehensive",
+        "startDate": "2024-12-01",
+        "endDate": "2025-11-30",
+        "payment": "card",
+        "issueDate": "2024-11-25",
+        "premiumAmount": "12000"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-01-15",
+          "claimAmount": "8500",
+          "reason": "minor collision",
+          "status": "Approved"
+        },
+        {
+          "claimDate": "2025-03-20",
+          "claimAmount": "15000",
+          "reason": "windshield damage",
+          "status": "Approved"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 19.08168787495554,
+        "longitude": 72.875847334118,
+        "timestamp": "2025-06-23T05:15:38.734Z",
+        "address": "Kalina Kurla Road, Kismat Nagar, L Ward, Zone 5, Mumbai, Maharashtra, 400070, India"
+      },
+      "lastUpdated": "2025-06-12T10:15:30.123Z"
+    },
+    {
+      "id": "d9g3",
+      "make": "hyundai",
+      "model": "i20",
+      "purchaseDate": "2020-08-22",
+      "registrationNumber": "DL01CD7890",
+      "purchasePrice": "750000",
+      "fuelType": "Petrol",
+      "engineNumber": "hyundai789abc456",
+      "chassisNumber": "hyundai123ghi789",
+      "kilometers": "32000",
+      "color": "red",
+      "owner": "Priya Sharma",
+      "phone": "8765432109",
+      "address": "New Delhi, Delhi",
+      "insurance": {
+        "policyNumber": "456789",
+        "insurer": "HDFC Ergo",
+        "policytype": "Third Party",
+        "startDate": "2025-06-11",
+        "endDate": "2025-09-30",
+        "payment": "cash",
+        "issueDate": "2025-06-10",
+        "premiumAmount": "1652"
+      },
+      "currentLocation": {
+        "latitude": 28.703302758351427,
+        "longitude": 77.10271469105481,
+        "timestamp": "2025-06-17T04:51:55.856Z",
+        "address": "Sector 3, Rohini, Rohini Tehsil, North West Delhi, Delhi, 110085, India"
+      },
+      "lastUpdated": "2025-06-12T11:30:45.456Z"
+    },
+    {
+      "id": "e0h4",
+      "make": "maruti",
+      "model": "baleno",
+      "purchaseDate": "2019-11-10",
+      "registrationNumber": "KA03EF1234",
+      "purchasePrice": "680000",
+      "fuelType": "Petrol",
+      "engineNumber": "maruti456jkl123",
+      "chassisNumber": "maruti789mno456",
+      "kilometers": "55000",
+      "color": "blue",
+      "owner": "Amit Patel",
+      "phone": "7654321098",
+      "address": "Bangalore, Karnataka",
+      "insurance": {
+        "policyNumber": "321654",
+        "insurer": "Bajaj Allianz",
+        "policytype": "Comprehensive",
+        "startDate": "2024-08-01",
+        "endDate": "2025-07-31",
+        "payment": "upi",
+        "issueDate": "2024-07-25",
+        "premiumAmount": "9500"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-12-05",
+          "claimAmount": "22000",
+          "reason": "major accident",
+          "status": "Approved"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "timestamp": "2025-06-12T12:45:20.789Z",
+        "address": "Bangalore, Karnataka, India"
+      },
+      "lastUpdated": "2025-06-12T12:45:20.789Z"
+    },
+    {
+      "id": "f1i5",
+      "make": "tata",
+      "model": "nexon",
+      "purchaseDate": "2021-03-18",
+      "registrationNumber": "TN02GH5678",
+      "purchasePrice": "1450000",
+      "fuelType": "Electric",
+      "engineNumber": "tata123pqr789",
+      "chassisNumber": "tata456stu123",
+      "kilometers": "28000",
+      "color": "green",
+      "owner": "Sneha Reddy",
+      "phone": "6543210987",
+      "address": "Chennai, Tamil Nadu",
+      "insurance": {
+        "policyNumber": "987123",
+        "insurer": "Reliance General",
+        "policytype": "Comprehensive",
+        "startDate": "2024-09-01",
+        "endDate": "2025-08-31",
+        "payment": "card",
+        "issueDate": "2024-08-20",
+        "premiumAmount": "18000"
+      },
+      "currentLocation": {
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "timestamp": "2025-06-13T05:15:01.379Z",
+        "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-13T05:15:02.058Z"
+    },
+    {
+      "id": "g2j6",
+      "make": "kia",
+      "model": "seltos",
+      "purchaseDate": "2022-01-25",
+      "registrationNumber": "AP05IJ9012",
+      "purchasePrice": "1250000",
+      "fuelType": "Diesel",
+      "engineNumber": "kia789vwx456",
+      "chassisNumber": "kia123yza789",
+      "kilometers": "18000",
+      "color": "orange",
+      "owner": "Vikram Singh",
+      "phone": "5432109876",
+      "address": "Hyderabad, Telangana",
+      "insurance": {
+        "policyNumber": "654321",
+        "insurer": "SBI General",
+        "policytype": "Liability",
+        "startDate": "2024-07-01",
+        "endDate": "2025-06-30",
+        "payment": "cash",
+        "issueDate": "2024-06-15",
+        "premiumAmount": "11000"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-11-10",
+          "claimAmount": "35000",
+          "reason": "theft",
+          "status": "Rejected"
+        },
+        {
+          "claimDate": "2025-06-18",
+          "claimAmount": "2754.65",
+          "reason": "fell in river",
+          "status": "Pending"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.96996266696826,
+        "longitude": 77.58983877609221,
+        "timestamp": "2025-06-17T04:50:09.903Z",
+        "address": "Unknown location"
+      }
+    },
+    {
+      "id": "h3k7",
+      "make": "mahindra",
+      "model": "xuv300",
+      "purchaseDate": "2020-06-12",
+      "registrationNumber": "GJ01KL3456",
+      "purchasePrice": "850000",
+      "fuelType": "Petrol",
+      "engineNumber": "mahindra456bcd789",
+      "chassisNumber": "mahindra123efg456",
+      "kilometers": "42000",
+      "color": "yellow",
+      "owner": "Rahul Mehta",
+      "phone": "4321098765",
+      "address": "Ahmedabad, Gujarat",
+      "insurance": {
+        "policyNumber": "147258",
+        "insurer": "Tata AIG",
+        "policytype": "Comprehensive",
+        "startDate": "2024-11-01",
+        "endDate": "2025-10-31",
+        "payment": "upi",
+        "issueDate": "2024-10-20",
+        "premiumAmount": "13500"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-02-08",
+          "claimAmount": "18500",
+          "reason": "rear collision",
+          "status": "Approved"
+        },
+        {
+          "claimDate": "2025-06-19",
+          "claimAmount": "4000",
+          "reason": "tsunami",
+          "status": "Pending"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.96801622404748,
+        "longitude": 77.59335132570467,
+        "timestamp": "2025-06-12T09:41:57.094Z",
+        "address": "Sree Kanteerava Stadium, Rajaram Mohan Roy Road, Sampangirama Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:41:57.824Z"
+    },
+    {
+      "id": "i4l8",
+      "make": "ford",
+      "model": "ecosport",
+      "purchaseDate": "2019-09-30",
+      "registrationNumber": "UP32MN7890",
+      "purchasePrice": "1100000",
+      "fuelType": "Diesel",
+      "engineNumber": "ford789hij123",
+      "chassisNumber": "ford456klm789",
+      "kilometers": "38000",
+      "color": "brown",
+      "owner": "Anjali sha verma",
+      "phone": "3210987654",
+      "address": "Lucknow, Uttar Pradesh",
+      "insurance": {
+        "policyNumber": "963852",
+        "insurer": "New India Assurance",
+        "policytype": "Third Party",
+        "startDate": "2024-09-01",
+        "endDate": "2025-08-31",
+        "payment": "bank account",
+        "issueDate": "2024-08-15",
+        "premiumAmount": "9000"
+      }
+    },
+    {
+      "id": "j5m9",
+      "make": "renault",
+      "model": "kwid",
+      "purchaseDate": "2021-12-05",
+      "registrationNumber": "PB02OP1234",
+      "purchasePrice": "450000",
+      "fuelType": "Petrol",
+      "engineNumber": "renault123qrs456",
+      "chassisNumber": "renault789tuv123",
+      "kilometers": "25000",
+      "color": "purple",
+      "owner": "Harpreet Kaur",
+      "phone": "2109876543",
+      "address": "Chandigarh, Punjab",
+      "insurance": {
+        "policyNumber": "741852",
+        "insurer": "Oriental Insurance",
+        "policytype": "Comprehensive",
+        "startDate": "2024-10-01",
+        "endDate": "2025-09-30",
+        "payment": "card",
+        "issueDate": "2024-09-20",
+        "premiumAmount": "7000"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-12-20",
+          "claimAmount": "12000",
+          "reason": "side damage",
+          "status": "Rejected"
+        }
+      ]
+    },
+    {
+      "id": "k6n0",
+      "make": "nissan",
+      "model": "magnite",
+      "purchaseDate": "2022-04-18",
+      "registrationNumber": "HR06QR5678",
+      "purchasePrice": "720000",
+      "fuelType": "Petrol",
+      "engineNumber": "nissan456wxy789",
+      "chassisNumber": "nissan123zab456",
+      "kilometers": "15000",
+      "color": "pink",
+      "owner": "Deepika Sharma",
+      "phone": "1098765432",
+      "address": "Gurgaon, Haryana",
+      "insurance": {
+        "policyNumber": "369258",
+        "insurer": "United India Insurance",
+        "policytype": "Liability",
+        "startDate": "2024-08-01",
+        "endDate": "2025-07-31",
+        "payment": "cash",
+        "issueDate": "2024-07-25",
+        "premiumAmount": "8500"
+      }
+    },
+    {
+      "id": "l7o1",
+      "make": "volkswagen",
+      "model": "polo",
+      "purchaseDate": "2018-11-22",
+      "registrationNumber": "RJ14ST9012",
+      "purchasePrice": "780000",
+      "fuelType": "Diesel",
+      "engineNumber": "volkswagen789cde123",
+      "chassisNumber": "volkswagen456fgh789",
+      "kilometers": "62000",
+      "color": "gray",
+      "owner": "Rajiv Malhotra",
+      "phone": "0987654321",
+      "address": "Jaipur, Rajasthan",
+      "insurance": {
+        "policyNumber": "852963",
+        "insurer": "National Insurance",
+        "policytype": "Comprehensive",
+        "startDate": "2024-12-01",
+        "endDate": "2025-11-30",
+        "payment": "upi",
+        "issueDate": "2024-11-20",
+        "premiumAmount": "14000"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-01-30",
+          "claimAmount": "28000",
+          "reason": "engine damage",
+          "status": "Approved"
+        },
+        {
+          "claimDate": "2025-03-15",
+          "claimAmount": "9500",
+          "reason": "bumper damage",
+          "status": "Rejected"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.969554853565063,
+        "longitude": 77.59905854416311,
+        "timestamp": "2025-06-13T10:06:59.893Z",
+        "address": "Bishop Cotton Boys School, Saint Mark's Road, Shanthala Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-13T10:07:00.161Z"
+    },
+    {
+      "id": "m8p2",
+      "make": "skoda",
+      "model": "rapid",
+      "purchaseDate": "2020-03-08",
+      "registrationNumber": "MP09UV3456",
+      "purchasePrice": "920000",
+      "fuelType": "Petrol",
+      "engineNumber": "skoda123ijk456",
+      "chassisNumber": "skoda789lmn123",
+      "kilometers": "35000",
+      "color": "cyan",
+      "owner": "Priyanka Dubey",
+      "phone": "9876543210",
+      "address": "Bhopal, Madhya Pradesh",
+      "insurance": {
+        "policyNumber": "456123",
+        "insurer": "Royal Sundaram",
+        "policytype": "Third Party",
+        "startDate": "2024-09-01",
+        "endDate": "2025-08-31",
+        "payment": "bank account",
+        "issueDate": "2024-08-25",
+        "premiumAmount": "10000"
+      },
+      "currentLocation": {
+        "latitude": 12.968279701245054,
+        "longitude": 77.59528747390891,
+        "timestamp": "2025-06-12T09:57:54.014Z",
+        "address": "Vydehi Superspeciality Hospital, 2, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:57:54.721Z"
+    },
+    {
+      "id": "n9q3",
+      "make": "mg",
+      "model": "hector",
+      "purchaseDate": "2021-07-14",
+      "registrationNumber": "WB16WX7890",
+      "purchasePrice": "1350000",
+      "fuelType": "Petrol",
+      "engineNumber": "mg456opq789",
+      "chassisNumber": "mg123rst456",
+      "kilometers": "22000",
+      "color": "maroon",
+      "owner": "Sourav Ganguly",
+      "phone": "8765432109",
+      "address": "Kolkata, West Bengal",
+      "insurance": {
+        "policyNumber": "12154",
+        "insurer": "hdfc",
+        "policytype": "Third Party",
+        "startDate": "2025-06-12",
+        "endDate": "2026-07-08",
+        "payment": "bank account",
+        "issueDate": "2025-06-10",
+        "premiumAmount": "2300"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-11-25",
+          "claimAmount": "42000",
+          "reason": "major collision",
+          "status": "Rejected"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.975076749106497,
+        "longitude": 77.59107133960151,
+        "timestamp": "2025-06-17T06:48:49.076Z",
+        "address": "Cubbon Park Circle, Doctor B R Ambedkar Veedhi, Fair Field Layout, Gandhinagar, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      }
+    },
+    {
+      "id": "o0r4",
+      "make": "jeep",
+      "model": "compass",
+      "purchaseDate": "2022-02-28",
+      "registrationNumber": "OR02YZ1234",
+      "purchasePrice": "1850000",
+      "fuelType": "Diesel",
+      "engineNumber": "jeep789uvw456",
+      "chassisNumber": "jeep123xyz789",
+      "kilometers": "12000",
+      "color": "navy",
+      "owner": "Biju Patnaik",
+      "phone": "7654321098",
+      "address": "Bhubaneswar, Odisha",
+      "insurance": {
+        "policyNumber": "321654",
+        "insurer": "Cholamandalam MS",
+        "policytype": "Liability",
+        "startDate": "2024-07-01",
+        "endDate": "2025-06-30",
+        "payment": "upi",
+        "issueDate": "2024-06-20",
+        "premiumAmount": "20000"
+      },
+      "currentLocation": {
+        "latitude": 12.966758199452437,
+        "longitude": 77.59057483735717,
+        "timestamp": "2025-06-17T04:49:05.929Z",
+        "address": "Cross Road, Sampangi Rama Nagara, Shanti Nagar, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      }
+    },
+    {
+      "id": "p1s5",
+      "make": "bmw",
+      "model": "x1",
+      "purchaseDate": "2020-10-15",
+      "registrationNumber": "MH01AB5678",
+      "purchasePrice": "3200000",
+      "fuelType": "Petrol",
+      "engineNumber": "bmw456abc123",
+      "chassisNumber": "bmw789def456",
+      "kilometers": "28000",
+      "color": "white",
+      "owner": "Ratan Tata",
+      "phone": "6543210987",
+      "address": "Mumbai, Maharashtra",
+      "insurance": {
+        "policyNumber": "987456",
+        "insurer": "Bajaj Allianz",
+        "policytype": "Comprehensive",
+        "startDate": "2024-11-01",
+        "endDate": "2025-10-31",
+        "payment": "card",
+        "issueDate": "2024-10-25",
+        "premiumAmount": "35000"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-01-10",
+          "claimAmount": "85000",
+          "reason": "luxury car damage",
+          "status": "Approved"
+        }
+      ]
+    },
+    {
+      "id": "q2t6",
+      "make": "audi",
+      "model": "a4",
+      "purchaseDate": "2021-05-20",
+      "registrationNumber": "DL02CD9012",
+      "purchasePrice": "4500000",
+      "fuelType": "Petrol",
+      "engineNumber": "audi123ghi789",
+      "chassisNumber": "audi456jkl123",
+      "kilometers": "18000",
+      "color": "black",
+      "owner": "Mukesh Ambani",
+      "phone": "5432109876",
+      "address": "New Delhi, Delhi",
+      "insurance": {
+        "policyNumber": "654789",
+        "insurer": "ICICI Lombard",
+        "policytype": "Comprehensive",
+        "startDate": "2025-07-02",
+        "endDate": "2026-12-16",
+        "payment": "card",
+        "issueDate": "2025-06-01",
+        "premiumAmount": "45000",
+        "hasInsurance": true
+      },
+      "claims": [
+        {
+          "claimDate": "2025-06-18",
+          "claimAmount": "123",
+          "reason": "12d",
+          "status": "Pending"
+        }
+      ]
+    },
+    {
+      "id": "r3u7",
+      "make": "mercedes",
+      "model": "c-class",
+      "purchaseDate": "2019-08-12",
+      "registrationNumber": "KA04EF3456",
+      "purchasePrice": "5200000",
+      "fuelType": "Diesel",
+      "engineNumber": "mercedes789mno456",
+      "chassisNumber": "mercedes123pqr789",
+      "kilometers": "32000",
+      "color": "silver",
+      "owner": "Narayana Murthy",
+      "phone": "4321098765",
+      "address": "Bangalore, Karnataka",
+      "insurance": {
+        "policyNumber": "147963",
+        "insurer": "HDFC Ergo",
+        "policytype": "Comprehensive",
+        "startDate": "2024-10-01",
+        "endDate": "2025-09-30",
+        "payment": "card",
+        "issueDate": "2024-09-15",
+        "premiumAmount": "55000"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-12-05",
+          "claimAmount": "120000",
+          "reason": "premium car repair",
+          "status": "Rejected"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.967235944364578,
+        "longitude": 77.59427339080796,
+        "timestamp": "2025-06-23T05:16:10.542Z",
+        "address": "Rajaram Mohan Roy Road, Sampangirama Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      }
+    },
+    {
+      "id": "s4v8",
+      "make": "land rover",
+      "model": "discovery",
+      "purchaseDate": "2022-06-30",
+      "registrationNumber": "TN03GH7890",
+      "purchasePrice": "8500000",
+      "fuelType": "Diesel",
+      "engineNumber": "landrover456stu123",
+      "chassisNumber": "landrover789vwx456",
+      "kilometers": "8000",
+      "color": "green",
+      "owner": "Lakshmi Mittal",
+      "phone": "3210987654",
+      "address": "Chennai, Tamil Nadu",
+      "insurance": {
+        "policyNumber": "963147",
+        "insurer": "Reliance General",
+        "policytype": "Comprehensive",
+        "startDate": "2024-08-01",
+        "endDate": "2025-07-31",
+        "payment": "upi",
+        "issueDate": "2024-07-20",
+        "premiumAmount": "75000"
+      }
+    },
+    {
+      "id": "t5w9",
+      "make": "jaguar",
+      "model": "xe",
+      "purchaseDate": "2021-12-03",
+      "registrationNumber": "AP06IJ1234",
+      "purchasePrice": "6800000",
+      "fuelType": "Petrol",
+      "engineNumber": "jaguar123yza789",
+      "chassisNumber": "jaguar456bcd123",
+      "kilometers": "15000",
+      "color": "blue",
+      "owner": "Azim Premji",
+      "phone": "2109876543",
+      "address": "Hyderabad, Telangana",
+      "insurance": {
+        "policyNumber": "741369",
+        "insurer": "SBI General",
+        "policytype": "Liability",
+        "startDate": "2024-09-01",
+        "endDate": "2025-08-31",
+        "payment": "cash",
+        "issueDate": "2024-08-25",
+        "premiumAmount": "65000"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-11-15",
+          "claimAmount": "180000",
+          "reason": "luxury vehicle damage",
+          "status": "Pending"
+        }
+      ],
+      "currentLocation": {
+        "latitude": 12.976171632927615,
+        "longitude": 77.5899459582894,
+        "timestamp": "2025-06-17T04:47:12.673Z",
+        "address": "Government Secretariat Club - KGSC, Doctor B R Ambedkar Veedhi, Fair Field Layout, Gandhinagar, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      }
+    },
+    {
+      "id": "u6x0",
+      "make": "volvo",
+      "model": "xc60",
+      "purchaseDate": "2020-04-25",
+      "registrationNumber": "GJ02KL5678",
+      "purchasePrice": "5500000",
+      "fuelType": "Hybrid",
+      "engineNumber": "volvo789efg123",
+      "chassisNumber": "volvo123hij456",
+      "kilometers": "25000",
+      "color": "red",
+      "owner": "Kumar Mangalam Birla",
+      "phone": "1098765432",
+      "address": "Ahmedabad, Gujarat",
+      "insurance": {
+        "policyNumber": "369741",
+        "insurer": "Tata AIG",
+        "policytype": "Comprehensive",
+        "startDate": "2024-11-01",
+        "endDate": "2025-10-31",
+        "payment": "bank account",
+        "issueDate": "2024-10-20",
+        "premiumAmount": "60000"
+      }
+    },
+    {
+      "id": "v7y1",
+      "make": "lexus",
+      "model": "es",
+      "purchaseDate": "2022-01-10",
+      "registrationNumber": "UP33MN9012",
+      "purchasePrice": "7200000",
+      "fuelType": "Hybrid",
+      "engineNumber": "lexus456klm789",
+      "chassisNumber": "lexus789nop123",
+      "kilometers": "10000",
+      "color": "white",
+      "owner": "Sunil Mittal",
+      "phone": "0987654321",
+      "address": "Lucknow, Uttar Pradesh",
+      "insurance": {
+        "policyNumber": "852147",
+        "insurer": "New India Assurance",
+        "policytype": "Comprehensive",
+        "startDate": "2024-10-01",
+        "endDate": "2025-09-30",
+        "payment": "card",
+        "issueDate": "2024-09-20",
+        "premiumAmount": "70000"
+      },
+      "claims": [
+        {
+          "claimDate": "2024-12-10",
+          "claimAmount": "250000",
+          "reason": "premium hybrid repair",
+          "status": "Approved"
+        }
+      ]
+    },
+    {
+      "id": "w8z2",
+      "make": "datsun",
+      "model": "go",
+      "purchaseDate": "2019-07-15",
+      "registrationNumber": "KL07BC3456",
+      "purchasePrice": "380000",
+      "fuelType": "Petrol",
+      "engineNumber": "datsun123qrs456",
+      "chassisNumber": "datsun789tuv123",
+      "kilometers": "75000",
+      "color": "beige",
+      "owner": "Manoj Pillai",
+      "phone": "9876543210",
+      "address": "Kochi, Kerala",
+      "insurance": {
+        "policyNumber": "152535",
+        "insurer": "tata",
+        "policytype": "Third Party",
+        "startDate": "2024-07-07",
+        "endDate": "2025-06-21",
+        "payment": "cash",
+        "issueDate": "2024-07-08",
+        "premiumAmount": "1350",
+        "hasInsurance": true
+      }
+    },
+    {
+      "id": "y0b4",
+      "make": "isuzu",
+      "model": "d-max",
+      "purchaseDate": "2021-08-22",
+      "registrationNumber": "AS03FG1234",
+      "purchasePrice": "1650000",
+      "fuelType": "Diesel",
+      "engineNumber": "isuzu789cde123",
+      "chassisNumber": "isuzu456fgh789",
+      "kilometers": "28000",
+      "color": "bronze",
+      "owner": "Rajesh Gogoi",
+      "phone": "7654321098",
+      "address": "Guwahati, Assam",
+      "insurance": {
+        "policyNumber": "758432",
+        "insurer": "bajaj",
+        "policytype": "Liability",
+        "startDate": "2025-06-22",
+        "endDate": "2026-07-07",
+        "payment": "card",
+        "issueDate": "2025-06-01",
+        "premiumAmount": "3500"
+      },
+      "claims": [
+        {
+          "claimDate": "2025-08-13",
+          "claimAmount": "6000",
+          "reason": "CRASH",
+          "status": "Approved"
+        },
+        {
+          "claimDate": "2025-06-30",
+          "claimAmount": "7500",
+          "reason": "landslide",
+          "status": "Pending"
+        }
+      ]
+    },
+    {
+      "id": "z1c5",
+      "make": "citroen",
+      "model": "c5",
+      "purchaseDate": "2022-03-30",
+      "registrationNumber": "PB03HI5678",
+      "purchasePrice": "2800000",
+      "fuelType": "Petrol",
+      "engineNumber": "citroen123ijk456",
+      "chassisNumber": "citroen789lmn123",
+      "kilometers": "12000",
+      "color": "lavender",
+      "owner": "Gurpreet Singh",
+      "phone": "6543210987",
+      "address": "Amritsar, Punjab",
+      "currentLocation": {
+        "latitude": 12.973842073753149,
+        "longitude": 77.59821992266714,
+        "timestamp": "2025-06-12T09:27:15.317Z",
+        "address": "Shanthala Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:27:15.988Z"
+    },
+    {
+      "id": "a2d6",
+      "make": "peugeot",
+      "model": "2008",
+      "purchaseDate": "2021-11-12",
+      "registrationNumber": "HR07JK9012",
+      "purchasePrice": "1850000",
+      "fuelType": "Petrol",
+      "engineNumber": "peugeot456opq789",
+      "chassisNumber": "peugeot123rst456",
+      "kilometers": "18000",
+      "color": "coral",
+      "owner": "Priya Malhotra",
+      "phone": "5432109876",
+      "address": "Faridabad, Haryana",
+      "currentLocation": {
+        "latitude": 12.968900433265443,
+        "longitude": 77.59513896589918,
+        "timestamp": "2025-06-12T09:32:44.807Z",
+        "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:32:45.492Z"
+    },
+    {
+      "id": "bd58",
+      "make": "benz",
+      "model": "c class",
+      "purchaseDate": "2023-02-07",
+      "registrationNumber": "ga03tn3231",
+      "purchasePrice": "25648958",
+      "fuelType": "CNG",
+      "engineNumber": "1234455",
+      "chassisNumber": "124320er32",
+      "kilometers": "156892",
+      "color": "grey",
+      "owner": "sivaherd",
+      "phone": "1369878549",
+      "address": "ertyui",
+      "insurance": {
+        "policyNumber": "1155054",
+        "insurer": "eryt",
+        "policytype": "Comprehensive",
+        "startDate": "2025-06-15",
+        "endDate": "2026-06-15",
+        "payment": "upi",
+        "issueDate": "2025-06-02",
+        "premiumAmount": "35698"
+      },
+      "currentLocation": {
+        "latitude": 12.968393882764596,
+        "longitude": 77.59322153217178,
+        "timestamp": "2025-06-12T09:25:41.301Z",
+        "address": "Sree Kanteerava Stadium, Rajaram Mohan Roy Road, Sampangirama Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+      },
+      "lastUpdated": "2025-06-12T09:25:41.935Z"
+    },
+    {
+      "id": "12cd",
+      "make": "ford",
+      "model": "fiesta",
+      "purchaseDate": "1993-03-03",
+      "registrationNumber": "hj05tv3435",
+      "purchasePrice": "350000",
+      "fuelType": "Diesel",
+      "engineNumber": "697869",
+      "chassisNumber": "9648356985586",
+      "kilometers": "96587",
+      "color": "maroon",
+      "owner": "Edison",
+      "phone": "9897969594",
+      "address": "evm india 123 pin: 695875"
+    },
+    {
+      "id": "fe87",
+      "make": "hummer",
+      "model": "ev",
+      "purchaseDate": "2000-06-13",
+      "registrationNumber": "tj254rhr",
+      "purchasePrice": "48000000",
+      "fuelType": "CNG",
+      "engineNumber": "152535",
+      "chassisNumber": "1525354555",
+      "kilometers": "132000",
+      "color": "red",
+      "owner": "derik",
+      "phone": "7695828458",
+      "address": "erenelmoriaritymukk"
+    },
+    {
+      "id": "01e4",
+      "make": "hyundai",
+      "model": "i10",
+      "purchaseDate": "2002-03-15",
+      "registrationNumber": "ih03ih1212",
+      "purchasePrice": "600000",
+      "fuelType": "Electric",
+      "engineNumber": "789586",
+      "chassisNumber": "4985698758",
+      "kilometers": "165489",
+      "color": "red",
+      "owner": "heb",
+      "phone": "1986597485",
+      "address": "abc",
+      "insurance": {
+        "policyNumber": "552535",
+        "insurer": "tata",
+        "policytype": "Third Party",
+        "startDate": "2025-06-18",
+        "endDate": "2026-06-09",
+        "payment": "cash",
+        "issueDate": "2025-06-02",
+        "premiumAmount": "3698",
+        "hasInsurance": true
+      },
+      "claims": [
+        {
+          "claimDate": "2025-06-18",
+          "claimAmount": "123",
+          "reason": "eee",
+          "status": "Pending"
+        }
+      ]
+    },
+    {
+      "id": "9be8",
+      "make": "neoq",
+      "model": "i5",
+      "purchaseDate": "2000-01-10",
+      "registrationNumber": "32423",
+      "purchasePrice": "253232",
+      "fuelType": "Electric",
+      "engineNumber": "124222",
+      "chassisNumber": "12491049110",
+      "kilometers": "7887",
+      "color": "dsaf",
+      "owner": "SI",
+      "phone": "1236985478",
+      "address": "DSFS",
+      "insurance": {
+        "policyNumber": "12345",
+        "insurer": "bhm",
+        "policytype": "Comprehensive",
+        "startDate": "2024-06-04",
+        "endDate": "2025-06-18",
+        "payment": "cash",
+        "issueDate": "2024-06-05",
+        "premiumAmount": "1200",
+        "hasInsurance": true
+      }
+    },
+    {
+      "id": "a74b",
+      "make": "Honda",
+      "model": "City",
+      "registrationNumber": "KL01CD1234",
+      "purchaseDate": "2024-01-15",
+      "purchasePrice": "1200000",
+      "fuelType": "Petrol",
+      "engineNumber": "honda123xyz",
+      "chassisNumber": "honda456abc",
+      "kilometers": "5000",
+      "color": "white",
+      "owner": "Alice Johnson",
+      "phone": "9876543210",
+      "address": "Kerala, India",
+      "insurance": {
+        "policyNumber": "POL789012",
+        "insurer": "HDFC Ergo",
+        "policytype": "Comprehensive",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "payment": "card",
+        "issueDate": "2023-12-20",
+        "premiumAmount": "12000"
+      }
+    },
+    {
+      "id": "2705",
+      "make": "byd",
+      "model": "i12",
+      "purchaseDate": "1975-12-04",
+      "registrationNumber": "i23i24",
+      "purchasePrice": "3975482",
+      "fuelType": "Hybrid",
+      "engineNumber": "4978566",
+      "chassisNumber": "3978467856",
+      "kilometers": "250000",
+      "color": "purple",
+      "owner": "begger",
+      "phone": "3978468542",
+      "address": "india europe america",
+      "insurance": {
+        "policyNumber": "9728162",
+        "insurer": "americna express",
+        "policytype": "Liability",
+        "startDate": "2022-01-05",
+        "endDate": "2023-02-05",
+        "payment": "cash",
+        "issueDate": "2022-01-07",
+        "premiumAmount": "16500",
+        "hasInsurance": true
+      },
+      "claims": [
+        {
+          "claimDate": "2023-03-05",
+          "claimAmount": "59862",
+          "reason": "asd",
+          "status": "Pending"
+        }
+      ]
+    },
+    {
+      "id": "2fa6",
+      "make": "mclaren",
+      "model": "p3",
+      "purchaseDate": "2004-04-05",
+      "registrationNumber": "yh10hi3839",
+      "purchasePrice": "15000000",
+      "fuelType": "Petrol",
+      "engineNumber": "9182736",
+      "chassisNumber": "54720154936",
+      "kilometers": "95768",
+      "color": "red",
+      "owner": "hibit",
+      "phone": "0987654321",
+      "address": "hitugnal",
+      "insurance": {
+        "policyNumber": "153241",
+        "insurer": "ambaani",
+        "policytype": "Liability",
+        "startDate": "2019-12-24",
+        "endDate": "2025-12-25",
+        "payment": "bank account",
+        "issueDate": "2019-12-25",
+        "premiumAmount": "75000",
+        "hasInsurance": true
+      }
+    },
+    {
+      "id": "abf1",
+      "make": "Honda",
+      "model": "City",
+      "registrationNumber": "KL01CD1234",
+      "purchaseDate": "2020-10-15",
+      "purchasePrice": "1200000",
+      "fuelType": "Petrol",
+      "engineNumber": "honda123xyz",
+      "chassisNumber": "honda456abc",
+      "kilometers": "5000",
+      "color": "white",
+      "owner": "Alice Johnson",
+      "phone": "9876543210",
+      "address": "Kerala, India",
+      "insurance": {
+        "policyNumber": "POL789012",
+        "insurer": "HDFC Ergo",
+        "policytype": "Comprehensive",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "payment": "card",
+        "issueDate": "2023-12-20",
+        "premiumAmount": "12000",
+        "hasInsurance": true
+      }
+    }
+  ],
+  "locationHistory": [
+    {
+      "id": "loc1",
+      "vehicleId": "a4e4",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T09:25:51.910Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc2",
+      "vehicleId": "a4e4",
+      "latitude": 12.972,
+      "longitude": 77.595,
+      "timestamp": "2025-06-12T08:15:30.123Z",
+      "address": "Richmond Town, Bengaluru, Karnataka, India"
+    },
+    {
+      "id": "loc3",
+      "vehicleId": "c8f2",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "timestamp": "2025-06-12T10:15:30.123Z",
+      "address": "Mumbai, Maharashtra, India"
+    },
+    {
+      "id": "loc4",
+      "vehicleId": "d9g3",
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "timestamp": "2025-06-12T11:30:45.456Z",
+      "address": "New Delhi, Delhi, India"
+    },
+    {
+      "id": "loc5",
+      "vehicleId": "e0h4",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T12:45:20.789Z",
+      "address": "Bangalore, Karnataka, India"
+    },
+    {
+      "id": "loc_1749720765519",
+      "vehicleId": "a2d6",
+      "latitude": 12.968900433265443,
+      "longitude": 77.59513896589918,
+      "timestamp": "2025-06-12T09:32:45.519Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749721287133",
+      "vehicleId": "6b1e",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T09:41:27.133Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749721289718",
+      "vehicleId": "6b1e",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T09:41:29.718Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749721293420",
+      "vehicleId": "6b1e",
+      "latitude": 12.972948059259464,
+      "longitude": 77.59274949156482,
+      "timestamp": "2025-06-12T09:41:33.420Z",
+      "address": "Sampangirama Nagar, Gandhinagar, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749721317834",
+      "vehicleId": "h3k7",
+      "latitude": 12.96801622404748,
+      "longitude": 77.59335132570467,
+      "timestamp": "2025-06-12T09:41:57.834Z",
+      "address": "Sree Kanteerava Stadium, Rajaram Mohan Roy Road, Sampangirama Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749722216235",
+      "vehicleId": "m8p2",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T09:56:56.235Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749722217371",
+      "vehicleId": "m8p2",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-12T09:56:57.371Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749722274729",
+      "vehicleId": "m8p2",
+      "latitude": 12.968279701245054,
+      "longitude": 77.59528747390891,
+      "timestamp": "2025-06-12T09:57:54.729Z",
+      "address": "Vydehi Superspeciality Hospital, 2, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749722375160",
+      "vehicleId": "a4e4",
+      "latitude": 12.968781414749165,
+      "longitude": 77.59518691833674,
+      "timestamp": "2025-06-12T09:59:35.160Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749722384456",
+      "vehicleId": "a4e4",
+      "latitude": 12.965019229955242,
+      "longitude": 77.59316564360695,
+      "timestamp": "2025-06-12T09:59:44.456Z",
+      "address": "೧೨ನೇ ಅಡ್ಡ ರಸ್ತೆ, Sampangi Rama Nagara, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749791702107",
+      "vehicleId": "f1i5",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-13T05:15:02.107Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749802877358",
+      "vehicleId": "a4e4",
+      "latitude": 12.969902923936484,
+      "longitude": 77.59556670903353,
+      "timestamp": "2025-06-13T08:21:17.358Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749809217854",
+      "vehicleId": "l7o1",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "timestamp": "2025-06-13T10:06:57.854Z",
+      "address": "St. Joseph's Indian High School, Vittal Mallya Road, D'Souza Layout, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    },
+    {
+      "id": "loc_1749809220166",
+      "vehicleId": "l7o1",
+      "latitude": 12.969554853565063,
+      "longitude": 77.59905854416311,
+      "timestamp": "2025-06-13T10:07:00.166Z",
+      "address": "Bishop Cotton Boys School, Saint Mark's Road, Shanthala Nagar, Richmond Town, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560001, India"
+    }
+  ],
+  "drivers": [
+    {
+      "id": "d1",
+      "name": "John Doe",
+      "licenseNumber": "DL1234567890",
+      "phone": "9876543210",
+      "address": "123 Main St, City, State",
+      "isActive": true,
+      "assignedVehicleIds": [
+        "a4e4",
+        "6b1e"
+      ]
+    },
+    {
+      "id": "287a",
+      "name": "dom T",
+      "licenseNumber": "kl01kl09879081",
+      "phone": "9638527410",
+      "address": "ambadaaaaaaaa",
+      "isActive": true,
+      "assignedVehicleIds": [
+        "i4l8",
+        "q2t6",
+        "w8z2",
+        "fe87",
+        "2705",
+        "6b1e",
+        "a2d6",
+        "z1c5"
+      ]
+    },
+    {
+      "id": "ed95",
+      "name": "johnson",
+      "licenseNumber": "908909",
+      "phone": "918",
+      "address": "india usa",
+      "isActive": true,
+      "assignedVehicleIds": []
+    },
+    {
+      "id": "f4cc",
+      "name": "test",
+      "licenseNumber": "test123",
+      "phone": "5289484",
+      "address": "asdfg",
+      "isActive": false,
+      "assignedVehicleIds": [
+        "6b1e",
+        "a4e4"
+      ]
+    }
+  ]
+}

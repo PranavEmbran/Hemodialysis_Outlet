@@ -1,0 +1,244 @@
+/* .patient-registration-container {
+  height: calc(100vh - 64px);
+  width: calc(100% - 240px);
+  background-color: #d9e0e7;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50px;
+  left: 250px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  padding: 2rem;
+} */
+.patient-container {
+  height: calc(100vh - 64px);
+  /* margin-left: 250px; */
+  width: calc(100% - 250px);
+  /* background-color: #f8f9fa; */
+  background-color: #d9e0e7;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50px;
+  left: 250px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  padding: 2rem;
+}
+/* .main-container {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px 0;
+} */
+
+.patient-registration-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+}
+
+.patient-image-container {
+  width: 350px;
+  min-width: 250px;
+  max-width: 400px;
+  flex-shrink: 0;
+  /* border: 1px solid blue !important; */
+  display: flex;
+  margin-left: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.patient-image {
+  width: 100%;
+  height: auto;
+  max-width: 350px;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-right: 0;
+}
+
+.patient-registration-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.patient-form {
+  width: 100%;
+  /* border: 1px solid red; */
+  margin-left: -25px;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 1.5rem;
+  margin-right: 10px;
+  background: #fff;
+}
+
+.patient-registration-form {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.patient-container.collapsed {
+  left: 0px;
+  /* width: calc(100% - 0px); */
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.patient-registration-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-top: 5px solid #0097a7;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.patient-registration-container.collapsed {
+  left: 0;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.patient-registration-title {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  color: #495057;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.25rem !important;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px !important;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #B3E5FC;
+  box-shadow: 0 0 0 2px rgba(179, 229, 252, 0.2);
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.25rem !important;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px !important;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #ffffff;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #B3E5FC;
+  box-shadow: 0 0 0 2px rgba(179, 229, 252, 0.2);
+}
+
+.btn-primary {
+  background-color: #B3E5FC;
+  color: #333;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #81d4fa;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .patient-registration-flex {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .patient-image-container {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .patient-image {
+    max-width: 100%;
+    height: auto;
+  }
+}

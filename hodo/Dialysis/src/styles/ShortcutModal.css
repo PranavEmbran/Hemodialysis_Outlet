@@ -1,0 +1,96 @@
+.shortcuts-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 700px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+ 
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+ 
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #333;
+  }
+ 
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+ 
+  .close-btn:hover {
+    color: #333;
+  }
+ 
+  .shortcut-section {
+    margin-bottom: 2rem;
+  }
+ 
+  .shortcut-section:last-child {
+    margin-bottom: 0.5rem;
+  }
+ 
+  .shortcut-section h3 {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+ 
+  .shortcut-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+  }
+ 
+  .shortcut-keys {
+    background-color: #f5f5f5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #333;
+    white-space: nowrap;
+  }
+ 
+  .shortcut-description {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+    flex: 1;
+  }
+ 
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }

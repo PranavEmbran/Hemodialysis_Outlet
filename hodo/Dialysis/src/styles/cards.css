@@ -1,0 +1,36 @@
+
+/* ee dashboard summary cards ningal kodkkunna card container nte style aan ath athil kodkkanam bakki cards.css il ittere */
+.dashboard-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.7rem;
+    margin-bottom: 2rem;
+} 
+
+.summary-card {
+  background: #fff;
+  color: #222;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 8, 14, 0.18);
+  padding: 2rem 2.5rem;
+  /* min-width: 200px; */
+  flex: 1 1 200px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border: 1px solid #e3eafc;
+}
+.summary-card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 8px 24px rgba(0, 8, 14, 0.18);
+}
+.summary-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+.summary-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
