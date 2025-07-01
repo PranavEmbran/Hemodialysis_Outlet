@@ -1,11 +1,12 @@
 .btn-outline-danger {
     border: none;
-    border-color: none;
-    background-color: none;
-}
-
-.btn-outline-danger:hover {
+    background-color: transparent;
+  }
+  
+  .btn-outline-danger:hover,
+  .btn-outline-danger:focus {
+    background-color: transparent;
     border: none;
-    border-color: none;
-    background-color: none;
-}
+    box-shadow: none; /* Optional: removes Bootstrap focus ring */
+  }
+  
