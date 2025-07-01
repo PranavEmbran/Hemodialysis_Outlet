@@ -19,6 +19,8 @@ import Cards from '../components/Cards';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import Searchbar from '../components/Searchbar';
+import EditButton from '../components/EditButton';
+import DeleteButton from '../components/DeleteButton';
 
 
 interface Stat {
@@ -295,6 +297,14 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     return filteredAppointments;
   };
 
+  // Add handlers at the component level
+  const handleEdit = (id: string | number) => {
+    console.log('Edit', id);
+  };
+  const handleDelete = (id: string | number) => {
+    console.log('Delete', id);
+  };
+
   if (loading) {
     return (
       <>
@@ -358,6 +368,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 { key: 'bloodGroup', header: 'Blood Group' },
                 { key: 'dateOfBirth', header: 'DOB' },
                 { key: 'lastVisit', header: 'Last Visit' },
+                { key: 'action', header: 'Action' },
               ]}
               data={getFilteredPatientsData().map((p) => {
                 const lastVisit = history
@@ -371,6 +382,12 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                   bloodGroup: p.bloodGroup,
                   dateOfBirth: p.dateOfBirth,
                   lastVisit: lastVisit ? lastVisit.date : 'No visits',
+                  action: (
+                    <>
+                      <EditButton onClick={() => handleEdit(p.id ?? '')} id={p.id ?? ''} />
+                      <DeleteButton onClick={() => handleDelete(p.id ?? '')} id={p.id ?? ''} />
+                    </>
+                  ),
                 };
               })}
             />
@@ -408,7 +425,12 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                     {apt.status}
                   </span>
                 ),
-                action: <Button size="sm" variant="outline-secondary">View</Button>,
+                action: (
+                  <>
+                    <EditButton onClick={() => handleEdit(apt.id ?? '')} id={apt.id ?? ''} />
+                    <DeleteButton onClick={() => handleDelete(apt.id ?? '')} id={apt.id ?? ''} />
+                  </>
+                ),
               }))}
             />
 

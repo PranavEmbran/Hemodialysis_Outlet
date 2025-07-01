@@ -1,0 +1,11 @@
+.btn-outline-danger {
+    border: none;
+    border-color: none;
+    background-color: none;
+}
+
+.btn-outline-danger:hover {
+    border: none;
+    border-color: none;
+    background-color: none;
+}

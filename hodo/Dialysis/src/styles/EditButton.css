@@ -1,0 +1,11 @@
+.btn-outline-primary {
+    border: none;
+    border-color: none;
+    background-color: none;
+}
+
+.btn-outline-primary:hover {
+    border: none;
+    border-color: none;
+    background-color: none;
+}
