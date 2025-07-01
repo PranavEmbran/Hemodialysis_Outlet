@@ -67,6 +67,16 @@
   .home-actions {
     grid-template-columns: 1fr;
   }
+
+  .dashboard-table-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dashboard-table-search {
+    width: 100%;
+  }
 }
 
 /* .main-container {
@@ -123,6 +133,15 @@
   font-size: 1.2rem;
   font-weight: 600;
   /* margin-bottom: 1rem; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dashboard-table-search {
+  display: flex;
+  align-items: center;
 }
 
 .home-stats-grid {

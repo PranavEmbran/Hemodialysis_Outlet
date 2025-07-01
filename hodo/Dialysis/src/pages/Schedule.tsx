@@ -13,6 +13,7 @@ import SectionHeading from '../components/SectionHeading';
 import PageContainer from '../components/PageContainer';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
+import Searchbar from '../components/Searchbar';
 
 
 interface ScheduleFormValues {
@@ -41,6 +42,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
   const [staff, setStaff] = useState<StaffData>({ technicians: [], doctors: [], units: [] });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
+  const [schedulesSearch, setSchedulesSearch] = useState<string>('');
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   // const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
@@ -98,6 +100,32 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
     } catch {
       setError('Failed to add schedule');
     }
+  };
+
+  // Handle schedules search
+  const handleSchedulesSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSchedulesSearch(e.target.value);
+  };
+
+  // Get filtered schedules data with search
+  const getFilteredSchedulesData = () => {
+    let filteredSchedules = schedules;
+
+    // Apply schedules search
+    if (schedulesSearch.trim()) {
+      const searchLower = schedulesSearch.toLowerCase();
+      filteredSchedules = filteredSchedules.filter(schedule => 
+        schedule.patientName?.toLowerCase().includes(searchLower) ||
+        schedule.date?.includes(schedulesSearch) ||
+        schedule.time?.includes(schedulesSearch) ||
+        schedule.dialysisUnit?.toLowerCase().includes(searchLower) ||
+        schedule.technician?.toLowerCase().includes(searchLower) ||
+        schedule.admittingDoctor?.toLowerCase().includes(searchLower) ||
+        schedule.status?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return filteredSchedules;
   };
 
   const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
@@ -266,7 +294,15 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
           </Row>
 
           <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div className='dashboard-table-heading'>Scheduled Sessions: {schedules.length}</div>
+            <div className='dashboard-table-heading'>
+              Scheduled Sessions: {getFilteredSchedulesData().length}
+              <div className="dashboard-table-search">
+                <Searchbar 
+                  value={schedulesSearch}
+                  onChange={handleSchedulesSearch}
+                />
+              </div>
+            </div>
             <Table
               columns={[
                 { key: 'patientName', header: 'Patient' },
@@ -277,7 +313,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
                 { key: 'admittingDoctor', header: 'Doctor' },
                 { key: 'status', header: 'Status' },
               ]}
-              data={schedules.map(schedule => ({
+              data={getFilteredSchedulesData().map(schedule => ({
                 id: schedule.id,
                 patientName: schedule.patientName,
                 date: schedule.date,

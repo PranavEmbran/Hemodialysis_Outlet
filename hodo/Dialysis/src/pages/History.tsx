@@ -12,11 +12,14 @@ import type { Patient, History } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import { Row, Col, Container } from 'react-bootstrap';
 import Table from '../components/Table';
+import Searchbar from '../components/Searchbar';
 
 const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [history, setHistory] = useState<History[]>([]);
+  const [allHistory, setAllHistory] = useState<History[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -32,6 +35,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           patientsApi.getAllPatients()
         ]);
         setHistory(historyData);
+        setAllHistory(historyData);
         setPatients(patientsData);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -43,25 +47,38 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     fetchData();
   }, []);
 
+  // Filter history based on search term and selected patient
+  useEffect(() => {
+    let filteredHistory = allHistory;
+
+    // Filter by patient if selected
+    if (selectedPatient) {
+      filteredHistory = filteredHistory.filter(h => h.patientId === selectedPatient);
+    }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filteredHistory = filteredHistory.filter(h => 
+        h.patientName?.toLowerCase().includes(searchLower) ||
+        h.date?.toLowerCase().includes(searchLower) ||
+        h.parameters?.toLowerCase().includes(searchLower) ||
+        h.notes?.toLowerCase().includes(searchLower) ||
+        h.nursingNotes?.toLowerCase().includes(searchLower) ||
+        h.amount?.toString().includes(searchLower)
+      );
+    }
+
+    setHistory(filteredHistory);
+  }, [searchTerm, selectedPatient, allHistory]);
+
   const handlePatientChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     const patientId = e.target.value;
     setSelectedPatient(patientId);
-    try {
-      setLoading(true);
-      setError('');
-      if (patientId) {
-        const patientHistory = await historyApi.getHistoryByPatientId(patientId);
-        setHistory(patientHistory);
-      } else {
-        const allHistory = await historyApi.getAllHistory();
-        setHistory(allHistory);
-      }
-    } catch (err) {
-      console.error('Error loading patient history:', err);
-      setError('Failed to load patient history. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
@@ -101,6 +118,12 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="history-search-group">
+                <Searchbar 
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
               </div>
             </div>
           </div>

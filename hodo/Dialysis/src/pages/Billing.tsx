@@ -15,6 +15,7 @@ import type { Patient, Billing as BillingType } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
+import Searchbar from '../components/Searchbar';
 
 interface BillingFormValues {
   patientId: string;
@@ -39,6 +40,7 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
   const [showPrintModal, setShowPrintModal] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [billsSearch, setBillsSearch] = useState<string>('');
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   // const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
@@ -104,6 +106,30 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
     };
 
     html2pdf().set(opt).from(element).save();
+  };
+
+  // Handle bills search
+  const handleBillsSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBillsSearch(e.target.value);
+  };
+
+  // Get filtered bills data with search
+  const getFilteredBillsData = () => {
+    let filteredBills = bills;
+
+    // Apply bills search
+    if (billsSearch.trim()) {
+      const searchLower = billsSearch.toLowerCase();
+      filteredBills = filteredBills.filter(bill => 
+        bill.patientName?.toLowerCase().includes(searchLower) ||
+        bill.sessionDate?.includes(billsSearch) ||
+        bill.status?.toLowerCase().includes(searchLower) ||
+        bill.totalAmount?.toString().includes(billsSearch) ||
+        bill.sessionDuration?.toString().includes(billsSearch)
+      );
+    }
+
+    return filteredBills;
   };
 
   const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
@@ -238,7 +264,15 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
               <Card.Body style={{ marginLeft: "10px", marginRight: "10px", paddingBottom: "0px" }}> */}
           {/* <h3 className="home-title mb-4">Recent Bills</h3> */}
           <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div className='dashboard-table-heading'>Recent Bills: {bills.length}</div>
+            <div className='dashboard-table-heading'>
+              Recent Bills: {getFilteredBillsData().length}
+              <div className="dashboard-table-search">
+                <Searchbar 
+                  value={billsSearch}
+                  onChange={handleBillsSearch}
+                />
+              </div>
+            </div>
             <Table
               columns={[
                 { key: 'patientName', header: 'Patient' },
@@ -248,7 +282,7 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
                 { key: 'status', header: 'Status' },
                 { key: 'actions', header: 'Actions' },
               ]}
-              data={bills.map(b => ({
+              data={getFilteredBillsData().map(b => ({
                 id: b.id,
                 patientName: b.patientName,
                 sessionDate: b.sessionDate,

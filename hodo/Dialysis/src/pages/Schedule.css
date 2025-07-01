@@ -143,6 +143,21 @@
   border-bottom: none;
 }
 
+/* Dashboard table heading styles for search functionality */
+.dashboard-table-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dashboard-table-search {
+  display: flex;
+  align-items: center;
+}
+
 .pagination-container {
   display: flex;
   justify-content: space-between;
@@ -240,5 +255,15 @@
 
   .table-responsive {
     padding: 0.5rem;
+  }
+
+  .dashboard-table-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dashboard-table-search {
+    width: 100%;
   }
 }

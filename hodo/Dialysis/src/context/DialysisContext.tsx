@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Patient } from '../types';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import type { Patient } from '../types';
 
 interface DialysisContextType {
   patients: Patient[];

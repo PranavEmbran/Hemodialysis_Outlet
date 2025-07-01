@@ -18,6 +18,7 @@ import PageContainer from '../components/PageContainer';
 import Cards from '../components/Cards';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
+import Searchbar from '../components/Searchbar';
 
 
 interface Stat {
@@ -49,6 +50,10 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   const [autoRefresh, setAutoRefresh] = useState<number>(15);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
+  
+  // Table-specific search states
+  const [patientsSearch, setPatientsSearch] = useState<string>('');
+  const [appointmentsSearch, setAppointmentsSearch] = useState<string>('');
 
   // Auto-refresh timer
   const [refreshTimer, setRefreshTimer] = useState<NodeJS.Timeout | null>(null);
@@ -237,61 +242,58 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     setShowAll(true);
   };
 
+  // Handle patients search
+  const handlePatientsSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setPatientsSearch(e.target.value);
+  };
+
+  // Handle appointments search
+  const handleAppointmentsSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setAppointmentsSearch(e.target.value);
+  };
+
   const stats = getDashboardStats();
   const filteredData = getFilteredData();
 
-  // Pagination logic
-  // const patientsTotalPages = Math.ceil(filteredData.patients.length / patientsRowsPerPage);
-  // const appointmentsTotalPages = Math.ceil(filteredData.appointments.length / appointmentsRowsPerPage);
-  // const paginatedPatients = filteredData.patients.slice((patientsPage - 1) * patientsRowsPerPage, patientsPage * patientsRowsPerPage);
-  // const paginatedAppointments = filteredData.appointments.slice((appointmentsPage - 1) * appointmentsRowsPerPage, appointmentsPage * appointmentsRowsPerPage);
+  // Get filtered patients data with table-specific search
+  const getFilteredPatientsData = () => {
+    let filteredPatients = filteredData.patients;
 
-  // const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
-  //   // Show a window of 5 page numbers
-  //   const pageWindow = 2;
-  //   let start = Math.max(1, currentPage - pageWindow);
-  //   let end = Math.min(totalPages, currentPage + pageWindow);
-  //   if (end - start < 4) {
-  //     if (start === 1) end = Math.min(totalPages, start + 4);
-  //     if (end === totalPages) start = Math.max(1, end - 4);
-  //   }
-  //   const pageNumbers = [];
-  //   for (let i = start; i <= end; i++) pageNumbers.push(i);
+    // Apply patients table search
+    if (patientsSearch.trim()) {
+      const searchLower = patientsSearch.toLowerCase();
+      filteredPatients = filteredPatients.filter(p => {
+        const fullName = `${p.firstName || p.name} ${p.lastName || ''}`.toLowerCase();
+        return fullName.includes(searchLower) ||
+               p.mobileNo?.includes(patientsSearch) ||
+               p.bloodGroup?.toLowerCase().includes(searchLower) ||
+               p.gender?.toLowerCase().includes(searchLower) ||
+               p.dateOfBirth?.includes(patientsSearch);
+      });
+    }
 
-  //   return (
-  //     <div className="pagination-container">
-  //       <div className="pagination-info">
-  //         Rows per page:
-  //         <select
-  //           value={rowsPerPage}
-  //           onChange={e => setRowsPerPage(Number(e.target.value))}
-  //           style={{ margin: '0 8px', padding: '2px 8px', borderRadius: 4 }}
-  //         >
-  //           {[5, 10, 20, 50].map(n => <option key={n} value={n}>{n}</option>)}
-  //         </select>
-  //         Page {currentPage} of {totalPages}
-  //       </div>
-  //       <div className="pagination-controls">
-  //         <button className="pagination-btn" onClick={() => setPage(1)} disabled={currentPage === 1}>&#171; First</button>
-  //         <button className="pagination-btn" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1}>&#8249; Prev</button>
-  //         <div className="page-numbers">
-  //           {pageNumbers.map(page => (
-  //             <button
-  //               key={page}
-  //               className={`page-number${page === currentPage ? ' active' : ''}`}
-  //               onClick={() => setPage(page)}
-  //               disabled={page === currentPage}
-  //             >
-  //               {page}
-  //             </button>
-  //           ))}
-  //         </div>
-  //         <button className="pagination-btn" onClick={() => setPage(currentPage + 1)} disabled={currentPage === totalPages}>Next &#8250;</button>
-  //         <button className="pagination-btn" onClick={() => setPage(totalPages)} disabled={currentPage === totalPages}>Last &#187;</button>
-  //       </div>
-  //     </div>
-  //   );
-  // };
+    return filteredPatients;
+  };
+
+  // Get filtered appointments data with table-specific search
+  const getFilteredAppointmentsData = () => {
+    let filteredAppointments = filteredData.appointments;
+
+    // Apply appointments table search
+    if (appointmentsSearch.trim()) {
+      const searchLower = appointmentsSearch.toLowerCase();
+      filteredAppointments = filteredAppointments.filter(apt => 
+        apt.patientName?.toLowerCase().includes(searchLower) ||
+        apt.admittingDoctor?.toLowerCase().includes(searchLower) ||
+        apt.date?.includes(appointmentsSearch) ||
+        apt.time?.includes(appointmentsSearch) ||
+        apt.dialysisUnit?.toLowerCase().includes(searchLower) ||
+        apt.status?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return filteredAppointments;
+  };
 
   if (loading) {
     return (
@@ -339,9 +341,15 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
             ))}
           </Row>
 
-
-          {/* <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}> */}
-            <div className='dashboard-table-heading'>Registered Patients: {filteredData.patients.length}</div>
+            <div className='dashboard-table-heading'>
+              Registered Patients: {getFilteredPatientsData().length}
+              <div className="dashboard-table-search">
+                <Searchbar 
+                  value={patientsSearch}
+                  onChange={handlePatientsSearch}
+                />
+              </div>
+            </div>
             <Table
               columns={[
                 { key: 'name', header: 'Name' },
@@ -351,7 +359,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 { key: 'dateOfBirth', header: 'DOB' },
                 { key: 'lastVisit', header: 'Last Visit' },
               ]}
-              data={filteredData.patients.map((p) => {
+              data={getFilteredPatientsData().map((p) => {
                 const lastVisit = history
                   .filter(h => h.patientId === p.id)
                   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
@@ -366,13 +374,16 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 };
               })}
             />
-          {/* </div> */}
-          {/* </Col> */}
-          {/* </Row> */}
-          {/* <Row> */}
-          {/* <Col> */}
-          {/* <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}> */}
-            <div className='dashboard-table-heading'>Scheduled Appointments: {filteredData.appointments.length}</div>
+
+            <div className='dashboard-table-heading'>
+              Scheduled Appointments: {getFilteredAppointmentsData().length}
+              <div className="dashboard-table-search">
+                <Searchbar 
+                  value={appointmentsSearch}
+                  onChange={handleAppointmentsSearch}
+                />
+              </div>
+            </div>
             <Table
               columns={[
                 { key: 'expand', header: '' },
@@ -384,7 +395,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 { key: 'status', header: 'Status' },
                 { key: 'action', header: 'Action' },
               ]}
-              data={filteredData.appointments.map((apt) => ({
+              data={getFilteredAppointmentsData().map((apt) => ({
                 id: apt.id,
                 expand: <Button size="sm" variant="outline-primary">+</Button>,
                 patientName: apt.patientName,
@@ -400,13 +411,9 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 action: <Button size="sm" variant="outline-secondary">View</Button>,
               }))}
             />
-          {/* </div> */}
-          {/* </Col> */}
-          {/* </Row> */}
-          {/* </div> */}
+
         </PageContainer>
         <Footer />
-      {/* </Container> */}
     </>
   );
 };

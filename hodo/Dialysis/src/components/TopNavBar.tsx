@@ -123,7 +123,7 @@ const TopNavBar: React.FC = () => {
             </li>
             <li className='nav-link'>
               <NavLink
-                to="/insurance"
+                to="/billing"
                 className={({ isActive }) => isActive ? 'active' : ''}
                 style={{ fontSize: '14px', fontWeight: 400,color:'#cccccc' }}
               >
@@ -132,7 +132,7 @@ const TopNavBar: React.FC = () => {
             </li>
             <li className='nav-link'>
               <NavLink
-                to="/documents"
+                to="/process"
                 className={({ isActive }) => isActive ? 'active' : ''}
                 style={{ fontSize: '14px', fontWeight: 400,color:'#cccccc' }}
               >
@@ -141,7 +141,7 @@ const TopNavBar: React.FC = () => {
             </li>
             <li className='nav-link'>
               <NavLink
-                to="/documents"
+                to="/schedule"
                 className={({ isActive }) => isActive ? 'active' : ''}
                 style={{ fontSize: '14px', fontWeight: 400,color:'#cccccc' }}
               >
