@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
@@ -14,6 +14,7 @@ import PageContainer from '../components/PageContainer';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
+import { SelectField, DateField, TimeField, TextareaField } from '../components/forms';
 
 
 interface ScheduleFormValues {
@@ -206,75 +207,74 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
                       <Form>
                         <Row>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="patientId" className="form-label">Patient</label>
-                              <Field as="select" id="patientId" name="patientId" className="form-select">
-                                <option value="">Select Patient</option>
-                                {patients.map(p => (
-                                  <option key={p.id} value={p.id}>
-                                    {p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim()}
-                                  </option>
-                                ))}
-                              </Field>
-                              <ErrorMessage name="patientId" component="div" className="text-danger" />
-                            </div>
+                            <SelectField
+                              label="Patient"
+                              name="patientId"
+                              options={patients.map(p => ({
+                                label: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim(),
+                                value: p.id?.toString() || ''
+                              }))}
+                              placeholder="Select Patient"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="dialysisUnit" className="form-label">Dialysis Unit</label>
-                              <Field as="select" id="dialysisUnit" name="dialysisUnit" className="form-select">
-                                <option value="">Select Unit</option>
-                                {staff.units.map(unit => (
-                                  <option key={unit} value={unit}>{unit}</option>
-                                ))}
-                              </Field>
-                              <ErrorMessage name="dialysisUnit" component="div" className="text-danger" />
-                            </div>
+                            <SelectField
+                              label="Dialysis Unit"
+                              name="dialysisUnit"
+                              options={staff.units.map(unit => ({
+                                label: unit,
+                                value: unit
+                              }))}
+                              placeholder="Select Unit"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="technician" className="form-label">Technician</label>
-                              <Field as="select" id="technician" name="technician" className="form-select">
-                                <option value="">Select Technician</option>
-                                {staff.technicians.map(tech => (
-                                  <option key={tech} value={tech}>{tech}</option>
-                                ))}
-                              </Field>
-                              <ErrorMessage name="technician" component="div" className="text-danger" />
-                            </div>
+                            <SelectField
+                              label="Technician"
+                              name="technician"
+                              options={staff.technicians.map(tech => ({
+                                label: tech,
+                                value: tech
+                              }))}
+                              placeholder="Select Technician"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="admittingDoctor" className="form-label">Admitting Doctor</label>
-                              <Field as="select" id="admittingDoctor" name="admittingDoctor" className="form-select">
-                                <option value="">Select Doctor</option>
-                                {staff.doctors.map(doc => (
-                                  <option key={doc} value={doc}>{doc}</option>
-                                ))}
-                              </Field>
-                              <ErrorMessage name="admittingDoctor" component="div" className="text-danger" />
-                            </div>
+                            <SelectField
+                              label="Admitting Doctor"
+                              name="admittingDoctor"
+                              options={staff.doctors.map(doc => ({
+                                label: doc,
+                                value: doc
+                              }))}
+                              placeholder="Select Doctor"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="date" className="form-label">Date</label>
-                              <Field type="date" id="date" name="date" className="form-control" />
-                              <ErrorMessage name="date" component="div" className="text-danger" />
-                            </div>
+                            <DateField
+                              label="Date"
+                              name="date"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="time" className="form-label">Time</label>
-                              <Field type="time" id="time" name="time" className="form-control" />
-                              <ErrorMessage name="time" component="div" className="text-danger" />
-                            </div>
+                            <TimeField
+                              label="Time"
+                              name="time"
+                              required
+                            />
                           </Col>
                           <Col md={12} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="remarks" className="form-label">Remarks</label>
-                              <Field as="textarea" id="remarks" name="remarks" className="form-control" rows={3} />
-                              <ErrorMessage name="remarks" component="div" className="text-danger" />
-                            </div>
+                            <TextareaField
+                              label="Remarks"
+                              name="remarks"
+                              placeholder="Enter any additional remarks..."
+                              rows={3}
+                            />
                           </Col>
                           <Col md={12}>
                             {/* <button type="submit" className="btn btn-primary" disabled={isSubmitting}> */}

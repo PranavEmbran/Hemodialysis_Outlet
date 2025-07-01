@@ -60,6 +60,7 @@ span{
 
 .footer-container a:hover {
     text-decoration: underline;
+    color: rgb(3, 139, 164);
 }
 
 

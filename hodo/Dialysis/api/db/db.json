@@ -160,6 +160,21 @@
       "fistulaDate": "2025-06-30",
       "phone": "9876543215",
       "id": "20250630/002"
+    },
+    {
+      "firstName": "Ashwin",
+      "lastName": "Varma",
+      "gender": "Male",
+      "dateOfBirth": "2000-06-08",
+      "mobileNo": "9876543215",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-01",
+      "fistulaCreationDate": "2025-07-01",
+      "name": "Ashwin Varma",
+      "catheterDate": "2025-07-01",
+      "fistulaDate": "2025-07-01",
+      "phone": "9876543215",
+      "id": "20250701/001"
     }
   ],
   "appointments": [
@@ -283,6 +298,17 @@
       "remarks": "",
       "patientName": "Parvathi Devi",
       "id": "1751280137331"
+    },
+    {
+      "patientId": "20250701/001",
+      "dialysisUnit": "Unit D",
+      "technician": "Dr. Wilson",
+      "admittingDoctor": "Dr. Davis",
+      "date": "2025-07-08",
+      "time": "12:45",
+      "remarks": "test",
+      "patientName": "Ashwin Varma",
+      "id": "1751350501571"
     }
   ],
   "billing": [
@@ -307,6 +333,17 @@
       "status": "PAID",
       "date": "2025-06-30",
       "id": "1751280084297"
+    },
+    {
+      "patientId": "20250701/001",
+      "sessionDate": "2025-07-01",
+      "sessionDuration": 90,
+      "amount": 700,
+      "patientName": "Ashwin Varma",
+      "totalAmount": 700,
+      "status": "PAID",
+      "date": "2025-07-01",
+      "id": "1751350574555"
     }
   ],
   "history": [
@@ -425,6 +462,35 @@
       "patientName": "Prabhavati A",
       "date": "2025-06-30",
       "id": "1751286474787"
+    },
+    {
+      "patientId": "20250701/001",
+      "startTime": "11:45",
+      "endTime": "13:45",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "120",
+          "heartRate": 72,
+          "temperature": 37,
+          "weight": 70
+        },
+        "postDialysis": {
+          "bloodPressure": "120",
+          "heartRate": 72,
+          "temperature": 37,
+          "weight": 70
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "45",
+        "bloodFlow": 65,
+        "dialysateFlow": 21,
+        "ultrafiltration": 45
+      },
+      "nursingNotes": "test",
+      "patientName": "Ashwin Varma",
+      "date": "2025-07-01",
+      "id": "1751350547948"
     }
   ],
   "dialysisFlowCharts": [],

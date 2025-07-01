@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage} from 'formik';
+import { Formik, Form } from 'formik';
 import type {FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { patientsApi } from '../api/patientsApi';
@@ -12,6 +12,7 @@ import SectionHeading from '../components/SectionHeading';
 import { Row, Col, Container } from 'react-bootstrap';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import img1 from '../assets/patient1.png';
+import { InputField, SelectField, DateField } from '../components/forms';
 
 interface PatientFormValues {
   firstName: string;
@@ -118,114 +119,88 @@ const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: 
                     <Form className="patient-registration-form">
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="firstName" className="form-label">First Name</label>
-                            <Field
-                              type="text"
-                              id="firstName"
-                              name="firstName"
-                              className="form-control"
-                            />
-                            <ErrorMessage name="firstName" component="div" className="text-danger" />
-                          </div>
+                          <InputField
+                            label="First Name"
+                            name="firstName"
+                            placeholder="Enter first name"
+                            required
+                          />
                         </div>
 
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="lastName" className="form-label">Last Name</label>
-                            <Field
-                              type="text"
-                              id="lastName"
-                              name="lastName"
-                              className="form-control"
-                            />
-                            <ErrorMessage name="lastName" component="div" className="text-danger" />
-                          </div>
+                          <InputField
+                            label="Last Name"
+                            name="lastName"
+                            placeholder="Enter last name"
+                            required
+                          />
                         </div>
                       </div>
 
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="gender" className="form-label">Gender</label>
-                            <Field as="select" id="gender" name="gender" className="form-select">
-                              <option value="">Select Gender</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                              <option value="Other">Other</option>
-                            </Field>
-                            <ErrorMessage name="gender" component="div" className="text-danger" />
-                          </div>
+                          <SelectField
+                            label="Gender"
+                            name="gender"
+                            options={[
+                              { label: 'Male', value: 'Male' },
+                              { label: 'Female', value: 'Female' },
+                              { label: 'Other', value: 'Other' }
+                            ]}
+                            placeholder="Select Gender"
+                            required
+                          />
                         </div>
 
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="dateOfBirth" className="form-label">Date of Birth</label>
-                            <Field
-                              type="date"
-                              id="dateOfBirth"
-                              name="dateOfBirth"
-                              className="form-control"
-                            />
-                            <ErrorMessage name="dateOfBirth" component="div" className="text-danger" />
-                          </div>
+                          <DateField
+                            label="Date of Birth"
+                            name="dateOfBirth"
+                            required
+                          />
                         </div>
                       </div>
 
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="mobileNo" className="form-label">Mobile Number</label>
-                            <Field
-                              type="text"
-                              id="mobileNo"
-                              name="mobileNo"
-                              className="form-control"
-                              placeholder="10-digit mobile number"
-                            />
-                            <ErrorMessage name="mobileNo" component="div" className="text-danger" />
-                          </div>
+                          <InputField
+                            label="Mobile Number"
+                            name="mobileNo"
+                            type="text"
+                            placeholder="10-digit mobile number"
+                            required
+                          />
                         </div>
 
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="bloodGroup" className="form-label">Blood Group</label>
-                            <Field as="select" id="bloodGroup" name="bloodGroup" className="form-select">
-                              <option value="">Select Blood Group</option>
-                              {bloodGroups.map(group => (
-                                <option key={group} value={group}>{group}</option>
-                              ))}
-                            </Field>
-                            <ErrorMessage name="bloodGroup" component="div" className="text-danger" />
-                          </div>
+                          <SelectField
+                            label="Blood Group"
+                            name="bloodGroup"
+                            options={bloodGroups.map(group => ({
+                              label: group,
+                              value: group
+                            }))}
+                            placeholder="Select Blood Group"
+                            required
+                          />
                         </div>
                       </div>
 
                       <div className="row">
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="catheterInsertionDate" className="form-label">Catheter Insertion Date</label>
-                            <Field
-                              type="date"
-                              id="catheterInsertionDate"
-                              name="catheterInsertionDate"
-                              className="form-control"
-                            />
-                            <ErrorMessage name="catheterInsertionDate" component="div" className="text-danger" />
-                          </div>
+                          <DateField
+                            label="Catheter Insertion Date"
+                            name="catheterInsertionDate"
+                            required
+                          />
                         </div>
 
                         <div className="col-md-6">
-                          <div className="form-group">
-                            <label htmlFor="fistulaCreationDate" className="form-label">Fistula Creation Date</label>
-                            <Field
-                              type="date"
-                              id="fistulaCreationDate"
-                              name="fistulaCreationDate"
-                              className="form-control"
-                            />
-                            <ErrorMessage name="fistulaCreationDate" component="div" className="text-danger" />
-                          </div>
+                          <DateField
+                            label="Fistula Creation Date"
+                            name="fistulaCreationDate"
+                            required
+                          />
                         </div>
                       </div>
 

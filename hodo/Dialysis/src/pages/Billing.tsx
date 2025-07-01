@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import type{FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import html2pdf from 'html2pdf.js';
@@ -16,6 +16,7 @@ import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
+import { SelectField, DateField, InputField } from '../components/forms';
 
 interface BillingFormValues {
   patientId: string;
@@ -215,35 +216,41 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
                       <Form>
                         <Row>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="patientId" className="form-label">Patient</label>
-                              <Field as="select" id="patientId" name="patientId" className="form-select">
-                                <option value="">Select</option>
-                                {patients.map(p => <option key={p.id} value={p.id}>{(p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : '')}</option>)}
-                              </Field>
-                              <ErrorMessage name="patientId" component="div" className="text-danger" />
-                            </div>
+                            <SelectField
+                              label="Patient"
+                              name="patientId"
+                              options={patients.map(p => ({
+                                label: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
+                                value: p.id?.toString() || ''
+                              }))}
+                              placeholder="Select Patient"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="sessionDate" className="form-label">Session Date</label>
-                              <Field type="date" id="sessionDate" name="sessionDate" className="form-control" />
-                              <ErrorMessage name="sessionDate" component="div" className="text-danger" />
-                            </div>
+                            <DateField
+                              label="Session Date"
+                              name="sessionDate"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="sessionDuration" className="form-label">Session Duration (min)</label>
-                              <Field type="number" id="sessionDuration" name="sessionDuration" className="form-control" />
-                              <ErrorMessage name="sessionDuration" component="div" className="text-danger" />
-                            </div>
+                            <InputField
+                              label="Session Duration (min)"
+                              name="sessionDuration"
+                              type="number"
+                              placeholder="Enter duration in minutes"
+                              required
+                            />
                           </Col>
                           <Col md={6} className="mb-3">
-                            <div className="form-group">
-                              <label htmlFor="amount" className="form-label">Amount</label>
-                              <Field type="number" id="amount" name="amount" className="form-control" />
-                              <ErrorMessage name="amount" component="div" className="text-danger" />
-                            </div>
+                            <InputField
+                              label="Amount"
+                              name="amount"
+                              type="number"
+                              placeholder="Enter amount"
+                              required
+                            />
                           </Col>
                         </Row>
                         {/*<Button type="submit" variant="primary" disabled={isSubmitting} className="btn-with-gradient">*/}
