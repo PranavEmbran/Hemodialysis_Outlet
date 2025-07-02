@@ -1,8 +1,10 @@
 .searchbar-container {
   position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
+  /* width: 100%; */
+  /* display: flex;
+  justify-content: flex-end; */
+  width: fit-content;
+
 }
 
 .search-input {
@@ -12,7 +14,8 @@
 
 .search-icon {
   position: absolute;
-  left: calc(100% - 240px);
+  /* left: calc(100% - 240px); */
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: #888;

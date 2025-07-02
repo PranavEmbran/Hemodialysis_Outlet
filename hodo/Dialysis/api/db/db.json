@@ -2,14 +2,14 @@
   "patients": [
     {
       "firstName": "Vigneshan",
-      "lastName": "Sharma K",
+      "lastName": "Sharma KGB",
       "gender": "Male",
       "dateOfBirth": "1995-06-05",
       "mobileNo": "9876543444",
       "bloodGroup": "B+",
       "catheterInsertionDate": "2025-07-02",
       "fistulaCreationDate": "2025-07-02",
-      "name": "Vigneshan Sharma K",
+      "name": "Vigneshan Sharma KGB",
       "catheterDate": "2025-06-26",
       "fistulaDate": "2025-06-26",
       "phone": "9876543215",
@@ -77,14 +77,14 @@
     },
     {
       "firstName": "Subhadra",
-      "lastName": "Sharma G",
+      "lastName": "Sharma GK",
       "gender": "Female",
       "dateOfBirth": "2000-02-16",
       "mobileNo": "9876543211",
       "bloodGroup": "B+",
       "catheterInsertionDate": "2025-06-26",
       "fistulaCreationDate": "2025-06-26",
-      "name": "Subhadra Sharma G",
+      "name": "Subhadra Sharma GK",
       "catheterDate": "2025-06-26",
       "fistulaDate": "2025-06-26",
       "phone": "6549873216",
@@ -276,12 +276,12 @@
       "date": "2025-06-26",
       "time": "14:04",
       "remarks": "u",
-      "patientName": "Subhadra Sharma G",
+      "patientName": "Subhadra Sharma GK",
       "id": "1750926860009",
       "staffName": "Dr. Johnson",
       "status": "Completed",
       "notes": "u",
-      "name": "Subhadra Sharma G"
+      "name": "Subhadra Sharma GK"
     },
     {
       "patientId": "20250626/004",
@@ -291,9 +291,9 @@
       "date": "2025-06-29",
       "time": "16:07",
       "remarks": "d",
-      "patientName": "Subhadra Sharma G",
+      "patientName": "Subhadra Sharma GK",
       "id": "1750927079121",
-      "name": "Subhadra Sharma G"
+      "name": "Subhadra Sharma GK"
     },
     {
       "patientId": "20250626/006",
@@ -314,9 +314,9 @@
       "date": "2025-07-12",
       "time": "14:20",
       "remarks": "d",
-      "patientName": "Subhadra Sharma G",
+      "patientName": "Subhadra Sharma GK",
       "id": "1750927815455",
-      "name": "Subhadra Sharma G"
+      "name": "Subhadra Sharma GK"
     },
     {
       "patientId": "20250626/004",
@@ -326,12 +326,12 @@
       "date": "2025-07-30",
       "time": "14:20",
       "remarks": "www",
-      "patientName": "Subhadra Sharma G",
+      "patientName": "Subhadra Sharma GK",
       "id": "1750927869769",
       "staffName": "Dr. Garcia",
       "status": "Scheduled",
       "notes": "www",
-      "name": "Subhadra Sharma G"
+      "name": "Subhadra Sharma GK"
     },
     {
       "patientId": "20250626/006",
@@ -402,9 +402,9 @@
       "date": "2025-07-05",
       "time": "14:45",
       "remarks": "test",
-      "patientName": "Vigneshan Sharma K",
+      "patientName": "Vigneshan Sharma KGB",
       "id": "1751447659493",
-      "name": "Vigneshan Sharma K"
+      "name": "Vigneshan Sharma KGB"
     },
     {
       "patientId": "20250702/002",
@@ -435,12 +435,12 @@
       "sessionDate": "2025-06-26",
       "sessionDuration": 120,
       "amount": 1000,
-      "patientName": "Subhadra Sharma G",
+      "patientName": "Subhadra Sharma GK",
       "totalAmount": 1000,
       "status": "PAID",
       "date": "2025-06-26",
       "id": "1750927228786",
-      "name": "Subhadra Sharma G"
+      "name": "Subhadra Sharma GK"
     },
     {
       "patientId": "20250629/001",
@@ -697,10 +697,10 @@
         "ultrafiltration": 444
       },
       "nursingNotes": "ttt",
-      "patientName": "Vigneshan Sharma K",
+      "patientName": "Vigneshan Sharma KGB",
       "date": "2025-07-02",
       "id": "1751447729640",
-      "name": "Vigneshan Sharma K"
+      "name": "Vigneshan Sharma KGB"
     },
     {
       "patientId": "20250702/002",
