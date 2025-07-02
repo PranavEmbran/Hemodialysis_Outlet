@@ -112,4 +112,35 @@ export const fixDuplicatePatientIds = (): number => {
   }
   writeDatabase(db);
   return fixed;
-}; 
+};
+
+/**
+ * Updates patientName in all related tables for a given patientId.
+ * @param patientId - The unique patient id
+ * @param fullName - The new full name to set as patientName
+ * @param db - The database object (mutated in place)
+ */
+export function updatePatientNameReferences(patientId: string, fullName: string, db: any): void {
+  const updateNameFields = (arr: any[]) =>
+    arr.map((item: any) =>
+      item.patientId === patientId
+        ? { ...item, patientName: fullName, name: fullName }
+        : item
+    );
+
+  if (db.appointments) {
+    db.appointments = updateNameFields(db.appointments);
+  }
+  if (db.history) {
+    db.history = updateNameFields(db.history);
+  }
+  if (db.billing) {
+    db.billing = updateNameFields(db.billing);
+  }
+  if (db.dialysisFlowCharts) {
+    db.dialysisFlowCharts = updateNameFields(db.dialysisFlowCharts);
+  }
+  if (db.haemodialysisRecords) {
+    db.haemodialysisRecords = updateNameFields(db.haemodialysisRecords);
+  }
+} 

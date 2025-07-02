@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { generatePatientId } from '../utils/patientIdGenerator';
+import { updatePatientNameReferences } from '../db/dbOperations';
 
 const router = express.Router();
 
@@ -62,9 +63,11 @@ router.post('/patients', (req: Request, res: Response) => {
     const db = readDatabase();
     // Use catheterInsertionDate as registration date for ID
     const newPatientId = generatePatientId(req.body.catheterInsertionDate);
+    // Always compute the name field from firstName and lastName
     const patient = {
       ...req.body,
-      id: newPatientId
+      id: newPatientId,
+      name: `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim()
     };
 
     db.patients.push(patient);
@@ -103,14 +106,22 @@ router.put('/patients/:id', (req: Request, res: Response) => {
     
     const index = db.patients.findIndex((p: any) => p.id === id);
     if (index !== -1) {
-      // Update the patient data while preserving the ID
+      // Always compute the name field from firstName and lastName
       const updatedPatient = {
         ...db.patients[index],
         ...req.body,
-        id: id // Ensure ID is preserved
+        id: id, // Ensure ID is preserved
+        name: `${req.body.firstName || db.patients[index].firstName || ''} ${req.body.lastName || db.patients[index].lastName || ''}`.trim()
       };
-      
       db.patients[index] = updatedPatient;
+
+      // Compute the new full name for patientName
+      const newPatientName = `${updatedPatient.firstName || ''} ${updatedPatient.lastName || ''}`.trim();
+
+      // Update patientName in all related tables using the utility function
+      updatePatientNameReferences(id, newPatientName, db);
+
+      // Save the updated database
       writeDatabase(db);
       
       res.json(updatedPatient);

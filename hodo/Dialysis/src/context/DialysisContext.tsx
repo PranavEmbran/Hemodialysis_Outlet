@@ -81,33 +81,35 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       // Calculate the full name from updated data
       const fullName = `${updatedPatient.firstName || updatedPatient.name || ''} ${updatedPatient.lastName || ''}`.trim();
 
-      // Optimistically update patients state
+      // Optimistically update patients state, and update the 'name' field as well
       setPatients(prevPatients => 
         prevPatients.map(p => 
-          p.id === patientId ? { ...p, ...updatedPatient } : p
+          p.id === patientId ? { ...p, ...updatedPatient, name: fullName } : p
         )
       );
 
-      // Update patient references in appointments
+      // Update patient references in appointments, including 'patientName' and 'name' if present
       setAppointments(prevAppointments => 
         prevAppointments.map(apt => {
           if (apt.patientId === patientId) {
             return {
               ...apt,
-              patientName: fullName
+              patientName: fullName,
+              name: fullName // In case 'name' is used in appointment records
             };
           }
           return apt;
         })
       );
 
-      // Update patient references in history
+      // Update patient references in history, including 'patientName' and 'name' if present
       setHistory(prevHistory => 
         prevHistory.map(h => {
           if (h.patientId === patientId) {
             return {
               ...h,
               patientName: fullName,
+              name: fullName, // In case 'name' is used in history records
               gender: updatedData.gender || h.gender,
               age: updatedData.age?.toString() || h.age
             };
