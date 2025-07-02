@@ -1,12 +1,14 @@
-import React, { useState, useEffect, type ChangeEvent } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Formik, Form, FieldArray } from 'formik';
+import * as Yup from 'yup';
 import { patientsApi } from '../api/patientsApi';
 import type { Patient } from '../types';
 import { haemodialysisRecordApi } from '../api/haemodialysisRecordApi';
 import ButtonWithGradient from './ButtonWithGradient';
+import { SelectField, InputField, TimeField, TextareaField } from './forms';
 import './HaemodialysisRecordDetails.css';
 
 interface Row {
-  id: number;
   time: string;
   bp: string;
   pulse: string;
@@ -18,27 +20,46 @@ interface Row {
   medicationRemarks: string;
 }
 
-const HaemodialysisRecordDetails: React.FC = () => {
-  const createNewRow = (): Row => {
-    const now = new Date();
-    const time = now.toTimeString().slice(0, 5);
-    return {
-      id: now.getTime(),
-      time: time,
-      bp: '',
-      pulse: '',
-      temperature: '',
-      venousPressure: '',
-      negativePressure: '',
-      tmp: '',
-      heparin: '',
-      medicationRemarks: '',
-    };
-  };
+interface FormValues {
+  patientId: string;
+  rows: Row[];
+}
 
-  const [rows, setRows] = useState<Row[]>([createNewRow()]);
+const createNewRow = (): Row => {
+  const now = new Date();
+  const time = now.toTimeString().slice(0, 5);
+  return {
+    time: time,
+    bp: '',
+    pulse: '',
+    temperature: '',
+    venousPressure: '',
+    negativePressure: '',
+    tmp: '',
+    heparin: '',
+    medicationRemarks: '',
+  };
+};
+
+const validationSchema = Yup.object({
+  patientId: Yup.string().required('Please select a patient.'),
+  rows: Yup.array().of(
+    Yup.object({
+      time: Yup.string().required('Required'),
+      bp: Yup.string(),
+      pulse: Yup.string(),
+      temperature: Yup.string(),
+      venousPressure: Yup.string(),
+      negativePressure: Yup.string(),
+      tmp: Yup.string(),
+      heparin: Yup.string(),
+      medicationRemarks: Yup.string(),
+    })
+  )
+});
+
+const HaemodialysisRecordDetails: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -50,45 +71,33 @@ const HaemodialysisRecordDetails: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handlePatientChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPatientId(e.target.value);
+  const initialValues: FormValues = {
+    patientId: '',
+    rows: [createNewRow()]
   };
 
-  const handleAddRow = () => {
-    setRows([...rows, createNewRow()]);
-  };
-
-  const handleRowChange = (id: number, field: keyof Row, value: string) => {
-    const updatedRows = rows.map((row) => {
-      if (row.id === id) {
-        return { ...row, [field]: value };
-      }
-      return row;
-    });
-    setRows(updatedRows);
-  };
-
-  const handleSave = async () => {
+  const handleSubmit = async (values: FormValues, { resetForm }: any) => {
     setError('');
     setSuccess('');
-    if (!selectedPatientId) {
+    if (!values.patientId) {
       setError('Please select a patient.');
       return;
     }
-    const patient = patients.find(p => String(p.id) === String(selectedPatientId));
+    const patient = patients.find(p => String(p.id) === String(values.patientId));
     if (!patient) {
       setError('Invalid patient selected.');
       return;
     }
     const record = {
-      patientId: selectedPatientId,
+      patientId: values.patientId,
       patientName: (patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : ''),
       date: new Date().toISOString().split('T')[0],
-      rows: rows,
+      rows: values.rows,
     };
     try {
       await haemodialysisRecordApi.addRecord(record);
       setSuccess('Record saved successfully!');
+      resetForm();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Failed to save record. Please try again.');
@@ -101,91 +110,108 @@ const HaemodialysisRecordDetails: React.FC = () => {
 
   return (
     <div className="haemodialysis-record-content">
-      {/* <div className="haemodialysis-record-header">
-        <h2 className="haemodialysis-record-title">Haemodialysis Record Details</h2>
-      </div> */}
       <div className="haemodialysis-record-form-container">
-        {/* Patient Dropdown */}
-        <div className="form-field" style={{ marginBottom: '1.5rem' }}>
-          <label htmlFor="patient-select"><strong>Select Patient</strong></label>
-          <select
-            id="patient-select"
-            value={selectedPatientId}
-            onChange={handlePatientChange}
-            disabled={loading}
-            style={{ marginLeft: '1rem', minWidth: '200px' }}
-          >
-            <option value="">-- Select Patient --</option>
-            {patients.map((p) => (
-              <option key={p.id} value={p.id}>
-                {(p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : '')}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Selected Patient Info */}
-        {selectedPatientId && (
-          <div className="selected-patient-info" style={{ marginBottom: '1.5rem', background: '#f8f9fa', padding: '1rem', borderRadius: '6px' }}>
-            <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>Selected Patient Information</h4>
-            {(() => {
-              const selectedPatient = patients.find(p => String(p.id) === String(selectedPatientId));
-              if (!selectedPatient) return null;
-              return (
-                <div className="patient-details-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                  <div><strong>Name:</strong> {(selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')}</div>
-                  <div><strong>Gender:</strong> {selectedPatient.gender || 'N/A'}</div>
-                  <div><strong>Blood Group:</strong> {selectedPatient.bloodGroup || 'N/A'}</div>
-                  <div><strong>Mobile:</strong> {selectedPatient.mobileNo || selectedPatient.phone || 'N/A'}</div>
-                  <div><strong>Date of Birth:</strong> {selectedPatient.dateOfBirth || 'N/A'}</div>
-                  <div><strong>Catheter Date:</strong> {selectedPatient.catheterDate || selectedPatient.catheterInsertionDate || 'N/A'}</div>
-                  <div><strong>Fistula Date:</strong> {selectedPatient.fistulaDate || selectedPatient.fistulaCreationDate || 'N/A'}</div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ values, isSubmitting, setFieldValue }) => (
+            <Form>
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <SelectField
+                  label="Select Patient"
+                  name="patientId"
+                  options={patients.map((p) => ({
+                    label: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
+                    value: p.id || ''
+                  }))}
+                  placeholder="-- Select Patient --"
+                  disabled={loading}
+                  required
+                />
+              </div>
+              {/* Selected Patient Info */}
+              {values.patientId && (
+                <div className="selected-patient-info" style={{ marginBottom: '1.5rem', background: '#f8f9fa', padding: '1rem', borderRadius: '6px' }}>
+                  <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>Selected Patient Information</h4>
+                  {(() => {
+                    const selectedPatient = patients.find(p => String(p.id) === String(values.patientId));
+                    if (!selectedPatient) return null;
+                    return (
+                      <div className="patient-details-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                        <div><strong>Name:</strong> {(selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')}</div>
+                        <div><strong>Gender:</strong> {selectedPatient.gender || 'N/A'}</div>
+                        <div><strong>Blood Group:</strong> {selectedPatient.bloodGroup || 'N/A'}</div>
+                        <div><strong>Mobile:</strong> {selectedPatient.mobileNo || selectedPatient.phone || 'N/A'}</div>
+                        <div><strong>Date of Birth:</strong> {selectedPatient.dateOfBirth || 'N/A'}</div>
+                        <div><strong>Catheter Date:</strong> {selectedPatient.catheterDate || selectedPatient.catheterInsertionDate || 'N/A'}</div>
+                        <div><strong>Fistula Date:</strong> {selectedPatient.fistulaDate || selectedPatient.fistulaCreationDate || 'N/A'}</div>
+                      </div>
+                    );
+                  })()}
                 </div>
-              );
-            })()}
-          </div>
-        )}
-        <div className="record-table-wrapper">
-          <table className="record-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>B.P.</th>
-                <th>Pulse</th>
-                <th>Temp</th>
-                <th>Venous Pressure</th>
-                <th>Negative Pressure</th>
-                <th>TMP</th>
-                <th>Heparin</th>
-                <th>Medication & Remarks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.id}>
-                  <td><input type="time" value={row.time} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'time', e.target.value)} /></td>
-                  <td><input type="text" value={row.bp} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'bp', e.target.value)} placeholder="e.g., 120/80" /></td>
-                  <td><input type="number" value={row.pulse} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'pulse', e.target.value)} /></td>
-                  <td><input type="number" value={row.temperature} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'temperature', e.target.value)} /></td>
-                  <td><input type="number" value={row.venousPressure} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'venousPressure', e.target.value)} /></td>
-                  <td><input type="number" value={row.negativePressure} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'negativePressure', e.target.value)} /></td>
-                  <td><input type="number" value={row.tmp} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'tmp', e.target.value)} /></td>
-                  <td><input type="text" value={row.heparin} onChange={(e: ChangeEvent<HTMLInputElement>) => handleRowChange(row.id, 'heparin', e.target.value)} /></td>
-                  <td><textarea value={row.medicationRemarks} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleRowChange(row.id, 'medicationRemarks', e.target.value)}></textarea></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="form-actions">
-          <ButtonWithGradient onClick={handleAddRow} className="btn-add-row" text="Add Row" />
-          <div className="action-buttons">
-            <ButtonWithGradient onClick={handleSave} className="btn-save" disabled={!selectedPatientId} text="Save" />
-            <ButtonWithGradient onClick={handlePrint} className="btn-print-record" text="Print" />
-          </div>
-        </div>
+              )}
+              <FieldArray name="rows">
+                {({ push, remove }) => (
+                  <div className="record-table-wrapper">
+                    <table className="record-table">
+                      <thead>
+                        <tr>
+                          <th>Time</th>
+                          <th>B.P.</th>
+                          <th>Pulse</th>
+                          <th>Temp</th>
+                          <th>Venous Pressure</th>
+                          <th>Negative Pressure</th>
+                          <th>TMP</th>
+                          <th>Heparin</th>
+                          <th>Medication & Remarks</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {values.rows.map((row, idx) => (
+                          <tr key={idx}>
+                            <td><TimeField name={`rows.${idx}.time`} label="Time" /></td>
+                            <td><InputField name={`rows.${idx}.bp`} type="text" label="B.P." placeholder="e.g., 120/80" /></td>
+                            <td><InputField name={`rows.${idx}.pulse`} type="number" label="Pulse" /></td>
+                            <td><InputField name={`rows.${idx}.temperature`} type="number" label="Temp" /></td>
+                            <td><InputField name={`rows.${idx}.venousPressure`} type="number" label="Venous Pressure" /></td>
+                            <td><InputField name={`rows.${idx}.negativePressure`} type="number" label="Negative Pressure" /></td>
+                            <td><InputField name={`rows.${idx}.tmp`} type="number" label="TMP" /></td>
+                            <td><InputField name={`rows.${idx}.heparin`} type="text" label="Heparin" /></td>
+                            <td><TextareaField name={`rows.${idx}.medicationRemarks`} label="Medication & Remarks" rows={1} /></td>
+                            <td>
+                              {values.rows.length > 1 && (
+                                <ButtonWithGradient
+                                  type="button"
+                                  className="btn-outline btn-sm"
+                                  onClick={() => remove(idx)}
+                                  text="Remove"
+                                />
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <ButtonWithGradient type="button" onClick={() => push(createNewRow())} className="btn-add-row" text="Add Row" />
+                  </div>
+                )}
+              </FieldArray>
+              <div className="form-actions">
+                <div className="action-buttons">
+                  <ButtonWithGradient type="submit" className="btn-save" disabled={isSubmitting || !values.patientId} text={isSubmitting ? 'Saving...' : 'Save'} />
+                  <ButtonWithGradient onClick={handlePrint} className="btn-print-record" text="Print" />
+                </div>
+              </div>
+              {success && <div className="success-message">{success}</div>}
+              {error && <div className="error-message">{error}</div>}
+            </Form>
+          )}
+        </Formik>
       </div>
-      {success && <div className="success-message">{success}</div>}
-      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };

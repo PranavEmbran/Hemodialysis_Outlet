@@ -3,24 +3,24 @@ import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 
 import { FaUserInjured, FaProcedures, FaCalendarAlt } from 'react-icons/fa';
-import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import Footer from '../components/Footer';
 // import Header from '../components/Header';
 import Header from '../components/Header';
-import { patientsApi } from '../api/patientsApi';
-import { scheduleApi } from '../api/scheduleApi';
-import { historyApi } from '../api/historyApi';
 import type { Patient, ScheduleEntry, History } from '../types';
 import SectionHeading from '../components/SectionHeading';
 import PageContainer from '../components/PageContainer';
 import Cards from '../components/Cards';
 import Table from '../components/Table';
-import Pagination from '../components/Pagination';
+
 import Searchbar from '../components/Searchbar';
 import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
+import EditModal from '../components/EditModal';
+import { patientFormConfig, appointmentFormConfig } from '../components/forms/formConfigs';
+import { useDialysis } from '../context/DialysisContext';
 
 
 interface Stat {
@@ -37,12 +37,17 @@ interface FilteredData {
 }
 
 const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  // State for real data
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [appointments, setAppointments] = useState<ScheduleEntry[]>([]);
-  const [history, setHistory] = useState<History[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  // Use centralized state from context
+  const { 
+    patients, 
+    appointments, 
+    history, 
+    loading, 
+    error, 
+    updatePatient, 
+    updateAppointment, 
+    refreshAllData 
+  } = useDialysis();
 
   // Filter states
   const [fromDate, setFromDate] = useState<string>('');
@@ -66,6 +71,12 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   const [patientsRowsPerPage, setPatientsRowsPerPage] = useState<number>(10);
   const [appointmentsRowsPerPage, setAppointmentsRowsPerPage] = useState<number>(10);
 
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [editingData, setEditingData] = useState<Patient | ScheduleEntry | null>(null);
+  const [editingDataType, setEditingDataType] = useState<'patient' | 'appointment'>('patient');
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+
   // Reset page when filters or rows per page change
   useEffect(() => {
     setPatientsPage(1);
@@ -76,8 +87,8 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
 
   // Load data on component mount
   useEffect(() => {
-    loadData();
-  }, []);
+    refreshAllData();
+  }, [refreshAllData]);
 
   // Set up auto-refresh
   useEffect(() => {
@@ -87,7 +98,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
 
     if (autoRefresh > 0) {
       const timer = setInterval(() => {
-        loadData();
+        refreshAllData();
       }, autoRefresh * 60 * 1000); // Convert minutes to milliseconds
       setRefreshTimer(timer);
     }
@@ -97,30 +108,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
         clearInterval(refreshTimer);
       }
     };
-  }, [autoRefresh]);
-
-  // Load all data from APIs
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const [patientsData, appointmentsData, historyData] = await Promise.all([
-        patientsApi.getAllPatients(),
-        scheduleApi.getAllSchedules(),
-        historyApi.getAllHistory()
-      ]);
-
-      setPatients(patientsData);
-      setAppointments(appointmentsData);
-      setHistory(historyData);
-    } catch (err) {
-      console.error('Error loading data:', err);
-      setError('Failed to load data. Please check your connection.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [autoRefresh, refreshAllData]);
 
   // Calculate dashboard statistics
   const getDashboardStats = (): Stat[] => {
@@ -231,7 +219,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
 
   // Handle manual refresh
   const handleRefresh = () => {
-    loadData();
+    refreshAllData();
   };
 
   // Handle filter reset
@@ -298,11 +286,97 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   };
 
   // Add handlers at the component level
-  const handleEdit = (id: string | number) => {
-    console.log('Edit', id);
+  const handleEdit = (id: string | number, dataType: 'patient' | 'appointment') => {
+    // Validate that we have a valid ID
+    if (!id || id === '' || id === 'undefined' || id === 'null') {
+      console.error('Invalid ID provided for editing:', id);
+      return;
+    }
+    
+    let dataToEdit: Patient | ScheduleEntry | null = null;
+    
+    if (dataType === 'patient') {
+      dataToEdit = patients.find(p => p.id === id) || null;
+    } else {
+      dataToEdit = appointments.find(a => a.id === id) || null;
+    }
+    
+    if (dataToEdit) {
+      console.log('Editing data:', dataToEdit);
+      setEditingData(dataToEdit);
+      setEditingDataType(dataType);
+      setShowEditModal(true);
+    } else {
+      console.error('Could not find data to edit for ID:', id, 'Type:', dataType);
+    }
   };
+
   const handleDelete = (id: string | number) => {
     console.log('Delete', id);
+  };
+
+  const handleEditSubmit = async (values: any) => {
+    if (!editingData) return;
+    
+    setEditLoading(true);
+    try {
+      if (editingDataType === 'patient') {
+        const patientData = editingData as Patient;
+        
+        // Validate patient ID
+        if (!patientData.id) {
+          throw new Error('Invalid patient ID');
+        }
+        
+        console.log('Updating patient with ID:', patientData.id);
+        
+        // Use centralized update function
+        await updatePatient(patientData.id as string, {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          gender: values.gender,
+          dateOfBirth: values.dateOfBirth,
+          mobileNo: values.mobileNo,
+          bloodGroup: values.bloodGroup,
+          catheterInsertionDate: values.catheterInsertionDate,
+          fistulaCreationDate: values.fistulaCreationDate,
+        });
+        
+      } else {
+        const appointmentData = editingData as ScheduleEntry;
+        
+        // Validate appointment ID
+        if (!appointmentData.id) {
+          throw new Error('Invalid appointment ID');
+        }
+        
+        console.log('Updating appointment with ID:', appointmentData.id);
+        
+        // Create a schedule update object that matches the Schedule interface
+        const scheduleUpdateData = {
+          patientName: values.patientName,
+          date: values.date,
+          time: values.time,
+          staffName: values.admittingDoctor, // Map to staffName field
+          status: values.status,
+          notes: values.remarks, // Map to notes field
+        };
+        
+        // Use centralized update function
+        await updateAppointment(appointmentData.id as string, scheduleUpdateData);
+      }
+    } catch (error) {
+      console.error('Error updating data:', error);
+      throw error;
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingData(null);
+    setEditLoading(false);
   };
 
   if (loading) {
@@ -329,7 +403,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
         <div className="alert alert-danger" role="alert">
           <h4>Error Loading Data</h4>
           <p>{error}</p>
-          <Button variant="primary" onClick={loadData}>Retry</Button>
+          <Button variant="primary" onClick={refreshAllData}>Retry</Button>
         </div>
       </Container>
     );
@@ -384,7 +458,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                   lastVisit: lastVisit ? lastVisit.date : 'No visits',
                   action: (
                     <>
-                      <EditButton onClick={() => handleEdit(p.id ?? '')} id={p.id ?? ''} />
+                      <EditButton onClick={() => handleEdit(p.id ?? '', 'patient')} id={p.id ?? ''} />
                       <DeleteButton onClick={() => handleDelete(p.id ?? '')} id={p.id ?? ''} />
                     </>
                   ),
@@ -421,13 +495,18 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 time: apt.time,
                 dialysisUnit: apt.dialysisUnit,
                 status: (
-                  <span className={`badge bg-${apt.status === 'Completed' ? 'success' : apt.status === 'Scheduled' ? 'primary' : 'warning'}`}>
+                  <span className={`status-badge ${
+                    apt.status === 'Completed' ? 'active' :
+                    apt.status === 'Scheduled' ? 'scheduled' :
+                    'inactive'
+                  }`}>
+                  
                     {apt.status}
                   </span>
                 ),
                 action: (
                   <>
-                    <EditButton onClick={() => handleEdit(apt.id ?? '')} id={apt.id ?? ''} />
+                    <EditButton onClick={() => handleEdit(apt.id ?? '', 'appointment')} id={apt.id ?? ''} />
                     <DeleteButton onClick={() => handleDelete(apt.id ?? '')} id={apt.id ?? ''} />
                   </>
                 ),
@@ -435,6 +514,17 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
             />
 
         </PageContainer>
+        
+        {/* Edit Modal */}
+        <EditModal
+          show={showEditModal}
+          onHide={handleCloseEditModal}
+          data={editingData}
+          formConfig={editingDataType === 'patient' ? patientFormConfig : appointmentFormConfig}
+          onSubmit={handleEditSubmit}
+          loading={editLoading}
+        />
+        
         <Footer />
     </>
   );

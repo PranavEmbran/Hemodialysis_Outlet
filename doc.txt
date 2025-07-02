@@ -1,0 +1,26 @@
+npm install react-bootstrap bootstrap
+
+npm install @primer/octicons-react
+
+npm install @fortawesome/free-solid-svg-icons
+
+npm install --save @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+
+npm install react-icons
+
+npm install --save-dev @types/node
+
+npm install formik
+
+npm install yup
+
+npm install xlsx
+
+npm i --save-dev @types/file-saver
+
+npm install html2pdf.js
+
+
+
+
+npm audit fix --force

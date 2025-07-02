@@ -1,0 +1,58 @@
+Compare src\api and api
+
+c:\Users\prana\CODE\Dialysis_Management_Module\dialysis-management-ui\api:
+Contains backend server code (Node.js/Express)
+Includes:
+server.js - Main server file
+package.json and package-lock.json - Node.js dependencies
+Directories for controllers, db, and routes
+This is the backend API server implementation
+c:\Users\prana\CODE\Dialysis_Management_Module\dialysis-management-ui\src\api:
+Contains frontend API client code (React)
+Includes:
+billingApi.js
+ - Frontend billing API client
+historyApi.js - Frontend history API client
+patientsApi.js - Frontend patients API client
+scheduleApi.js - Frontend schedule API client
+These files contain functions to make HTTP requests to the backend API
+This is a common architecture where:
+
+The api directory contains the actual backend server implementation
+The src/api directory contains the frontend API client code that makes requests to the backend API
+The frontend API clients use the API_URL from config to communicate with the backend server
+This separation of concerns is good practice as it:
+
+Keeps frontend and backend code separate
+Makes it easier to maintain and update each independently
+Allows for different team members to work on different parts
+Makes it easier to switch out the backend implementation if needed
+
+
+Why does src\api not contain dashboardApi and DialysisProcessApi
+
+Why there are no separate API clients for Dashboard and DialysisProcess:
+
+Dashboard:
+Uses patientsApi for fetching patient data
+Doesn't require additional API endpoints since it's a summary view using existing patient data
+DialysisProcess:
+Uses historyApi for handling dialysis history
+Uses patientsApi for patient information
+Doesn't need a separate API client since it uses existing APIs
+The frontend API structure is organized by business domains:
+
+patientsApi: Handles all patient-related operations
+historyApi: Manages dialysis history and process tracking
+billingApi: Handles billing operations
+scheduleApi: Manages appointment scheduling
+This is a good practice because:
+
+It prevents API client duplication
+It keeps related functionality together
+It reduces code maintenance
+It follows the Single Responsibility Principle
+For example, the DialysisProcess component uses both historyApi and patientsApi because it needs to:
+
+Access patient information (using patientsApi)
+Record dialysis sessions (using historyApi)

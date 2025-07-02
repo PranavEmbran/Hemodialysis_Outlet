@@ -1,5 +1,5 @@
 export interface Patient {
-  id?: string | number;
+  id?: string;
   name: string;
   firstName?: string;
   lastName?: string;
@@ -81,7 +81,7 @@ export interface StaffData {
 }
 
 export interface ScheduleEntry {
-  id?: string | number;
+  id?: string;
   patientId?: string | number;
   patientName: string;
   date: string;

@@ -16,6 +16,7 @@ import SideBar from './components/SideBar';
 // import StartDialysis from './components/StartDialysis';
 import DialysisFlowChartPage from "./pages/DialysisFlowChartPage";
 import HaemodialysisRecordDetailsPage from "./pages/HaemodialysisRecordDetailsPage";
+import { DialysisProvider } from './context/DialysisContext';
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -23,30 +24,32 @@ const App: React.FC = () => {
   const toggleSidebar = () => setSidebarCollapsed(prev => !prev);
 
   return (
-    <Router>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#d9e0e7' }}>
+    <DialysisProvider>
+      <Router>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#d9e0e7' }}>
 
-        <TopNavBar />
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          <TopNavBar />
+          <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
-          <SideBar collapsed={sidebarCollapsed} />
-          <div style={{ flex: 1, padding: '10px', overflowY: 'auto' }}>
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/registration" element={<PatientRegistration sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/schedule" element={<Schedule sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/process" element={<DialysisProcess sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/billing" element={<Billing sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/history" element={<History sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              {/* <Route path="/start" element={<StartDialysis />} /> */}
-              <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-            </Routes>
+            <SideBar collapsed={sidebarCollapsed} />
+            <div style={{ flex: 1, padding: '10px', overflowY: 'auto' }}>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/registration" element={<PatientRegistration sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/schedule" element={<Schedule sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/process" element={<DialysisProcess sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/billing" element={<Billing sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/history" element={<History sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                {/* <Route path="/start" element={<StartDialysis />} /> */}
+                <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+              </Routes>
+            </div>
           </div>
         </div>
-      </div>
-    </Router >
+      </Router >
+    </DialysisProvider>
   );
 };
 

@@ -1,0 +1,43 @@
+dashboard_stats:
+  - card_name: Total Active Patients
+    logic: >
+      Counts patients who have had either an appointment or a dialysis session (history entry) on or after today's date.
+    code: |
+      const activePatients = patients.filter(patient =>
+        appointments.some(apt =>
+          apt.patientId === patient.id && apt.date >= today
+        ) ||
+        history.some(h =>
+          h.patientId === patient.id && h.date >= today
+        )
+      ).length;
+    meaning: >
+      Total number of patients with at least one appointment or dialysis session today or later.
+    data_sources: [patients, appointments, history]
+
+  - card_name: Today's Dialysis Sessions
+    logic: >
+      Counts the number of history entries (dialysis sessions) where the date matches today's date.
+    code: |
+      const todaysSessions = history.filter(h => h.date === today).length;
+    meaning: >
+      Number of dialysis sessions that occurred today.
+    data_sources: [history]
+
+  - card_name: Upcoming Appointments
+    logic: >
+      Counts appointments scheduled between today and the next 7 days.
+    code: |
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+
+      const upcomingAppointments = appointments.filter(apt => {
+        const aptDate = new Date(apt.date);
+        return aptDate >= new Date() && aptDate <= nextWeek;
+      }).length;
+    meaning: >
+      Appointments scheduled from today through the next 7 days.
+    data_sources: [appointments]
+
+location: Home.tsx
+function: getDashboardStats

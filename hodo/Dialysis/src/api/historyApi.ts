@@ -1,5 +1,5 @@
 import { API_URL } from '../config';
-import { History, HistoryRecord } from '../types';
+import type { History, HistoryRecord } from '../types';
 
 interface FetchOptions {
   method?: string;

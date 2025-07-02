@@ -1,5 +1,5 @@
 import { API_URL } from '../config';
-import { Patient } from '../types';
+import type { Patient } from '../types';
 
 interface FetchOptions {
   method?: string;
@@ -45,9 +45,9 @@ export const patientsApi = {
     }
   },
 
-  async getPatientById(id: number): Promise<Patient> {
+  async getPatientById(id: string | number): Promise<Patient> {
     try {
-      return await fetchWithRetry(`${API_URL}/patients/${id}`);
+      return await fetchWithRetry(`${API_URL}/patients/${encodeURIComponent(id)}`);
     } catch (error) {
       console.error('Error fetching patient:', error);
       throw new Error('Failed to fetch patient details.');
@@ -66,9 +66,9 @@ export const patientsApi = {
     }
   },
 
-  async updatePatient(id: number, patientData: Partial<Patient>): Promise<Patient> {
+  async updatePatient(id: string | number, patientData: Partial<Patient>): Promise<Patient> {
     try {
-      return await fetchWithRetry(`${API_URL}/patients/${id}`, {
+      return await fetchWithRetry(`${API_URL}/patients/${encodeURIComponent(id)}`, {
         method: 'PUT',
         body: JSON.stringify(patientData),
       });
@@ -78,9 +78,9 @@ export const patientsApi = {
     }
   },
 
-  async deletePatient(id: number): Promise<boolean> {
+  async deletePatient(id: string | number): Promise<boolean> {
     try {
-      return await fetchWithRetry(`${API_URL}/patients/${id}`, {
+      return await fetchWithRetry(`${API_URL}/patients/${encodeURIComponent(id)}`, {
         method: 'DELETE',
       });
     } catch (error) {

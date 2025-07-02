@@ -1,0 +1,5 @@
+npm install -g typescript
+
+npm install --save-dev ts-node typescript
+
+

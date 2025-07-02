@@ -6,7 +6,6 @@ import html2pdf from 'html2pdf.js';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { billingApi } from '../api/billingApi';
-import { patientsApi } from '../api/patientsApi';
 import './Billing.css';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -17,6 +16,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
 import { SelectField, DateField, InputField } from '../components/forms';
+import { useDialysis } from '../context/DialysisContext';
 
 interface BillingFormValues {
   patientId: string;
@@ -32,18 +32,14 @@ const validationSchema = Yup.object({
   amount: Yup.number().required('Amount is required'),
 });
 
-// const Billing: React.FC = () => {
 const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const { patients } = useDialysis();
   const [bills, setBills] = useState<BillingType[]>([]);
   const [selectedBill, setSelectedBill] = useState<BillingType | null>(null);
   const [showPrintModal, setShowPrintModal] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [billsSearch, setBillsSearch] = useState<string>('');
-  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  // const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
   // Pagination state for bills
   const [billsPage, setBillsPage] = useState(1);
@@ -52,7 +48,6 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
   const paginatedBills = bills.slice((billsPage - 1) * billsRowsPerPage, billsPage * billsRowsPerPage);
 
   useEffect(() => {
-    patientsApi.getAllPatients().then(setPatients).catch(() => setError('Failed to fetch patients'));
     billingApi.getAllBills().then(setBills).catch(() => setError('Failed to fetch bills'));
   }, []);
 
@@ -180,186 +175,164 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
 
   return (
     <>
-      {/* <Container fluid className={`billing-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
-      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
-        <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-        <PageContainer>
-          {/* <div className="main-container"> */}
-
-          {/* <div style={{ width: '100%', padding: '10px', marginTop: '-20px' }}> */}
-          <SectionHeading title="Billing" subtitle="Manage and view patient billing records" />
-          {/* </div> */}
-
-
-          <Row className="mb-4">
-            <Col>
-              <Card className="shadow-sm">
-                <Card.Body>
-                  {success && (
-                    <div className="alert alert-success">
-                      Bill added successfully!
-                    </div>
-                  )}
-
-                  {error && (
-                    <div className="alert alert-danger">
-                      {error}
-                    </div>
-                  )}
-
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                  >
-                    {({ isSubmitting }) => (
-                      <Form>
-                        <Row>
-                          <Col md={6} className="mb-3">
-                            <SelectField
-                              label="Patient"
-                              name="patientId"
-                              options={patients.map(p => ({
-                                label: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
-                                value: p.id?.toString() || ''
-                              }))}
-                              placeholder="Select Patient"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <DateField
-                              label="Session Date"
-                              name="sessionDate"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <InputField
-                              label="Session Duration (min)"
-                              name="sessionDuration"
-                              type="number"
-                              placeholder="Enter duration in minutes"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <InputField
-                              label="Amount"
-                              name="amount"
-                              type="number"
-                              placeholder="Enter amount"
-                              required
-                            />
-                          </Col>
-                        </Row>
-                        {/*<Button type="submit" variant="primary" disabled={isSubmitting} className="btn-with-gradient">*/}
-                        <ButtonWithGradient type="submit" disabled={isSubmitting}>
-                          {isSubmitting ? 'Adding...' : 'Add Bill'}
-                        </ButtonWithGradient>
-                      </Form>
-                    )}
-                  </Formik>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* <Row className="mt-4">
+      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <PageContainer>
+        <SectionHeading title="Billing" subtitle="Manage and view patient billing records" />
+        <Row className="mb-4">
           <Col>
-            <Card className="shadow-sm"  >
-              <Card.Body style={{ marginLeft: "10px", marginRight: "10px", paddingBottom: "0px" }}> */}
-          {/* <h3 className="home-title mb-4">Recent Bills</h3> */}
-          <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div className='dashboard-table-heading'>
-              Recent Bills: {getFilteredBillsData().length}
-              <div className="dashboard-table-search">
-                <Searchbar 
-                  value={billsSearch}
-                  onChange={handleBillsSearch}
-                />
-              </div>
-            </div>
-            <Table
-              columns={[
-                { key: 'patientName', header: 'Patient' },
-                { key: 'sessionDate', header: 'Date' },
-                { key: 'sessionDuration', header: 'Duration' },
-                { key: 'totalAmount', header: 'Amount' },
-                { key: 'status', header: 'Status' },
-                { key: 'actions', header: 'Actions' },
-              ]}
-              data={getFilteredBillsData().map(b => ({
-                id: b.id,
-                patientName: b.patientName,
-                sessionDate: b.sessionDate,
-                sessionDuration: b.sessionDuration ? `${b.sessionDuration} minutes` : '-',
-                totalAmount: b.totalAmount ? `₹${b.totalAmount}` : '-',
-                status: (
-                  <span className={`badge bg-${b.status === 'PAID' ? 'success' : 'warning'}`}>
-                    {b.status}
-                  </span>
-                ),
-                actions: (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedBill(b);
-                      setShowPrintModal(true);
-                    }}
-                  >
-                    View Bill
-                  </Button>
-                ),
-              }))}
-            />
-          </div>
-          {/* </Card.Body>
+            <Card className="shadow-sm">
+              <Card.Body>
+                {success && (
+                  <div className="alert alert-success">
+                    Bill added successfully!
+                  </div>
+                )}
+                {error && (
+                  <div className="alert alert-danger">
+                    {error}
+                  </div>
+                )}
+                <Formik
+                  initialValues={initialValues}
+                  validationSchema={validationSchema}
+                  onSubmit={handleSubmit}
+                >
+                  {({ isSubmitting }) => (
+                    <Form>
+                      <Row>
+                        <Col md={6} className="mb-3">
+                          <SelectField
+                            label="Patient"
+                            name="patientId"
+                            options={patients.map(p => ({
+                              label: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim(),
+                              value: p.id?.toString() || ''
+                            }))}
+                            placeholder="Select Patient"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <DateField
+                            label="Session Date"
+                            name="sessionDate"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <InputField
+                            label="Session Duration (hours)"
+                            name="sessionDuration"
+                            type="number"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <InputField
+                            label="Amount"
+                            name="amount"
+                            type="number"
+                            required
+                          />
+                        </Col>
+                        <Col md={12}>
+                          <ButtonWithGradient
+                            type="submit"
+                            disabled={isSubmitting}
+                            text={isSubmitting ? 'Adding...' : 'Add Bill'}
+                          />
+                        </Col>
+                      </Row>
+                    </Form>
+                  )}
+                </Formik>
+              </Card.Body>
             </Card>
           </Col>
-        </Row> */}
-
-          {showPrintModal && selectedBill && (
-            <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
-              <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Bill Details</h5>
-                    <button type="button" className="btn-close" onClick={() => setShowPrintModal(false)}></button>
+        </Row>
+        <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div className='dashboard-table-heading'>
+            Recent Bills: {getFilteredBillsData().length}
+            <div className="dashboard-table-search">
+              <Searchbar 
+                value={billsSearch}
+                onChange={handleBillsSearch}
+              />
+            </div>
+          </div>
+          <Table
+            columns={[
+              { key: 'patientName', header: 'Patient' },
+              { key: 'sessionDate', header: 'Date' },
+              { key: 'sessionDuration', header: 'Duration' },
+              { key: 'totalAmount', header: 'Amount' },
+              { key: 'status', header: 'Status' },
+              { key: 'actions', header: 'Actions' },
+            ]}
+            data={getFilteredBillsData().map(b => ({
+              id: b.id,
+              patientName: b.patientName,
+              sessionDate: b.sessionDate,
+              sessionDuration: b.sessionDuration ? `${b.sessionDuration} minutes` : '-',
+              totalAmount: b.totalAmount ? `₹${b.totalAmount}` : '-',
+              status: (
+                <span className={`badge bg-${b.status === 'PAID' ? 'success' : 'warning'}`}>
+                  {b.status}
+                </span>
+              ),
+              actions: (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedBill(b);
+                    setShowPrintModal(true);
+                  }}
+                >
+                  View Bill
+                </Button>
+              ),
+            }))}
+          />
+        </div>
+        {showPrintModal && selectedBill && (
+          <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Bill Details</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowPrintModal(false)}></button>
+                </div>
+                <div className="modal-body" id="print-bill">
+                  <div className="bill-header">
+                    <h3>Dialysis Center</h3>
+                    <p>Bill Receipt</p>
                   </div>
-                  <div className="modal-body" id="print-bill">
-                    <div className="bill-header">
-                      <h3>Dialysis Center</h3>
-                      <p>Bill Receipt</p>
-                    </div>
-                    <div className="bill-details">
-                      <p><strong>Patient:</strong> {selectedBill.patientName}</p>
-                      <p><strong>Date:</strong> {selectedBill.sessionDate}</p>
-                      <p><strong>Duration:</strong> {selectedBill.sessionDuration} minutes</p>
-                      <p><strong>Amount:</strong> ₹{selectedBill.totalAmount}</p>
-                      <p><strong>Status:</strong> {selectedBill.status}</p>
-                    </div>
+                  <div className="bill-details">
+                    <p><strong>Patient:</strong> {selectedBill.patientName}</p>
+                    <p><strong>Date:</strong> {selectedBill.sessionDate}</p>
+                    <p><strong>Duration:</strong> {selectedBill.sessionDuration} minutes</p>
+                    <p><strong>Amount:</strong> ₹{selectedBill.totalAmount}</p>
+                    <p><strong>Status:</strong> {selectedBill.status}</p>
                   </div>
-                  <div className="modal-footer">
-                    <Button variant="secondary" onClick={() => setShowPrintModal(false)}>
-                      Close
-                    </Button>
-                    <Button variant="primary" onClick={handlePrint}>
-                      Print
-                    </Button>
-                    <Button variant="success" onClick={handleDownloadPDF}>
-                      Download PDF
-                    </Button>
-                  </div>
+                </div>
+                <div className="modal-footer">
+                  <Button variant="secondary" onClick={() => setShowPrintModal(false)}>
+                    Close
+                  </Button>
+                  <Button variant="primary" onClick={handlePrint}>
+                    Print
+                  </Button>
+                  <Button variant="success" onClick={handleDownloadPDF}>
+                    Download PDF
+                  </Button>
                 </div>
               </div>
             </div>
-          )}
-          {/* </div> */}
-        </PageContainer>
-        <Footer />
-      {/* </Container> */}
+          </div>
+        )}
+      </PageContainer>
+      <Footer />
     </>
   );
 };

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { patientsApi } from '../api/patientsApi';
 import { dialysisFlowChartApi } from '../api/dialysisFlowChartApi';
-import type{ Patient } from '../types';
+import type { Patient } from '../types';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ButtonWithGradient from './ButtonWithGradient';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import { InputField, SelectField, DateField, TimeField, TextareaField, CheckboxField } from './forms';
 import './DialysisFlowChart.css';
 
 interface DialysisFlowChartForm {
@@ -51,55 +54,62 @@ interface DialysisFlowChartForm {
   deptInChargeSign: string;
 }
 
+const validationSchema = Yup.object({
+  patientId: Yup.string().required('Patient is required'),
+  date: Yup.string().required('Date is required'),
+  bloodAccess: Yup.string().required('Blood Access is required'),
+  hdStartingTime: Yup.string().required('HD Starting Time is required'),
+  hdClosingTime: Yup.string().required('HD Closing Time is required'),
+});
+
+const initialValues: DialysisFlowChartForm = {
+  patientId: '',
+  date: '',
+  hemodialysisNIO: '',
+  bloodAccess: '',
+  hdStartingTime: '',
+  hdClosingTime: '',
+  durationHours: '',
+  bloodFlowRate: '',
+  injHeparinPrime: '',
+  injHeparinBolus: '',
+  startingWithSaline: false,
+  closingWithAir: false,
+  closingWithSaline: false,
+  bloodTransfusion: false,
+  bloodTransfusionComment: '',
+  bpBeforeDialysis: '',
+  bpAfterDialysis: '',
+  bpDuringDialysis: '',
+  weightPreDialysis: '',
+  weightPostDialysis: '',
+  weightLoss: '',
+  dryWeight: '',
+  weightGain: '',
+  dialysisMonitorNameFO: '',
+  dialysisNameSize: '',
+  dialysisNumberOfRefuse: '',
+  bloodTubeNumberOfRefuse: '',
+  dialysisFlowRate: '',
+  bathacetete: '',
+  bathBicarb: '',
+  naConductivity: '',
+  profilesNo: '',
+  equipmentsComplaints: '',
+  patientsComplaints: '',
+  spo2: '',
+  fever: false,
+  rigor: false,
+  hypertension: false,
+  hypoglycemia: false,
+  deptInChargeSign: '',
+};
+
 const DialysisFlowChart: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [submitting, setSubmitting] = useState<boolean>(false);
-
-  const [formData, setFormData] = useState<DialysisFlowChartForm>({
-    patientId: '',
-    date: '',
-    hemodialysisNIO: '',
-    bloodAccess: '',
-    hdStartingTime: '',
-    hdClosingTime: '',
-    durationHours: '',
-    bloodFlowRate: '',
-    injHeparinPrime: '',
-    injHeparinBolus: '',
-    startingWithSaline: false,
-    closingWithAir: false,
-    closingWithSaline: false,
-    bloodTransfusion: false,
-    bloodTransfusionComment: '',
-    bpBeforeDialysis: '',
-    bpAfterDialysis: '',
-    bpDuringDialysis: '',
-    weightPreDialysis: '',
-    weightPostDialysis: '',
-    weightLoss: '',
-    dryWeight: '',
-    weightGain: '',
-    dialysisMonitorNameFO: '',
-    dialysisNameSize: '',
-    dialysisNumberOfRefuse: '',
-    bloodTubeNumberOfRefuse: '',
-    dialysisFlowRate: '',
-    bathacetete: '',
-    bathBicarb: '',
-    naConductivity: '',
-    profilesNo: '',
-    equipmentsComplaints: '',
-    patientsComplaints: '',
-    spo2: '',
-    fever: false,
-    rigor: false,
-    hypertension: false,
-    hypoglycemia: false,
-    deptInChargeSign: '',
-  });
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -109,7 +119,6 @@ const DialysisFlowChart: React.FC = () => {
         const patientsData = await patientsApi.getAllPatients();
         setPatients(patientsData);
       } catch (err) {
-        console.error('Error fetching patients:', err);
         setError('Failed to load patients. Please try again.');
       } finally {
         setLoading(false);
@@ -118,28 +127,17 @@ const DialysisFlowChart: React.FC = () => {
     fetchPatients();
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  const getSelectedPatient = (patientId: string) => {
+    return patients.find(patient => patient.id === patientId);
   };
-
-  const getSelectedPatient = () => {
-    return patients.find(patient => patient.id === formData.patientId);
-  };
-
-  const selectedPatient = getSelectedPatient();
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (formData: DialysisFlowChartForm) => {
     try {
-      const selectedPatient = getSelectedPatient();
+      const selectedPatient = getSelectedPatient(formData.patientId);
 
       // Prepare data for Excel export
       const excelData = [
@@ -261,88 +259,26 @@ const DialysisFlowChart: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Validate required fields
-    if (!formData.patientId || !formData.date || !formData.bloodAccess ||
-      !formData.hdStartingTime || !formData.hdClosingTime) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
-    setSubmitting(true);
+  const handleSubmit = async (values: DialysisFlowChartForm, { resetForm }: any) => {
     setError('');
     setSuccess('');
-
     try {
-      const selectedPatient = getSelectedPatient();
+      const selectedPatient = getSelectedPatient(values.patientId);
       if (!selectedPatient) {
         setError('Please select a valid patient');
         return;
       }
-
       const dialysisFlowChartData = {
-        ...formData,
+        ...values,
         patientName: (selectedPatient.firstName || selectedPatient.name) +
           (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')
       };
-
       await dialysisFlowChartApi.addDialysisFlowChart(dialysisFlowChartData);
-
       setSuccess('Dialysis flow chart saved successfully!');
-
-      // Reset form after successful submission
-      setFormData({
-        patientId: '',
-        date: '',
-        hemodialysisNIO: '',
-        bloodAccess: '',
-        hdStartingTime: '',
-        hdClosingTime: '',
-        durationHours: '',
-        bloodFlowRate: '',
-        injHeparinPrime: '',
-        injHeparinBolus: '',
-        startingWithSaline: false,
-        closingWithAir: false,
-        closingWithSaline: false,
-        bloodTransfusion: false,
-        bloodTransfusionComment: '',
-        bpBeforeDialysis: '',
-        bpAfterDialysis: '',
-        bpDuringDialysis: '',
-        weightPreDialysis: '',
-        weightPostDialysis: '',
-        weightLoss: '',
-        dryWeight: '',
-        weightGain: '',
-        dialysisMonitorNameFO: '',
-        dialysisNameSize: '',
-        dialysisNumberOfRefuse: '',
-        bloodTubeNumberOfRefuse: '',
-        dialysisFlowRate: '',
-        bathacetete: '',
-        bathBicarb: '',
-        naConductivity: '',
-        profilesNo: '',
-        equipmentsComplaints: '',
-        patientsComplaints: '',
-        spo2: '',
-        fever: false,
-        rigor: false,
-        hypertension: false,
-        hypoglycemia: false,
-        deptInChargeSign: '',
-      });
-
-      // Clear success message after 3 seconds
+      resetForm();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      console.error('Error saving dialysis flow chart:', err);
       setError('Failed to save dialysis flow chart. Please try again.');
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -366,292 +302,186 @@ const DialysisFlowChart: React.FC = () => {
       )}
 
       <div className="dialysis-flow-chart-form-container">
-        <form onSubmit={handleSubmit}>
-          {/* General Info */}
-          <div className="form-section">
-            <h3>General Info</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>Patient</label>
-                <select
-                  name="patientId"
-                  value={formData.patientId}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                >
-                  <option value="">
-                    {loading ? 'Loading patients...' : 'Select Patient'}
-                  </option>
-                  {patients.map(patient => (
-                    <option key={patient.id} value={patient.id}>
-                      {(patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : '')}
-                    </option>
-                  ))}
-                </select>
-                {error && <div className="error-message">{error}</div>}
-              </div>
-              <div className="form-field">
-                <label>Date</label>
-                <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-              </div>
-              <div className="form-field">
-                <label>Hemodialysis NIO</label>
-                <input type="text" name="hemodialysisNIO" value={formData.hemodialysisNIO} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Blood Access</label>
-                <select name="bloodAccess" value={formData.bloodAccess} onChange={handleChange} required>
-                  <option value="">Select Access</option>
-                  <option value="AV Fistula">AV Fistula</option>
-                  <option value="AV Graft">AV Graft</option>
-                  <option value="Catheter">Catheter</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ values, isSubmitting, setFieldValue, resetForm }) => {
+            const selectedPatient = getSelectedPatient(values.patientId);
+            return (
+              <Form>
+                {/* General Info */}
+                <div className="form-section">
+                  <h3>General Info</h3>
+                  <div className="form-grid">
+                    <SelectField
+                      label="Patient"
+                      name="patientId"
+                      options={patients.map(patient => ({
+                        label: (patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : ''),
+                        value: patient.id
+                      }))}
+                      placeholder={loading ? 'Loading patients...' : 'Select Patient'}
+                      required
+                      disabled={loading}
+                    />
+                    <DateField label="Date" name="date" required />
+                    <InputField label="Hemodialysis NIO" name="hemodialysisNIO" />
+                    <SelectField
+                      label="Blood Access"
+                      name="bloodAccess"
+                      options={[
+                        { label: 'AV Fistula', value: 'AV Fistula' },
+                        { label: 'AV Graft', value: 'AV Graft' },
+                        { label: 'Catheter', value: 'Catheter' },
+                        { label: 'Other', value: 'Other' },
+                      ]}
+                      required
+                    />
+                  </div>
+                  {/* Selected Patient Information */}
+                  {selectedPatient && (
+                    <div className="selected-patient-info">
+                      <h4>Selected Patient Information</h4>
+                      <div className="patient-details-grid">
+                        <div className="patient-detail">
+                          <strong>Name:</strong> {(selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Gender:</strong> {selectedPatient.gender || 'N/A'}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Blood Group:</strong> {selectedPatient.bloodGroup}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Mobile:</strong> {selectedPatient.mobileNo || selectedPatient.phone || 'N/A'}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Date of Birth:</strong> {selectedPatient.dateOfBirth || 'N/A'}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Catheter Date:</strong> {selectedPatient.catheterDate || selectedPatient.catheterInsertionDate || 'N/A'}
+                        </div>
+                        <div className="patient-detail">
+                          <strong>Fistula Date:</strong> {selectedPatient.fistulaDate || selectedPatient.fistulaCreationDate || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-              {/* Selected Patient Information */}
-              {selectedPatient && (
-                <div className="selected-patient-info">
-                  <h4>Selected Patient Information</h4>
-                  <div className="patient-details-grid">
-                    <div className="patient-detail">
-                      <strong>Name:</strong> {(selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')}
+                {/* Timing */}
+                <div className="form-section">
+                  <h3>Timing</h3>
+                  <div className="form-grid">
+                    <TimeField label="HD Starting Time" name="hdStartingTime" required />
+                    <TimeField label="HD Closing Time" name="hdClosingTime" required />
+                    <InputField label="Duration Hours" name="durationHours" type="number" min="0" />
+                  </div>
+                </div>
+
+                {/* Vitals */}
+                <div className="form-section">
+                  <h3>Vitals</h3>
+                  <div className="form-grid">
+                    <InputField label="B.P. Before Dialysis" name="bpBeforeDialysis" placeholder="e.g., 120/80" />
+                    <InputField label="B.P. After Dialysis" name="bpAfterDialysis" placeholder="e.g., 110/70" />
+                    <InputField label="B.P. During Dialysis (Average)" name="bpDuringDialysis" placeholder="e.g., 115/75" />
+                    <InputField label="Weight Pre Dialysis (kg)" name="weightPreDialysis" type="number" min="0" />
+                    <InputField label="Weight Post Dialysis (kg)" name="weightPostDialysis" type="number" min="0" />
+                    <InputField label="Weight Loss (kg)" name="weightLoss" type="number" min="0" />
+                    <InputField label="Dry Weight (kg)" name="dryWeight" type="number" min="0" />
+                    <InputField label="Weight Gain (kg)" name="weightGain" type="number" min="0" />
+                    <InputField label="SPO2 (%)" name="spo2" type="number" min="0" max="100" />
+                  </div>
+                </div>
+
+                {/* Dialysis Setup */}
+                <div className="form-section">
+                  <h3>Dialysis Setup</h3>
+                  <div className="form-grid">
+                    <InputField label="Blood Flow Rate (ml/min)" name="bloodFlowRate" type="number" min="0" />
+                    <InputField label="Inj Heparin Prime (units)" name="injHeparinPrime" type="number" min="0" />
+                    <InputField label="Inj. Heparin Bolus (units)" name="injHeparinBolus" type="number" min="0" />
+                    <CheckboxField label="Starting with Saline" name="startingWithSaline" />
+                    <div className="form-field checkbox-group">
+                      <label>Closing with:</label>
+                      <CheckboxField label="Air" name="closingWithAir" />
+                      <CheckboxField label="Saline" name="closingWithSaline" />
+                      <small style={{ fontWeight: 'normal' }}>* Use both only when clinically approved</small>
                     </div>
-                    <div className="patient-detail">
-                      <strong>Gender:</strong> {selectedPatient.gender || 'N/A'}
+                    <div className="form-field checkbox-group">
+                      <CheckboxField label="Blood Transfusion" name="bloodTransfusion" />
+                      {values.bloodTransfusion && (
+                        <InputField label="Blood Transfusion Comment" name="bloodTransfusionComment" />
+                      )}
                     </div>
-                    <div className="patient-detail">
-                      <strong>Blood Group:</strong> {selectedPatient.bloodGroup}
+                    <InputField label="Dialysis Monitor Name FO No" name="dialysisMonitorNameFO" />
+                    <InputField label="Dialysis Name / Size" name="dialysisNameSize" />
+                    <InputField label="Dialysis Number of Refuse" name="dialysisNumberOfRefuse" type="number" min="0" />
+                    <InputField label="Blood Tube Number of Refuse" name="bloodTubeNumberOfRefuse" type="number" min="0" />
+                    <InputField label="Dialysis Flow Rate" name="dialysisFlowRate" type="number" min="0" />
+                    <InputField label="Bathacetete" name="bathacetete" />
+                    <InputField label="Bath Bicarb" name="bathBicarb" />
+                    <InputField label="Na / Conductivity" name="naConductivity" />
+                    <InputField label="Profiles No" name="profilesNo" />
+                  </div>
+                </div>
+
+                {/* Complaints */}
+                <div className="form-section">
+                  <h3>Complaints & Observations</h3>
+                  <div className="form-grid">
+                    <TextareaField label="Equipments Complaints" name="equipmentsComplaints" rows={4} />
+                    <TextareaField label="Patients Complaints" name="patientsComplaints" rows={4} />
+                    <div className="form-field checkbox-group">
+                      <label>Fever / Rigor:</label>
+                      <CheckboxField label="Fever" name="fever" />
+                      <CheckboxField label="Rigor" name="rigor" />
                     </div>
-                    <div className="patient-detail">
-                      <strong>Mobile:</strong> {selectedPatient.mobileNo || selectedPatient.phone || 'N/A'}
-                    </div>
-                    <div className="patient-detail">
-                      <strong>Date of Birth:</strong> {selectedPatient.dateOfBirth || 'N/A'}
-                    </div>
-                    <div className="patient-detail">
-                      <strong>Catheter Date:</strong> {selectedPatient.catheterDate || selectedPatient.catheterInsertionDate || 'N/A'}
-                    </div>
-                    <div className="patient-detail">
-                      <strong>Fistula Date:</strong> {selectedPatient.fistulaDate || selectedPatient.fistulaCreationDate || 'N/A'}
+                    <div className="form-field checkbox-group">
+                      <label>Hypertension / Hypoglycemia:</label>
+                      <CheckboxField label="Hypertension" name="hypertension" />
+                      <CheckboxField label="Hypoglycemia" name="hypoglycemia" />
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Timing */}
-          <div className="form-section">
-            <h3>Timing</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>HD Starting Time</label>
-                <input type="time" name="hdStartingTime" value={formData.hdStartingTime} onChange={handleChange} required />
-              </div>
-              <div className="form-field">
-                <label>HD Closing Time</label>
-                <input type="time" name="hdClosingTime" value={formData.hdClosingTime} onChange={handleChange} required />
-              </div>
-              <div className="form-field">
-                <label>Duration Hours</label>
-                <input type="number" name="durationHours" value={formData.durationHours} onChange={handleChange} min="0" />
-              </div>
-            </div>
-          </div>
-
-          {/* Vitals */}
-          <div className="form-section">
-            <h3>Vitals</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>B.P. Before Dialysis</label>
-                <input type="text" name="bpBeforeDialysis" value={formData.bpBeforeDialysis} onChange={handleChange} placeholder="e.g., 120/80" />
-              </div>
-              <div className="form-field">
-                <label>B.P. After Dialysis</label>
-                <input type="text" name="bpAfterDialysis" value={formData.bpAfterDialysis} onChange={handleChange} placeholder="e.g., 110/70" />
-              </div>
-              <div className="form-field">
-                <label>B.P. During Dialysis (Average)</label>
-                <input type="text" name="bpDuringDialysis" value={formData.bpDuringDialysis} onChange={handleChange} placeholder="e.g., 115/75" />
-              </div>
-              <div className="form-field">
-                <label>Weight Pre Dialysis (kg)</label>
-                <input type="number" name="weightPreDialysis" value={formData.weightPreDialysis} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Weight Post Dialysis (kg)</label>
-                <input type="number" name="weightPostDialysis" value={formData.weightPostDialysis} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Weight Loss (kg)</label>
-                <input type="number" name="weightLoss" value={formData.weightLoss} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Dry Weight (kg)</label>
-                <input type="number" name="dryWeight" value={formData.dryWeight} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Weight Gain (kg)</label>
-                <input type="number" name="weightGain" value={formData.weightGain} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>SPO2 (%)</label>
-                <input type="number" name="spo2" value={formData.spo2} onChange={handleChange} min="0" max="100" />
-              </div>
-            </div>
-          </div>
-
-          {/* Dialysis Setup */}
-          <div className="form-section">
-            <h3>Dialysis Setup</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>Blood Flow Rate (ml/min)</label>
-                <input type="number" name="bloodFlowRate" value={formData.bloodFlowRate} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Inj Heparin Prime (units)</label>
-                <input type="number" name="injHeparinPrime" value={formData.injHeparinPrime} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Inj. Heparin Bolus (units)</label>
-                <input type="number" name="injHeparinBolus" value={formData.injHeparinBolus} onChange={handleChange} min="0" />
-              </div>
-
-              <div className="form-field checkbox-group">
-                <div className="checkbox-subgroup">
-                  <label htmlFor="startingWithSaline">Starting with Saline</label>
-                  <input id="startingWithSaline" type="checkbox" name="startingWithSaline" checked={formData.startingWithSaline} onChange={handleChange} />
+                {/* Sign-off */}
+                <div className="form-section">
+                  <h3>Sign-off</h3>
+                  <div className="form-grid">
+                    <InputField label="Dept In-Charge Sign" name="deptInChargeSign" />
+                  </div>
                 </div>
-              </div>
-              <div className="form-field checkbox-group">
-                <label>Closing with:</label>
-                <br />
-                <div className="checkbox-subgroup">
-                  <label htmlFor="closingWithAir">Air</label>
-                  <input id="closingWithAir" type="checkbox" name="closingWithAir" checked={formData.closingWithAir} onChange={handleChange} />
+
+                <div className="form-buttons">
+                  <ButtonWithGradient
+                    type="submit"
+                    className="btn-submit"
+                    disabled={isSubmitting}
+                    text={isSubmitting ? 'Saving...' : 'Submit'}
+                  />
+                  <ButtonWithGradient
+                    type="button"
+                    className="btn-print"
+                    onClick={handlePrint}
+                    disabled={isSubmitting}
+                    text="Print"
+                  />
+                  <ButtonWithGradient
+                    type="button"
+                    className="btn-export-excel"
+                    onClick={() => handleExportExcel(values)}
+                    disabled={isSubmitting}
+                    text="Export to Excel"
+                  />
                 </div>
-                <div className="checkbox-subgroup">
-                  <label htmlFor="closingWithSaline">Saline</label>
-                  <input id="closingWithSaline" type="checkbox" name="closingWithSaline" checked={formData.closingWithSaline} onChange={handleChange} />
-                </div>
-                <small style={{ fontWeight: 'normal' }}>* Use both only when clinically approved</small>
-              </div>
-              <div className="form-field checkbox-group">
-                <div className="checkbox-subgroup">
-                  <label htmlFor="bloodTransfusion">Blood Transfusion</label>
-                  <input id="bloodTransfusion" type="checkbox" name="bloodTransfusion" checked={formData.bloodTransfusion} onChange={handleChange} />
-                </div>
-                {formData.bloodTransfusion && (
-                  <input type="text" name="bloodTransfusionComment" value={formData.bloodTransfusionComment} onChange={handleChange} placeholder="Comment" style={{ marginTop: '0.5rem' }} />
-                )}
-              </div>
-
-              <div className="form-field">
-                <label>Dialysis Monitor Name FO No</label>
-                <input type="text" name="dialysisMonitorNameFO" value={formData.dialysisMonitorNameFO} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Dialysis Name / Size</label>
-                <input type="text" name="dialysisNameSize" value={formData.dialysisNameSize} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Dialysis Number of Refuse</label>
-                <input type="number" name="dialysisNumberOfRefuse" value={formData.dialysisNumberOfRefuse} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Blood Tube Number of Refuse</label>
-                <input type="number" name="bloodTubeNumberOfRefuse" value={formData.bloodTubeNumberOfRefuse} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Dialysis Flow Rate</label>
-                <input type="number" name="dialysisFlowRate" value={formData.dialysisFlowRate} onChange={handleChange} min="0" />
-              </div>
-              <div className="form-field">
-                <label>Bathacetete</label>
-                <input type="text" name="bathacetete" value={formData.bathacetete} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Bath Bicarb</label>
-                <input type="text" name="bathBicarb" value={formData.bathBicarb} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Na / Conductivity</label>
-                <input type="text" name="naConductivity" value={formData.naConductivity} onChange={handleChange} />
-              </div>
-              <div className="form-field">
-                <label>Profiles No</label>
-                <input type="text" name="profilesNo" value={formData.profilesNo} onChange={handleChange} />
-              </div>
-            </div>
-          </div>
-
-          {/* Complaints */}
-          <div className="form-section">
-            <h3>Complaints & Observations</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>Equipments Complaints</label>
-                <textarea name="equipmentsComplaints" value={formData.equipmentsComplaints} onChange={handleChange} rows={4}></textarea>
-              </div>
-              <div className="form-field">
-                <label>Patients Complaints</label>
-                <textarea name="patientsComplaints" value={formData.patientsComplaints} onChange={handleChange} rows={4}></textarea>
-              </div>
-              <div className="form-field checkbox-group">
-                <label>Fever / Rigor:</label>
-                <input type="checkbox" name="fever" checked={formData.fever} onChange={handleChange} />
-                <label>Fever</label>
-                <input type="checkbox" name="rigor" checked={formData.rigor} onChange={handleChange} />
-                <label>Rigor</label>
-              </div>
-              <div className="form-field checkbox-group">
-                <label>Hypertension / Hypoglycemia:</label>
-                <input type="checkbox" name="hypertension" checked={formData.hypertension} onChange={handleChange} />
-                <label>Hypertension</label>
-                <input type="checkbox" name="hypoglycemia" checked={formData.hypoglycemia} onChange={handleChange} />
-                <label>Hypoglycemia</label>
-              </div>
-            </div>
-          </div>
-
-          {/* Sign-off */}
-          <div className="form-section">
-            <h3>Sign-off</h3>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>Dept In-Charge Sign</label>
-                <input type="text" name="deptInChargeSign" value={formData.deptInChargeSign} onChange={handleChange} />
-              </div>
-            </div>
-          </div>
-
-          <div className="form-buttons">
-            <ButtonWithGradient
-              type="submit"
-              className="btn-submit"
-              disabled={submitting}
-              text={submitting ? 'Saving...' : 'Submit'}
-            />
-            <ButtonWithGradient
-              type="button"
-              className="btn-print"
-              onClick={handlePrint}
-              disabled={submitting}
-              text="Print"
-            />
-            <ButtonWithGradient
-              type="button"
-              className="btn-export-excel"
-              onClick={handleExportExcel}
-              disabled={submitting}
-              text="Export to Excel"
-            />
-          </div>
-        </form>
+              </Form>
+            );
+          }}
+        </Formik>
       </div>
     </div>
   );

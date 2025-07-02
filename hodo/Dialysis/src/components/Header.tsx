@@ -15,7 +15,7 @@ interface HeaderProps {
     showCalculator?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDate = true, showTime = true, showCalculator = true }) => {
+const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDate = true, showTime = true, showCalculator = false }) => {
 
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { scheduleApi } from '../api/scheduleApi';
-import { patientsApi } from '../api/patientsApi';
 import type { Patient, ScheduleEntry, StaffData } from '../types';
 import './Schedule.css';
 import Footer from '../components/Footer';
@@ -15,7 +14,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
 import { SelectField, DateField, TimeField, TextareaField } from '../components/forms';
-
+import { useDialysis } from '../context/DialysisContext';
 
 interface ScheduleFormValues {
   patientId: string;
@@ -38,14 +37,11 @@ const validationSchema = Yup.object({
 });
 
 const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const [schedules, setSchedules] = useState<ScheduleEntry[]>([]);
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const { appointments: schedules, patients, refreshAppointments, refreshPatients } = useDialysis();
   const [staff, setStaff] = useState<StaffData>({ technicians: [], doctors: [], units: [] });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
   const [schedulesSearch, setSchedulesSearch] = useState<string>('');
-  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  // const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
   // Pagination state for schedules
   const [schedulesPage, setSchedulesPage] = useState(1);
@@ -53,22 +49,9 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
   const schedulesTotalPages = Math.ceil(schedules.length / schedulesRowsPerPage);
   const paginatedSchedules = schedules.slice((schedulesPage - 1) * schedulesRowsPerPage, schedulesPage * schedulesRowsPerPage);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [schedulesData, patientsData, staffData] = await Promise.all([
-          scheduleApi.getAllSchedules(),
-          patientsApi.getAllPatients(),
-          scheduleApi.getStaff()
-        ]);
-        setSchedules(schedulesData);
-        setPatients(patientsData);
-        setStaff(staffData);
-      } catch (err) {
-        setError('Failed to load data. Please try again.');
-      }
-    };
-    fetchData();
+  React.useEffect(() => {
+    // Only fetch staff data, not patients or schedules
+    scheduleApi.getStaff().then(setStaff).catch(() => setError('Failed to fetch staff'));
   }, []);
 
   const initialValues: ScheduleFormValues = {
@@ -96,7 +79,8 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
       await scheduleApi.createSchedule(newSchedule);
       setSuccess(true);
       resetForm();
-      setSchedules(await scheduleApi.getAllSchedules());
+      await refreshAppointments();
+      await refreshPatients();
       setTimeout(() => setSuccess(false), 2000);
     } catch {
       setError('Failed to add schedule');
@@ -176,159 +160,152 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
 
   return (
     <>
-      {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
-        <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-        {/* <div className="main-container" style={{ height: '100%' }}> */}
-        <PageContainer>
-          {/* <div style={{ width: '100%', padding: '10px',marginTop: '-20px' }}> */}
-          <SectionHeading title="Schedule" subtitle="Manage and view dialysis appointments" />
-          {/* </div> */}
-          <Row className="mb-4">
-            <Col>
-              <Card className="shadow-sm">
-                <Card.Body>
-                  <h2 className="home-title mb-4">Schedule Dialysis Session</h2>
-                  {success && (
-                    <div className="alert alert-success">
-                      Session scheduled successfully!
-                    </div>
+      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <PageContainer>
+        <SectionHeading title="Schedule" subtitle="Manage and view dialysis appointments" />
+        <Row className="mb-4">
+          <Col>
+            <Card className="shadow-sm">
+              <Card.Body>
+                <h2 className="home-title mb-4">Schedule Dialysis Session</h2>
+                {success && (
+                  <div className="alert alert-success">
+                    Session scheduled successfully!
+                  </div>
+                )}
+                {error && (
+                  <div className="alert alert-danger">
+                    {error}
+                  </div>
+                )}
+                <Formik
+                  initialValues={initialValues}
+                  validationSchema={validationSchema}
+                  onSubmit={handleSubmit}
+                >
+                  {({ isSubmitting }) => (
+                    <Form>
+                      <Row>
+                        <Col md={6} className="mb-3">
+                          <SelectField
+                            label="Patient"
+                            name="patientId"
+                            options={patients.map(p => ({
+                              label: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim(),
+                              value: p.id?.toString() || ''
+                            }))}
+                            placeholder="Select Patient"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <SelectField
+                            label="Dialysis Unit"
+                            name="dialysisUnit"
+                            options={staff.units.map(unit => ({
+                              label: unit,
+                              value: unit
+                            }))}
+                            placeholder="Select Unit"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <SelectField
+                            label="Technician"
+                            name="technician"
+                            options={staff.technicians.map(tech => ({
+                              label: tech,
+                              value: tech
+                            }))}
+                            placeholder="Select Technician"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <SelectField
+                            label="Admitting Doctor"
+                            name="admittingDoctor"
+                            options={staff.doctors.map(doc => ({
+                              label: doc,
+                              value: doc
+                            }))}
+                            placeholder="Select Doctor"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <DateField
+                            label="Date"
+                            name="date"
+                            required
+                          />
+                        </Col>
+                        <Col md={6} className="mb-3">
+                          <TimeField
+                            label="Time"
+                            name="time"
+                            required
+                          />
+                        </Col>
+                        <Col md={12} className="mb-3">
+                          <TextareaField
+                            label="Remarks"
+                            name="remarks"
+                            placeholder="Enter any additional remarks..."
+                            rows={3}
+                          />
+                        </Col>
+                        <Col md={12}>
+                          <ButtonWithGradient
+                            type="submit"
+                            disabled={isSubmitting}
+                            text={isSubmitting ? 'Scheduling...' : 'Schedule Session'}
+                          />
+                        </Col>
+                      </Row>
+                    </Form>
                   )}
-                  {error && (
-                    <div className="alert alert-danger">
-                      {error}
-                    </div>
-                  )}
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                  >
-                    {({ isSubmitting }) => (
-                      <Form>
-                        <Row>
-                          <Col md={6} className="mb-3">
-                            <SelectField
-                              label="Patient"
-                              name="patientId"
-                              options={patients.map(p => ({
-                                label: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim(),
-                                value: p.id?.toString() || ''
-                              }))}
-                              placeholder="Select Patient"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <SelectField
-                              label="Dialysis Unit"
-                              name="dialysisUnit"
-                              options={staff.units.map(unit => ({
-                                label: unit,
-                                value: unit
-                              }))}
-                              placeholder="Select Unit"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <SelectField
-                              label="Technician"
-                              name="technician"
-                              options={staff.technicians.map(tech => ({
-                                label: tech,
-                                value: tech
-                              }))}
-                              placeholder="Select Technician"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <SelectField
-                              label="Admitting Doctor"
-                              name="admittingDoctor"
-                              options={staff.doctors.map(doc => ({
-                                label: doc,
-                                value: doc
-                              }))}
-                              placeholder="Select Doctor"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <DateField
-                              label="Date"
-                              name="date"
-                              required
-                            />
-                          </Col>
-                          <Col md={6} className="mb-3">
-                            <TimeField
-                              label="Time"
-                              name="time"
-                              required
-                            />
-                          </Col>
-                          <Col md={12} className="mb-3">
-                            <TextareaField
-                              label="Remarks"
-                              name="remarks"
-                              placeholder="Enter any additional remarks..."
-                              rows={3}
-                            />
-                          </Col>
-                          <Col md={12}>
-                            {/* <button type="submit" className="btn btn-primary" disabled={isSubmitting}> */}
-                            <ButtonWithGradient
-                              type="submit"
-                              disabled={isSubmitting}
-                              text={isSubmitting ? 'Scheduling...' : 'Schedule Session'}
-                            />
-                          </Col>
-                        </Row>
-                      </Form>
-                    )}
-                  </Formik>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+                </Formik>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
 
-          <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div className='dashboard-table-heading'>
-              Scheduled Sessions: {getFilteredSchedulesData().length}
-              <div className="dashboard-table-search">
-                <Searchbar 
-                  value={schedulesSearch}
-                  onChange={handleSchedulesSearch}
-                />
-              </div>
+        <div className="table-container" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div className='dashboard-table-heading'>
+            Scheduled Sessions: {getFilteredSchedulesData().length}
+            <div className="dashboard-table-search">
+              <Searchbar 
+                value={schedulesSearch}
+                onChange={handleSchedulesSearch}
+              />
             </div>
-            <Table
-              columns={[
-                { key: 'patientName', header: 'Patient' },
-                { key: 'date', header: 'Date' },
-                { key: 'time', header: 'Time' },
-                { key: 'dialysisUnit', header: 'Unit' },
-                { key: 'technician', header: 'Technician' },
-                { key: 'admittingDoctor', header: 'Doctor' },
-                { key: 'status', header: 'Status' },
-              ]}
-              data={getFilteredSchedulesData().map(schedule => ({
-                id: schedule.id,
-                patientName: schedule.patientName,
-                date: schedule.date,
-                time: schedule.time,
-                dialysisUnit: schedule.dialysisUnit,
-                technician: schedule.technician,
-                admittingDoctor: schedule.admittingDoctor,
-                status: schedule.status,
-              }))}
-            />
           </div>
-          {/* </div> */}
-        </PageContainer>
-        <Footer />
-      {/* </Container> */}
+          <Table
+            columns={[
+              { key: 'patientName', header: 'Patient' },
+              { key: 'date', header: 'Date' },
+              { key: 'time', header: 'Time' },
+              { key: 'dialysisUnit', header: 'Unit' },
+              { key: 'technician', header: 'Technician' },
+              { key: 'admittingDoctor', header: 'Doctor' },
+              { key: 'status', header: 'Status' },
+            ]}
+            data={getFilteredSchedulesData().map(schedule => ({
+              id: schedule.id,
+              patientName: schedule.patientName,
+              date: schedule.date,
+              time: schedule.time,
+              dialysisUnit: schedule.dialysisUnit,
+              technician: schedule.technician,
+              admittingDoctor: schedule.admittingDoctor,
+              status: schedule.status,
+            }))}
+          />
+        </div>
+      </PageContainer>
+      <Footer />
     </>
   );
 };

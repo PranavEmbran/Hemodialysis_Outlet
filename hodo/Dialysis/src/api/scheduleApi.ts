@@ -1,5 +1,5 @@
 import { API_URL } from '../config';
-import { ScheduleEntry, StaffData } from '../types';
+import type { ScheduleEntry, StaffData } from '../types';
 
 interface Schedule {
   id?: number;
@@ -62,7 +62,7 @@ export const scheduleApi = {
     return response.json();
   },
 
-  async getScheduleById(id: number): Promise<Schedule> {
+  async getScheduleById(id: string | number): Promise<Schedule> {
     try {
       return await fetchWithRetry(`${API_URL}/appointments/${id}`);
     } catch (error) {
@@ -81,7 +81,7 @@ export const scheduleApi = {
     return response.json();
   },
 
-  async updateSchedule(id: number, scheduleData: Partial<Schedule>): Promise<Schedule> {
+  async updateSchedule(id: string | number, scheduleData: Partial<Schedule>): Promise<Schedule> {
     try {
       return await fetchWithRetry(`${API_URL}/appointments/${id}`, {
         method: 'PUT',
@@ -93,7 +93,7 @@ export const scheduleApi = {
     }
   },
 
-  async deleteSchedule(id: number): Promise<boolean> {
+  async deleteSchedule(id: string | number): Promise<boolean> {
     try {
       await fetchWithRetry(`${API_URL}/appointments/${id}`, {
         method: 'DELETE',

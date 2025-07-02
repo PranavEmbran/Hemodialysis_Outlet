@@ -77,6 +77,72 @@ router.post('/patients', (req: Request, res: Response) => {
   }
 });
 
+// Get patient by ID
+router.get('/patients/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const patient = db.patients.find((p: any) => p.id === id);
+    if (patient) {
+      res.json(patient);
+    } else {
+      res.status(404).json({ error: 'Patient not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching patient:', error);
+    res.status(500).json({ error: 'Failed to fetch patient' });
+  }
+});
+
+// Update patient by ID
+router.put('/patients/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const index = db.patients.findIndex((p: any) => p.id === id);
+    if (index !== -1) {
+      // Update the patient data while preserving the ID
+      const updatedPatient = {
+        ...db.patients[index],
+        ...req.body,
+        id: id // Ensure ID is preserved
+      };
+      
+      db.patients[index] = updatedPatient;
+      writeDatabase(db);
+      
+      res.json(updatedPatient);
+    } else {
+      res.status(404).json({ error: 'Patient not found' });
+    }
+  } catch (error) {
+    console.error('Error updating patient:', error);
+    res.status(500).json({ error: 'Failed to update patient' });
+  }
+});
+
+// Delete patient by ID
+router.delete('/patients/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const index = db.patients.findIndex((p: any) => p.id === id);
+    if (index !== -1) {
+      db.patients.splice(index, 1);
+      writeDatabase(db);
+      res.json({ message: `Patient ${id} deleted successfully` });
+    } else {
+      res.status(404).json({ error: 'Patient not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting patient:', error);
+    res.status(500).json({ error: 'Failed to delete patient' });
+  }
+});
+
 // Billing endpoints
 router.get('/billing', (req: Request, res: Response) => {
   try {
@@ -210,6 +276,72 @@ router.post('/schedules', (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error adding schedule:', error);
     res.status(500).json({ error: 'Failed to add schedule' });
+  }
+});
+
+// Get appointment by ID
+router.get('/appointments/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const appointment = db.appointments.find((a: any) => a.id === id);
+    if (appointment) {
+      res.json(appointment);
+    } else {
+      res.status(404).json({ error: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching appointment:', error);
+    res.status(500).json({ error: 'Failed to fetch appointment' });
+  }
+});
+
+// Update appointment by ID
+router.put('/appointments/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const index = db.appointments.findIndex((a: any) => a.id === id);
+    if (index !== -1) {
+      // Update the appointment data while preserving the ID
+      const updatedAppointment = {
+        ...db.appointments[index],
+        ...req.body,
+        id: id // Ensure ID is preserved
+      };
+      
+      db.appointments[index] = updatedAppointment;
+      writeDatabase(db);
+      
+      res.json(updatedAppointment);
+    } else {
+      res.status(404).json({ error: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    res.status(500).json({ error: 'Failed to update appointment' });
+  }
+});
+
+// Delete appointment by ID
+router.delete('/appointments/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const index = db.appointments.findIndex((a: any) => a.id === id);
+    if (index !== -1) {
+      db.appointments.splice(index, 1);
+      writeDatabase(db);
+      res.json({ message: `Appointment ${id} deleted successfully` });
+    } else {
+      res.status(404).json({ error: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting appointment:', error);
+    res.status(500).json({ error: 'Failed to delete appointment' });
   }
 });
 

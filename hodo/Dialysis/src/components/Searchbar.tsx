@@ -2,6 +2,8 @@
 import React from 'react';
 import '../styles/searchbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaSearch } from 'react-icons/fa';
+
 
 interface SearchbarProps {
   value: string;
@@ -18,7 +20,8 @@ const Searchbar: React.FC<SearchbarProps> = ({ value, onChange }) => {
         value={value}
         onChange={onChange}
       />
-      <i className="fa-solid fa-magnifying-glass search-icon"></i>
+      {/* <i className="fa-solid fa-magnifying-glass search-icon"></i> */}
+      <FaSearch className="search-icon" />
     </div>
 
   );

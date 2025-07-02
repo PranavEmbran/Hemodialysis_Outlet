@@ -65,3 +65,33 @@
       padding: 8px;
     }
   }
+
+.status-badge {
+    display: inline-flex;
+    padding: 5px;
+    width: fit-content;
+    max-height: fit-content;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.status-badge.scheduled {
+  background-color: #ffffff;
+  color: rgb(80, 78, 78); 
+  border: 1px solid rgb(97, 95, 95); 
+}

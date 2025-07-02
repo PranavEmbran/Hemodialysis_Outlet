@@ -13,6 +13,7 @@ import { Row, Col, Container } from 'react-bootstrap';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import img1 from '../assets/patient1.png';
 import { InputField, SelectField, DateField } from '../components/forms';
+import { useDialysis } from '../context/DialysisContext';
 
 interface PatientFormValues {
   firstName: string;
@@ -43,8 +44,7 @@ const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  // const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
+  const { refreshPatients } = useDialysis();
 
   const handleSubmit = async (values: PatientFormValues, { resetForm }: FormikHelpers<PatientFormValues>) => {
     try {
@@ -60,6 +60,7 @@ const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: 
         setSuccess(true);
         setError('');
         resetForm();
+        await refreshPatients();
         setTimeout(() => setSuccess(false), 3000);
       }
     } catch (err) {
