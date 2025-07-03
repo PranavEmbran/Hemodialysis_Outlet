@@ -233,6 +233,11 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     let filteredAppointments = [...appointments];
     let filteredHistory = [...history];
 
+    // Filter out soft-deleted records
+    filteredPatients = filteredPatients.filter(p => p.isDeleted === 10);
+    filteredAppointments = filteredAppointments.filter(a => a.isDeleted === 10);
+    filteredHistory = filteredHistory.filter(h => h.isDeleted === 10);
+
     // Apply date range filter
     if (fromDate) {
       filteredAppointments = filteredAppointments.filter(apt => apt.date >= fromDate);

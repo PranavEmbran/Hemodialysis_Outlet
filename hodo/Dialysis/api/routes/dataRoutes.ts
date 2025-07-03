@@ -222,12 +222,11 @@ router.post('/schedule', (req: Request, res: Response) => {
     const db = readDatabase();
     const schedule = {
       ...req.body,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      isDeleted: 10 // Ensure isDeleted is always set
     };
-
     db.appointments.push(schedule);
     writeDatabase(db);
-
     res.status(201).json(schedule);
   } catch (error) {
     console.error('Error adding schedule:', error);
@@ -235,18 +234,17 @@ router.post('/schedule', (req: Request, res: Response) => {
   }
 });
 
-// Add the /schedules POST endpoint (plural) for frontend compatibility
+// Add or update the POST /schedules endpoint
 router.post('/schedules', (req: Request, res: Response) => {
   try {
     const db = readDatabase();
     const schedule = {
       ...req.body,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      isDeleted: 10 // Ensure isDeleted is always set
     };
-
     db.appointments.push(schedule);
     writeDatabase(db);
-
     res.status(201).json(schedule);
   } catch (error) {
     console.error('Error adding schedule:', error);

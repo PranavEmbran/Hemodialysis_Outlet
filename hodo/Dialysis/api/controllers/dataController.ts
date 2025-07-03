@@ -130,6 +130,44 @@ function normalizeDateString(date: string): string {
   return date;
 }
 
+// Utility: Normalize isDeleted field for all records in all tables (set to 10 if missing)
+export function normalizeIsDeletedFields(db: Database) {
+  const ensureIsDeleted = (arr: any[]) =>
+    arr.map(item =>
+      typeof item.isDeleted === 'undefined' ? { ...item, isDeleted: 10 } : item
+    );
+  if (db.patients) db.patients = ensureIsDeleted(db.patients);
+  if (db.appointments) db.appointments = ensureIsDeleted(db.appointments);
+  if (db.history) db.history = ensureIsDeleted(db.history);
+  if (db.billing) db.billing = ensureIsDeleted(db.billing);
+  if (db.dialysisFlowCharts) db.dialysisFlowCharts = ensureIsDeleted(db.dialysisFlowCharts);
+  if (db.haemodialysisRecords) db.haemodialysisRecords = ensureIsDeleted(db.haemodialysisRecords);
+}
+
+// Utility: Cascade soft-delete or hard-delete for all related records by patientId
+function cascadeDeleteByPatientId(db: Database, patientId: string, softDelete = true) {
+  // Mark as deleted if either patientId or id matches
+  const markDeleted = (arr: any[]) =>
+    arr.map(item =>
+      (item.patientId === patientId || item.id === patientId)
+        ? { ...item, isDeleted: 0 }
+        : item
+    );
+  if (softDelete) {
+    if (db.appointments) db.appointments = markDeleted(db.appointments);
+    if (db.history) db.history = markDeleted(db.history);
+    if (db.billing) db.billing = markDeleted(db.billing);
+    if (db.dialysisFlowCharts) db.dialysisFlowCharts = markDeleted(db.dialysisFlowCharts);
+    if (db.haemodialysisRecords) db.haemodialysisRecords = markDeleted(db.haemodialysisRecords);
+  } else {
+    if (db.appointments) db.appointments = db.appointments.filter(item => item.patientId !== patientId && item.id !== patientId);
+    if (db.history) db.history = db.history.filter(item => item.patientId !== patientId && item.id !== patientId);
+    if (db.billing) db.billing = db.billing.filter(item => item.patientId !== patientId && item.id !== patientId);
+    if (db.dialysisFlowCharts) db.dialysisFlowCharts = db.dialysisFlowCharts.filter(item => item.patientId !== patientId && item.id !== patientId);
+    if (db.haemodialysisRecords) db.haemodialysisRecords = db.haemodialysisRecords.filter(item => item.patientId !== patientId && item.id !== patientId);
+  }
+}
+
 // Patients
 export const getPatients = (req: Request, res: Response): any => {
   try {
@@ -230,6 +268,8 @@ export const deletePatient = (req: Request, res: Response): any => {
     }
 
     const db = readDB();
+    // Ensure all records have isDeleted field before operation
+    normalizeIsDeletedFields(db);
     const patientIndex = db.patients.findIndex(p => p.id === patientId);
     
     if (patientIndex === -1) {
@@ -239,10 +279,13 @@ export const deletePatient = (req: Request, res: Response): any => {
 
     // Soft delete: set isDeleted to 0 instead of removing the record
     db.patients[patientIndex].isDeleted = 0;
-
+    // Cascade soft delete to all related tables
+    cascadeDeleteByPatientId(db, patientId, true);
+    // Ensure all records have isDeleted field after operation
+    normalizeIsDeletedFields(db);
     writeDB(db);
-    console.log('Successfully soft deleted patient:', patientId);
-    return res.status(200).json({ message: 'Patient soft deleted successfully' });
+    console.log('Successfully soft deleted patient and related records:', patientId);
+    return res.status(200).json({ message: 'Patient and related records soft deleted successfully' });
   } catch (error) {
     console.error('Error in deletePatient:', error);
     return res.status(500).json({ 
@@ -307,7 +350,7 @@ export const addAppointment = (req: Request, res: Response): any => {
   try {
     console.log('Adding new appointment:', req.body);
     const db = readDB();
-    const newAppointment: Appointment = { id: Date.now().toString(), ...req.body };
+    const newAppointment: Appointment = { id: Date.now().toString(), ...req.body, isDeleted: 10 };
     db.appointments.push(newAppointment);
     writeDB(db);
     console.log('Successfully added new appointment:', newAppointment);
@@ -326,9 +369,20 @@ export const deleteAppointment = (req: Request, res: Response): any => {
     const appointmentId = req.params.id;
     console.log('Deleting appointment with ID:', appointmentId);
     const db = readDB();
+    // Find the appointment to get patientId
+    const appointment = db.appointments.find(a => a.id === appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    const patientId = appointment.patientId;
+    // Remove the appointment
     db.appointments = db.appointments.filter(a => a.id !== appointmentId);
+    // Remove all related history records for this patientId (optional: could filter by appointmentId if present)
+    if (patientId) {
+      db.history = db.history.filter(h => h.patientId !== patientId);
+    }
     writeDB(db);
-    console.log('Successfully deleted appointment:', appointmentId);
+    console.log('Successfully deleted appointment and related history:', appointmentId);
     return res.status(204).end();
   } catch (error) {
     console.error('Error in deleteAppointment:', error);
@@ -360,7 +414,7 @@ export const addBilling = (req: Request, res: Response): any => {
   try {
     console.log('Adding new billing record:', req.body);
     const db = readDB();
-    const newBilling: Billing = { id: Date.now().toString(), ...req.body };
+    const newBilling: Billing = { id: Date.now().toString(), ...req.body, isDeleted: 10 };
     db.billing.push(newBilling);
     writeDB(db);
     console.log('Successfully added new billing record:', newBilling);
@@ -413,7 +467,7 @@ export const addHistory = (req: Request, res: Response): any => {
   try {
     console.log('Adding new history record:', req.body);
     const db = readDB();
-    const newHistory: History = { id: Date.now().toString(), ...req.body };
+    const newHistory: History = { id: Date.now().toString(), ...req.body, isDeleted: 10 };
     db.history.push(newHistory);
     writeDB(db);
     console.log('Successfully added new history record:', newHistory);
@@ -487,7 +541,8 @@ export const addDialysisFlowChart = (req: Request, res: Response): any => {
     const db = readDB();
     const newDialysisFlowChart: DialysisFlowChart = { 
       id: Date.now().toString(), 
-      ...req.body 
+      ...req.body,
+      isDeleted: 10
     };
     db.dialysisFlowCharts.push(newDialysisFlowChart);
     writeDB(db);

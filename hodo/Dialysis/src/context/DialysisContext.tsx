@@ -3,6 +3,7 @@ import type { Patient, ScheduleEntry, History } from '../types';
 import { patientServiceFactory } from '../services/patient/factory';
 import { scheduleServiceFactory } from '../services/schedule/factory';
 import { historyServiceFactory } from '../services/history/factory';
+import { toast } from 'react-toastify';
 
 interface DialysisContextType {
   // State
@@ -26,12 +27,19 @@ interface DialysisContextType {
   refreshPatients: () => Promise<void>;
   refreshAppointments: () => Promise<void>;
   refreshHistory: () => Promise<void>;
+  deletePatientAndCascade: (patientId: string) => Promise<void>;
+  deleteAppointmentAndCascade: (appointmentId: string, patientId?: string) => Promise<void>;
 }
 
 const DialysisContext = createContext<DialysisContextType | undefined>(undefined);
 
 interface DialysisProviderProps {
   children: ReactNode;
+}
+
+// Utility: Normalize isDeleted field for all records in all arrays (set to 10 if missing)
+function normalizeIsDeletedArray<T extends { isDeleted?: number }>(arr: T[]): T[] {
+  return arr.map(item => typeof item.isDeleted === 'undefined' ? { ...item, isDeleted: 10 } : item);
 }
 
 export function DialysisProvider({ children }: DialysisProviderProps) {
@@ -46,20 +54,18 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     try {
       setLoading(true);
       setError('');
-
       const patientService = patientServiceFactory.getService();
       const scheduleService = scheduleServiceFactory.getService();
       const historyService = historyServiceFactory.getService();
-
       const [patientsData, appointmentsData, historyData] = await Promise.all([
         patientService.getAllPatients(),
         scheduleService.getAllSchedules(),
         historyService.getAllHistory()
       ]);
-
-      setPatients(patientsData);
-      setAppointments(appointmentsData);
-      setHistory(historyData);
+      // Normalize isDeleted field for all records
+      setPatients(normalizeIsDeletedArray(patientsData));
+      setAppointments(normalizeIsDeletedArray(appointmentsData));
+      setHistory(normalizeIsDeletedArray(historyData));
     } catch (err) {
       console.error('Error loading data:', err);
       setError('Failed to load data. Please check your connection.');
@@ -209,11 +215,61 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     }
   }, []);
 
+  // Delete patient and cascade in frontend state
+  const deletePatientAndCascade = useCallback(async (patientId: string) => {
+    try {
+      setLoading(true);
+      setError('');
+      const patientService = patientServiceFactory.getService();
+      await patientService.deletePatient(patientId);
+      // Soft delete patient and cascade to related records in state (always set isDeleted: 0)
+      setPatients(prev => prev.map(p => p.id === patientId ? { ...p, isDeleted: 0 } : p));
+      setAppointments(prev => prev.map(a => a.patientId === patientId ? { ...a, isDeleted: 0 } : a));
+      setHistory(prev => prev.map(h => h.patientId === patientId ? { ...h, isDeleted: 0 } : h));
+      toast.success('Patient and related records deleted successfully!');
+      // Always reload all data from backend to ensure appointments state is up-to-date
+      await loadAllData();
+    } catch (err) {
+      setError('Failed to delete patient. Please try again.');
+      toast.error('Failed to delete patient.');
+      await loadAllData();
+    } finally {
+      setLoading(false);
+    }
+  }, [loadAllData]);
+
+  // Delete appointment and cascade in frontend state
+  const deleteAppointmentAndCascade = useCallback(async (appointmentId: string, patientId?: string) => {
+    try {
+      setLoading(true);
+      setError('');
+      const scheduleService = scheduleServiceFactory.getService();
+      await scheduleService.deleteSchedule(appointmentId);
+      // Soft delete appointment and related history in state
+      setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, isDeleted: 0 } : a));
+      if (patientId) {
+        setHistory(prev => prev.map(h => h.patientId === patientId ? { ...h, isDeleted: 0 } : h));
+      }
+      toast.success('Appointment and related history deleted successfully!');
+    } catch (err) {
+      setError('Failed to delete appointment. Please try again.');
+      toast.error('Failed to delete appointment.');
+      await loadAllData();
+    } finally {
+      setLoading(false);
+    }
+  }, [loadAllData]);
+
+  // Selectors: Only return active (not soft-deleted) records
+  const visiblePatients = patients.filter(p => p.isDeleted === 10);
+  const visibleAppointments = appointments.filter(a => a.isDeleted === 10);
+  const visibleHistory = history.filter(h => h.isDeleted === 10);
+
   const value: DialysisContextType = {
-    // State
-    patients,
-    appointments,
-    history,
+    // State (expose only visible records)
+    patients: visiblePatients,
+    appointments: visibleAppointments,
+    history: visibleHistory,
     loading,
     error,
     
@@ -231,6 +287,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     refreshPatients,
     refreshAppointments,
     refreshHistory,
+    deletePatientAndCascade,
+    deleteAppointmentAndCascade,
   };
 
   return (
