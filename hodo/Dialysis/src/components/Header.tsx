@@ -5,6 +5,8 @@ import leftarrow from '../assets/lefthand.png'
 import rightarrow from '../assets/righthand.png'
 // import { Calendar, Clock, Calculator } from 'lucide-react';
 import { FaCalculator, FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 
 interface HeaderProps {
@@ -15,7 +17,7 @@ interface HeaderProps {
     showCalculator?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDate = true, showTime = true, showCalculator = false }) => {
+const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDate = true, showTime = true, showCalculator = true }) => {
 
     const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -80,7 +82,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarCollapsed, toggleSidebar, showDa
                         {showCalculator && (
                             <div className="icon-item">
                                 {/* <i className="header-icon fa-solid fa-calculator"></i> */}
-                                <FaCalculator className="header-icon" />
+                                {/* <FaCalculator className="header-icon" /> */}
+                                <FontAwesomeIcon className="header-icon" icon={faCalculator} style={{color: "#000000", fontSize: "16px", padding: "2px", borderRadius: "7px" }} />
                             </div>
                         )}
                     </div>

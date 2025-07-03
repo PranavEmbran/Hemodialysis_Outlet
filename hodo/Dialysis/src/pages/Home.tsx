@@ -1,9 +1,11 @@
 // import React, { useState, useEffect, ChangeEvent } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
 
 import { FaUserInjured, FaProcedures, FaCalendarAlt } from 'react-icons/fa';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import Footer from '../components/Footer';
@@ -20,7 +22,8 @@ import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
 import EditModal from '../components/EditModal';
 import { patientFormConfig, appointmentFormConfig } from '../components/forms/formConfigs';
-import { useDialysis } from '../context/DialysisContext';
+import { patientServiceFactory } from '../services/patient/factory';
+import { scheduleServiceFactory } from '../services/schedule/factory';
 
 
 interface Stat {
@@ -37,17 +40,12 @@ interface FilteredData {
 }
 
 const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  // Use centralized state from context
-  const { 
-    patients, 
-    appointments, 
-    history, 
-    loading, 
-    error, 
-    updatePatient, 
-    updateAppointment, 
-    refreshAllData 
-  } = useDialysis();
+  // Local state management
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<ScheduleEntry[]>([]);
+  const [history, setHistory] = useState<History[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   // Filter states
   const [fromDate, setFromDate] = useState<string>('');
@@ -76,6 +74,80 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   const [editingData, setEditingData] = useState<Patient | ScheduleEntry | null>(null);
   const [editingDataType, setEditingDataType] = useState<'patient' | 'appointment'>('patient');
   const [editLoading, setEditLoading] = useState<boolean>(false);
+
+  // Service instances
+  const patientService = patientServiceFactory.getService();
+  const scheduleService = scheduleServiceFactory.getService();
+
+  // Load all data from services
+  const loadAllData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const [patientsData, appointmentsData] = await Promise.all([
+        patientService.getAllPatients(),
+        scheduleService.getAllSchedules(),
+      ]);
+
+      setPatients(patientsData);
+      setAppointments(appointmentsData);
+      // Note: History is not implemented in services yet, so we'll keep it empty for now
+      setHistory([]);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
+  }, [patientService, scheduleService]);
+
+  // Refresh all data
+  const refreshAllData = useCallback(async () => {
+    await loadAllData();
+  }, [loadAllData]);
+
+  // Update patient
+  const updatePatient = useCallback(async (patientId: string, updatedData: Partial<Patient>) => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const updatedPatient = await patientService.updatePatient(patientId, updatedData);
+      
+      // Update local state
+      setPatients(prevPatients => 
+        prevPatients.map(p => p.id === patientId ? updatedPatient : p)
+      );
+
+    } catch (err) {
+      console.error('Error updating patient:', err);
+      setError('Failed to update patient. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [patientService]);
+
+  // Update appointment
+  const updateAppointment = useCallback(async (appointmentId: string, updatedData: Partial<ScheduleEntry>) => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const updatedAppointment = await scheduleService.updateSchedule(appointmentId, updatedData);
+      
+      // Update local state
+      setAppointments(prevAppointments =>
+        prevAppointments.map(a => a.id === appointmentId ? updatedAppointment : a)
+      );
+
+    } catch (err) {
+      console.error('Error updating appointment:', err);
+      setError('Failed to update appointment. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [scheduleService]);
 
   // Reset page when filters or rows per page change
   useEffect(() => {
@@ -311,8 +383,47 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     }
   };
 
-  const handleDelete = (id: string | number) => {
-    console.log('Delete', id);
+  const handleDelete = async (id: string | number, dataType: 'patient' | 'appointment') => {
+    // Get the name of the item being deleted for confirmation message
+    let itemName = '';
+    if (dataType === 'patient') {
+      const patient = patients.find(p => p.id === id);
+      itemName = patient ? `${patient.firstName || patient.name} ${patient.lastName || ''}`.trim() : 'this patient';
+    } else {
+      const appointment = appointments.find(a => a.id === id);
+      itemName = appointment ? appointment.patientName || 'this appointment' : 'this appointment';
+    }
+
+    // Show confirmation dialog
+    const isConfirmed = window.confirm(
+      `Are you sure you want to delete ${itemName}? This action cannot be undone.`
+    );
+
+    if (!isConfirmed) {
+      return; // User cancelled the deletion
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+
+      if (dataType === 'patient') {
+        await patientService.softDeletePatient(id);
+        // Remove from local state
+        setPatients(prevPatients => prevPatients.filter(p => p.id !== id));
+      } else {
+        await scheduleService.softDeleteSchedule(id);
+        // Remove from local state
+        setAppointments(prevAppointments => prevAppointments.filter(a => a.id !== id));
+      }
+
+      console.log(`Soft deleted ${dataType} with ID:`, id);
+    } catch (err) {
+      console.error(`Error soft deleting ${dataType}:`, err);
+      setError(`Failed to delete ${dataType}. Please try again.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditSubmit = async (values: any) => {
@@ -412,6 +523,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   return (
     <>
       {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
+
         <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
         <PageContainer>
           {/* <div className="main-container"> */}
@@ -457,10 +569,10 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                   dateOfBirth: p.dateOfBirth,
                   lastVisit: lastVisit ? lastVisit.date : 'No visits',
                   action: (
-                    <>
-                      <EditButton onClick={() => handleEdit(p.id ?? '', 'patient')} id={p.id ?? ''} />
-                      <DeleteButton onClick={() => handleDelete(p.id ?? '')} id={p.id ?? ''} />
-                    </>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                      <EditButton onClick={() => handleEdit(p.id ?? '', 'patient')} />
+                      <DeleteButton onClick={() => handleDelete(p.id ?? '', 'patient')} />
+                    </div>
                   ),
                 };
               })}
@@ -505,10 +617,10 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                   </span>
                 ),
                 action: (
-                  <>
-                    <EditButton onClick={() => handleEdit(apt.id ?? '', 'appointment')} id={apt.id ?? ''} />
-                    <DeleteButton onClick={() => handleDelete(apt.id ?? '')} id={apt.id ?? ''} />
-                  </>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <EditButton onClick={() => handleEdit(apt.id ?? '', 'appointment')} />
+                    <DeleteButton onClick={() => handleDelete(apt.id ?? '', 'appointment')} />
+                  </div>
                 ),
               }))}
             />

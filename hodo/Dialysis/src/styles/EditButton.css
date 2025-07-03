@@ -1,8 +1,0 @@
-.btn-outline-primary,
-.btn-outline-primary:hover,
-.btn-outline-primary:focus,
-.btn-outline-primary:active {
-  border: none;
-  background-color: transparent;
-  box-shadow: none; /* Optional: removes Bootstrap focus outline */
-}

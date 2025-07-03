@@ -1,23 +1,28 @@
 import React from 'react';
-import DeleteIcon from '../assets/delete.png'
-import '../styles/DeleteButton.css';
+import { FaTrash } from 'react-icons/fa';
+import styles from '../styles/DeleteButton.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+
 
 interface DeleteButtonProps {
-  onClick: () => void;
-  id?: string | number;
+  onClick: (e: React.MouseEvent) => void;
+  size?: number;
+  className?: string;
 }
 
-const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick, id }) => {
+const DeleteButton: React.FC<DeleteButtonProps> = ({ 
+  onClick, 
+  size = 14,
+  className = '' 
+}) => {
   return (
     <button
-      type="button"
       onClick={onClick}
-      className="btn btn-sm btn-outline-danger"
-      aria-label={`Delete ${id}`}
-      title="Delete"
+      className={`${styles.deleteButton} ${className}`}
+      aria-label="Delete"
     >
-      {/* Replace this with your custom delete icon later */}
-      <img src={DeleteIcon} alt="Delete" />
+     <FontAwesomeIcon icon={faTrash} style={{color: "#ffffff",}} />
     </button>
   );
 };

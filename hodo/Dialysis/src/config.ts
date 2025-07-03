@@ -1,4 +1,10 @@
 const getApiUrl = (): string => {
+  // Check if VITE_API_URL is set in environment
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback to dynamic URL based on hostname
   const hostname: string = window.location.hostname;
   const port: number = 5000; // API server port
   

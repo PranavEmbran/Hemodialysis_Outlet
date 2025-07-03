@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import html2pdf from 'html2pdf.js';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { billingApi } from '../api/billingApi';
+import { billingServiceFactory } from '../services/billing/factory';
 import './Billing.css';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -48,7 +48,8 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
   const paginatedBills = bills.slice((billsPage - 1) * billsRowsPerPage, billsPage * billsRowsPerPage);
 
   useEffect(() => {
-    billingApi.getAllBills().then(setBills).catch(() => setError('Failed to fetch bills'));
+    const billingService = billingServiceFactory.getService();
+    billingService.getAllBills().then(setBills).catch(() => setError('Failed to fetch bills'));
   }, []);
 
   const initialValues: BillingFormValues = {
@@ -75,10 +76,11 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
       sessionDuration: Number(values.sessionDuration),
     };
     try {
-      await billingApi.addBill(newBill);
+      const billingService = billingServiceFactory.getService();
+      await billingService.addBill(newBill);
       setSuccess(true);
       resetForm();
-      setBills(await billingApi.getAllBills());
+      setBills(await billingService.getAllBills());
       setTimeout(() => setSuccess(false), 2000);
     } catch {
       setError('Failed to add bill');

@@ -3,6 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { generatePatientId } from '../utils/patientIdGenerator';
 import { updatePatientNameReferences } from '../db/dbOperations';
+import { 
+  getPatients, 
+  addPatient, 
+  deletePatient, 
+  restorePatient 
+} from '../controllers/dataController';
 
 const router = express.Router();
 
@@ -48,37 +54,9 @@ router.get('/debug', (req: Request, res: Response) => {
 });
 
 // Patients endpoints
-router.get('/patients', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    res.json(db.patients || []);
-  } catch (error) {
-    console.error('Error fetching patients:', error);
-    res.status(500).json({ error: 'Failed to fetch patients' });
-  }
-});
+router.get('/patients', getPatients);
 
-router.post('/patients', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    // Use catheterInsertionDate as registration date for ID
-    const newPatientId = generatePatientId(req.body.catheterInsertionDate);
-    // Always compute the name field from firstName and lastName
-    const patient = {
-      ...req.body,
-      id: newPatientId,
-      name: `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim()
-    };
-
-    db.patients.push(patient);
-    writeDatabase(db);
-
-    res.status(201).json(patient);
-  } catch (error) {
-    console.error('Error adding patient:', error);
-    res.status(500).json({ error: 'Failed to add patient' });
-  }
-});
+router.post('/patients', addPatient);
 
 // Get patient by ID
 router.get('/patients/:id', (req: Request, res: Response) => {
@@ -134,25 +112,11 @@ router.put('/patients/:id', (req: Request, res: Response) => {
   }
 });
 
-// Delete patient by ID
-router.delete('/patients/:id', (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const db = readDatabase();
-    
-    const index = db.patients.findIndex((p: any) => p.id === id);
-    if (index !== -1) {
-      db.patients.splice(index, 1);
-      writeDatabase(db);
-      res.json({ message: `Patient ${id} deleted successfully` });
-    } else {
-      res.status(404).json({ error: 'Patient not found' });
-    }
-  } catch (error) {
-    console.error('Error deleting patient:', error);
-    res.status(500).json({ error: 'Failed to delete patient' });
-  }
-});
+// Delete patient by ID (soft delete)
+router.delete('/patients/:id', deletePatient);
+
+// Restore soft-deleted patient
+router.post('/patients/:id/restore', restorePatient);
 
 // Billing endpoints
 router.get('/billing', (req: Request, res: Response) => {

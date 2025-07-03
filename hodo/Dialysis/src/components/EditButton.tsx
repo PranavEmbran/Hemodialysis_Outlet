@@ -1,24 +1,26 @@
 import React from 'react';
-import EditIcon from '../assets/edit.png'
-import '../styles/EditButton.css';
-
+import styles from '../styles/EditButton.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 interface EditButtonProps {
-  onClick: () => void;
-  id?: string | number;
+  onClick: (e: React.MouseEvent) => void;
+  size?: number;
+  className?: string;
 }
 
-const EditButton: React.FC<EditButtonProps> = ({ onClick, id }) => {
+const EditButton: React.FC<EditButtonProps> = ({ 
+  onClick, 
+  size = 14,
+  className = '' 
+}) => {
   return (
     <button
-      type="button"
       onClick={onClick}
-      className="btn btn-sm btn-outline-primary me-1"
-      aria-label={`Edit ${id}`}
-      title="Edit"
+      className={`${styles.editButton} ${className}`}
+      aria-label="Edit"
     >
-      {/* Replace this with your custom edit icon later */}
-      <img src={EditIcon} alt="Edit" />
+     <FontAwesomeIcon icon={faPenToSquare} />
     </button>
   );
 };

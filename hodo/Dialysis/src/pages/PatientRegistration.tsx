@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import type {FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { patientsApi } from '../api/patientsApi';
+import { patientServiceFactory } from '../services/patient/factory';
 import './PatientRegistration.css';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -55,7 +55,8 @@ const PatientRegistration: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: 
         fistulaDate: values.fistulaCreationDate,
         phone: values.mobileNo,
       };
-      const response = await patientsApi.addPatient(patientData);
+      const patientService = patientServiceFactory.getService();
+      const response = await patientService.addPatient(patientData);
       if (response) {
         setSuccess(true);
         setError('');

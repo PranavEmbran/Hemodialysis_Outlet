@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { scheduleApi } from '../api/scheduleApi';
+import { scheduleServiceFactory } from '../services/schedule/factory';
 import type { Patient, ScheduleEntry, StaffData } from '../types';
 import './Schedule.css';
 import Footer from '../components/Footer';
@@ -51,7 +51,8 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
 
   React.useEffect(() => {
     // Only fetch staff data, not patients or schedules
-    scheduleApi.getStaff().then(setStaff).catch(() => setError('Failed to fetch staff'));
+    const scheduleService = scheduleServiceFactory.getService();
+    scheduleService.getStaff().then(setStaff).catch(() => setError('Failed to fetch staff'));
   }, []);
 
   const initialValues: ScheduleFormValues = {
@@ -76,7 +77,8 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
       patientName: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim()
     };
     try {
-      await scheduleApi.createSchedule(newSchedule);
+      const scheduleService = scheduleServiceFactory.getService();
+      await scheduleService.createSchedule(newSchedule);
       setSuccess(true);
       resetForm();
       await refreshAppointments();

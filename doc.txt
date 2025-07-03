@@ -20,7 +20,7 @@ npm i --save-dev @types/file-saver
 
 npm install html2pdf.js
 
-
+npm install react-toastify @types/react-toastify
 
 
 npm audit fix --force

@@ -17,6 +17,8 @@ export interface Patient {
   catheterInsertionDate?: string;
   fistulaCreationDate?: string;
   dateOfBirth?: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface Appointment {
@@ -91,4 +93,6 @@ export interface ScheduleEntry {
   admittingDoctor: string;
   status?: string;
   remarks?: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 } 

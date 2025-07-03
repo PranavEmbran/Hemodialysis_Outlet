@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import type { Patient, ScheduleEntry, History } from '../types';
-import { patientsApi } from '../api/patientsApi';
-import { scheduleApi } from '../api/scheduleApi';
-import { historyApi } from '../api/historyApi';
+import { patientServiceFactory } from '../services/patient/factory';
+import { scheduleServiceFactory } from '../services/schedule/factory';
+import { historyServiceFactory } from '../services/history/factory';
 
 interface DialysisContextType {
   // State
@@ -47,10 +47,14 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       setLoading(true);
       setError('');
 
+      const patientService = patientServiceFactory.getService();
+      const scheduleService = scheduleServiceFactory.getService();
+      const historyService = historyServiceFactory.getService();
+
       const [patientsData, appointmentsData, historyData] = await Promise.all([
-        patientsApi.getAllPatients(),
-        scheduleApi.getAllSchedules(),
-        historyApi.getAllHistory()
+        patientService.getAllPatients(),
+        scheduleService.getAllSchedules(),
+        historyService.getAllHistory()
       ]);
 
       setPatients(patientsData);
@@ -76,7 +80,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       setError('');
 
       // Update patient in backend
-      const updatedPatient = await patientsApi.updatePatient(patientId, updatedData);
+      const patientService = patientServiceFactory.getService();
+      const updatedPatient = await patientService.updatePatient(patientId, updatedData);
 
       // Calculate the full name from updated data
       const fullName = `${updatedPatient.firstName || updatedPatient.name || ''} ${updatedPatient.lastName || ''}`.trim();
@@ -135,7 +140,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       setError('');
 
       // Update appointment in backend
-      const updatedAppointment = await scheduleApi.updateSchedule(appointmentId, updatedData);
+      const scheduleService = scheduleServiceFactory.getService();
+      const updatedAppointment = await scheduleService.updateSchedule(appointmentId, updatedData);
 
       // Update appointments state
       setAppointments(prevAppointments =>
@@ -164,7 +170,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
   const refreshPatients = useCallback(async () => {
     try {
       setLoading(true);
-      const patientsData = await patientsApi.getAllPatients();
+      const patientService = patientServiceFactory.getService();
+      const patientsData = await patientService.getAllPatients();
       setPatients(patientsData);
     } catch (err) {
       console.error('Error refreshing patients:', err);
@@ -177,7 +184,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
   const refreshAppointments = useCallback(async () => {
     try {
       setLoading(true);
-      const appointmentsData = await scheduleApi.getAllSchedules();
+      const scheduleService = scheduleServiceFactory.getService();
+      const appointmentsData = await scheduleService.getAllSchedules();
       setAppointments(appointmentsData);
     } catch (err) {
       console.error('Error refreshing appointments:', err);
@@ -190,7 +198,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
   const refreshHistory = useCallback(async () => {
     try {
       setLoading(true);
-      const historyData = await historyApi.getAllHistory();
+      const historyService = historyServiceFactory.getService();
+      const historyData = await historyService.getAllHistory();
       setHistory(historyData);
     } catch (err) {
       console.error('Error refreshing history:', err);

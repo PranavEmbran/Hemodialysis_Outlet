@@ -15,6 +15,7 @@ interface Patient {
   bloodGroup: string;
   catheterInsertionDate: string;
   fistulaCreationDate: string;
+  isDeleted?: number; // 10 = active, 0 = deleted
 }
 
 interface Appointment {
@@ -134,8 +135,12 @@ export const getPatients = (req: Request, res: Response): any => {
   try {
     console.log('Fetching all patients...');
     const db = readDB();
-    const patients = db.patients || [];
-    console.log(`Found ${patients.length} patients`);
+    const allPatients = db.patients || [];
+    
+    // Filter out soft-deleted patients (only return active patients where isDeleted !== 0)
+    const patients = allPatients.filter(patient => patient.isDeleted !== 0);
+    
+    console.log(`Found ${patients.length} active patients out of ${allPatients.length} total`);
     return res.json(patients);
   } catch (error) {
     console.error('Error in getPatients:', error);
@@ -197,7 +202,8 @@ export const addPatient = (req: Request, res: Response): any => {
       mobileNo,
       bloodGroup,
       catheterInsertionDate,
-      fistulaCreationDate
+      fistulaCreationDate,
+      isDeleted: 10 // Mark as active by default
     };
 
     db.patients.push(newPatient);
@@ -216,7 +222,7 @@ export const addPatient = (req: Request, res: Response): any => {
 export const deletePatient = (req: Request, res: Response): any => {
   try {
     const patientId = req.params.id;
-    console.log('Deleting patient with ID:', patientId);
+    console.log('Soft deleting patient with ID:', patientId);
     
     if (!patientId) {
       console.error('No patient ID provided');
@@ -224,21 +230,57 @@ export const deletePatient = (req: Request, res: Response): any => {
     }
 
     const db = readDB();
-    const initialLength = db.patients.length;
-    db.patients = db.patients.filter(p => p.id !== patientId);
+    const patientIndex = db.patients.findIndex(p => p.id === patientId);
     
-    if (db.patients.length === initialLength) {
+    if (patientIndex === -1) {
       console.error('Patient not found:', patientId);
       return res.status(404).json({ message: 'Patient not found' });
     }
 
+    // Soft delete: set isDeleted to 0 instead of removing the record
+    db.patients[patientIndex].isDeleted = 0;
+
     writeDB(db);
-    console.log('Successfully deleted patient:', patientId);
-    return res.status(204).end();
+    console.log('Successfully soft deleted patient:', patientId);
+    return res.status(200).json({ message: 'Patient soft deleted successfully' });
   } catch (error) {
     console.error('Error in deletePatient:', error);
     return res.status(500).json({ 
       message: 'Failed to delete patient',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
+// Restore soft-deleted patient
+export const restorePatient = (req: Request, res: Response): any => {
+  try {
+    const patientId = req.params.id;
+    console.log('Restoring patient with ID:', patientId);
+    
+    if (!patientId) {
+      console.error('No patient ID provided');
+      return res.status(400).json({ message: 'Patient ID is required' });
+    }
+
+    const db = readDB();
+    const patientIndex = db.patients.findIndex(p => p.id === patientId);
+    
+    if (patientIndex === -1) {
+      console.error('Patient not found:', patientId);
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    // Restore: set isDeleted to 10 (active)
+    db.patients[patientIndex].isDeleted = 10;
+    
+    writeDB(db);
+    console.log('Successfully restored patient:', patientId);
+    return res.status(200).json({ message: 'Patient restored successfully' });
+  } catch (error) {
+    console.error('Error in restorePatient:', error);
+    return res.status(500).json({ 
+      message: 'Failed to restore patient',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
