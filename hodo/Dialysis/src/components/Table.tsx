@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../Styles/Table.css';
+import '../styles/Table.css';
 import Pagination from './Pagination';
 
 

@@ -64,8 +64,8 @@ export class MockScheduleService implements ScheduleService {
     
     const schedules = getSchedulesFromStorage();
     
-    // Filter out soft-deleted schedules
-    const activeSchedules = schedules.filter(s => !s.isDeleted);
+    // Filter out soft-deleted schedules (isDeleted = 0)
+    const activeSchedules = schedules.filter(s => s.isDeleted !== 0);
     
     // If no active schedules exist, initialize with some mock data
     if (activeSchedules.length === 0) {
@@ -80,7 +80,8 @@ export class MockScheduleService implements ScheduleService {
           technician: 'Dr. Sarah Wilson',
           admittingDoctor: 'Dr. Michael Brown',
           status: 'Scheduled',
-          remarks: 'Regular dialysis session'
+          remarks: 'Regular dialysis session',
+          isDeleted: 10,
         },
         {
           id: '2',
@@ -92,7 +93,8 @@ export class MockScheduleService implements ScheduleService {
           technician: 'Dr. David Johnson',
           admittingDoctor: 'Dr. Emily Davis',
           status: 'Completed',
-          remarks: 'Session completed successfully'
+          remarks: 'Session completed successfully',
+          isDeleted: 10,
         },
         {
           id: '3',
@@ -104,7 +106,8 @@ export class MockScheduleService implements ScheduleService {
           technician: 'Dr. Sarah Wilson',
           admittingDoctor: 'Dr. Michael Brown',
           status: 'Scheduled',
-          remarks: 'Morning session'
+          remarks: 'Morning session',
+          isDeleted: 10,
         }
       ];
       
@@ -119,7 +122,7 @@ export class MockScheduleService implements ScheduleService {
     await new Promise(resolve => setTimeout(resolve, 50));
     
     const schedules = getSchedulesFromStorage();
-    const schedule = schedules.find(s => s.id === id);
+    const schedule = schedules.find(s => s.id === id && s.isDeleted !== 0);
     
     if (!schedule) {
       throw new Error(`Schedule with ID ${id} not found`);
@@ -135,6 +138,7 @@ export class MockScheduleService implements ScheduleService {
     const newSchedule: ScheduleEntry = {
       ...schedule,
       id: generateId(),
+      isDeleted: 10,
     };
     
     schedules.push(newSchedule);
@@ -144,7 +148,7 @@ export class MockScheduleService implements ScheduleService {
   }
 
   async updateSchedule(id: string | number, scheduleData: Partial<ScheduleEntry>): Promise<ScheduleEntry> {
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     const schedules = getSchedulesFromStorage();
     const scheduleIndex = schedules.findIndex(s => s.id === id);
@@ -153,10 +157,11 @@ export class MockScheduleService implements ScheduleService {
       throw new Error(`Schedule with ID ${id} not found`);
     }
     
+    // Update the schedule with new data
     const updatedSchedule = {
       ...schedules[scheduleIndex],
       ...scheduleData,
-      id, // Ensure ID doesn't get overwritten
+      id: schedules[scheduleIndex].id // Preserve the original ID
     };
     
     schedules[scheduleIndex] = updatedSchedule;
@@ -182,7 +187,7 @@ export class MockScheduleService implements ScheduleService {
     // Soft delete - mark as deleted instead of removing
     schedules[scheduleIndex] = {
       ...schedules[scheduleIndex],
-      isDeleted: true,
+      isDeleted: 0,
       deletedAt: new Date().toISOString()
     };
     
@@ -200,10 +205,10 @@ export class MockScheduleService implements ScheduleService {
       throw new Error(`Schedule with ID ${id} not found`);
     }
     
-    // Restore - remove deleted flags
+    // Restore - mark as active
     schedules[scheduleIndex] = {
       ...schedules[scheduleIndex],
-      isDeleted: false,
+      isDeleted: 10,
       deletedAt: undefined
     };
     

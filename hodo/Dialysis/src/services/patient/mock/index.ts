@@ -159,7 +159,7 @@ export class MockPatientService implements PatientService {
     // Soft delete - mark as deleted instead of removing
     patients[patientIndex] = {
       ...patients[patientIndex],
-      isDeleted: true,
+      isDeleted: 0,
       deletedAt: new Date().toISOString()
     };
     
@@ -177,10 +177,10 @@ export class MockPatientService implements PatientService {
       throw new Error(`Patient with ID ${id} not found`);
     }
     
-    // Restore - remove deleted flags
+    // Restore - mark as active
     patients[patientIndex] = {
       ...patients[patientIndex],
-      isDeleted: false,
+      isDeleted: 10,
       deletedAt: undefined
     };
     

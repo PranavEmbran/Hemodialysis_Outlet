@@ -67,6 +67,18 @@ export const billingApi = {
     }
   },
 
+  async updateBill(id: string | number, billData: Partial<Billing>): Promise<Billing> {
+    try {
+      return await fetchWithRetry(`${API_URL}/billing/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(billData),
+      });
+    } catch (error) {
+      console.error('Error updating bill:', error);
+      throw new Error('Failed to update bill');
+    }
+  },
+
   async deleteBill(id: number): Promise<boolean> {
     try {
       await fetchWithRetry(`${API_URL}/billing/${id}`, {
@@ -76,6 +88,19 @@ export const billingApi = {
     } catch (error) {
       console.error('Error deleting bill:', error);
       throw new Error('Failed to delete bill');
+    }
+  },
+
+  async softDeleteBill(id: string | number): Promise<boolean> {
+    try {
+      await fetchWithRetry(`${API_URL}/billing/${id}/soft-delete`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isDeleted: 0 }),
+      });
+      return true;
+    } catch (error) {
+      console.error('Error soft deleting bill:', error);
+      throw new Error('Failed to soft delete bill');
     }
   },
 }; 

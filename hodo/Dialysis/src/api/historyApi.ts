@@ -62,6 +62,18 @@ export const historyApi = {
     return response.json();
   },
 
+  async updateHistory(id: string | number, historyData: Partial<History>): Promise<History> {
+    try {
+      return await fetchWithRetry(`${API_URL}/history/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(historyData),
+      });
+    } catch (error) {
+      console.error('Error updating history:', error);
+      throw new Error('Failed to update history');
+    }
+  },
+
   async deleteHistory(id: number): Promise<boolean> {
     try {
       await fetchWithRetry(`${API_URL}/history/${id}`, {
@@ -71,6 +83,19 @@ export const historyApi = {
     } catch (error) {
       console.error('Error deleting history:', error);
       throw new Error('Failed to delete history');
+    }
+  },
+
+  async softDeleteHistory(id: string | number): Promise<boolean> {
+    try {
+      await fetchWithRetry(`${API_URL}/history/${id}/soft-delete`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isDeleted: 0 }),
+      });
+      return true;
+    } catch (error) {
+      console.error('Error soft deleting history:', error);
+      throw new Error('Failed to soft delete history');
     }
   }
 }; 

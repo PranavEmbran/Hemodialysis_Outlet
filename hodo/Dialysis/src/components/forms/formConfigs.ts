@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
-import type { Patient, ScheduleEntry } from '../../types';
+import type { Patient, ScheduleEntry, Billing, History } from '../../types';
 
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea';
+  type: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea' | 'number';
   required?: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -99,5 +99,75 @@ export const appointmentFormConfig: FormConfig = {
     admittingDoctor: data.admittingDoctor || '',
     status: data.status || 'Scheduled',
     remarks: data.remarks || '',
+  })
+};
+
+export const billingFormConfig: FormConfig = {
+  title: 'Edit Bill',
+  fields: [
+    { name: 'patientName', label: 'Patient Name', type: 'text', required: true, colSize: 6 },
+    { name: 'sessionDate', label: 'Session Date', type: 'date', required: true, colSize: 6 },
+    { name: 'sessionDuration', label: 'Session Duration (hours)', type: 'number', required: true, colSize: 6 },
+    { name: 'totalAmount', label: 'Total Amount', type: 'number', required: true, colSize: 6 },
+    { name: 'status', label: 'Status', type: 'select', required: true, colSize: 6, options: [
+      { value: 'PAID', label: 'Paid' },
+      { value: 'PENDING', label: 'Pending' },
+      { value: 'CANCELLED', label: 'Cancelled' }
+    ] },
+    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Session description or notes', colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    patientName: Yup.string().required('Patient name is required'),
+    sessionDate: Yup.date().required('Session date is required'),
+    sessionDuration: Yup.number().min(0, 'Duration must be positive').required('Session duration is required'),
+    totalAmount: Yup.number().min(0, 'Amount must be positive').required('Total amount is required'),
+    status: Yup.string().required('Status is required'),
+    description: Yup.string(),
+  }),
+  initialValues: (data: Billing) => ({
+    patientName: data.patientName || '',
+    sessionDate: data.sessionDate || data.date || '',
+    sessionDuration: data.sessionDuration || 0,
+    totalAmount: data.totalAmount || data.amount || 0,
+    status: data.status || 'PENDING',
+    description: data.description || '',
+  })
+};
+
+export const historyFormConfig: FormConfig = {
+  title: 'Edit History Record',
+  fields: [
+    { name: 'patientName', label: 'Patient Name', type: 'text', required: true, colSize: 6 },
+    { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
+    { name: 'parameters', label: 'Parameters', type: 'textarea', placeholder: 'BP, Weight, etc.', required: true, colSize: 6 },
+    { name: 'amount', label: 'Amount', type: 'text', placeholder: 'Session cost', colSize: 6 },
+    { name: 'age', label: 'Age', type: 'text', colSize: 6 },
+    { name: 'gender', label: 'Gender', type: 'select', colSize: 6, options: [
+      { value: 'Male', label: 'Male' },
+      { value: 'Female', label: 'Female' },
+      { value: 'Other', label: 'Other' }
+    ] },
+    { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Session notes', colSize: 12 },
+    { name: 'nursingNotes', label: 'Nursing Notes', type: 'textarea', placeholder: 'Nursing observations', colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    patientName: Yup.string().required('Patient name is required'),
+    date: Yup.date().required('Date is required'),
+    parameters: Yup.string().required('Parameters are required'),
+    amount: Yup.string(),
+    age: Yup.string(),
+    gender: Yup.string(),
+    notes: Yup.string(),
+    nursingNotes: Yup.string(),
+  }),
+  initialValues: (data: History) => ({
+    patientName: data.patientName || '',
+    date: data.date || '',
+    parameters: data.parameters || '',
+    amount: data.amount || '',
+    age: data.age || '',
+    gender: data.gender || '',
+    notes: data.notes || '',
+    nursingNotes: data.nursingNotes || '',
   })
 }; 

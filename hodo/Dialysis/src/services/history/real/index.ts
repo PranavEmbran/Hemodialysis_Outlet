@@ -15,7 +15,15 @@ export class RealHistoryService implements HistoryService {
     return await historyApi.addHistory(history);
   }
 
+  async updateHistory(id: string | number, historyData: Partial<History>): Promise<History> {
+    return await historyApi.updateHistory(id, historyData);
+  }
+
   async deleteHistory(id: number): Promise<boolean> {
-    return await historyApi.deleteHistory(id);
+    return await this.softDeleteHistory(id);
+  }
+
+  async softDeleteHistory(id: string | number): Promise<boolean> {
+    return await historyApi.softDeleteHistory(id);
   }
 } 

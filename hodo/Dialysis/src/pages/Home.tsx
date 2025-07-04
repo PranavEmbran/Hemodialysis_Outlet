@@ -24,6 +24,7 @@ import EditModal from '../components/EditModal';
 import { patientFormConfig, appointmentFormConfig } from '../components/forms/formConfigs';
 import { patientServiceFactory } from '../services/patient/factory';
 import { scheduleServiceFactory } from '../services/schedule/factory';
+import mockData from '../mock/mockData.json';
 
 
 interface Stat {
@@ -41,9 +42,9 @@ interface FilteredData {
 
 const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   // Local state management
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [appointments, setAppointments] = useState<ScheduleEntry[]>([]);
-  const [history, setHistory] = useState<History[]>([]);
+  const [patients, setPatients] = useState<Patient[]>(mockData.patients);
+  const [appointments, setAppointments] = useState<ScheduleEntry[]>(mockData.appointments);
+  const [history, setHistory] = useState<History[]>(mockData.history);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
@@ -594,7 +595,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
             </div>
             <Table
               columns={[
-                { key: 'expand', header: '' },
+                // { key: 'expand', header: '' },
                 { key: 'patientName', header: 'Patient Name' },
                 { key: 'admittingDoctor', header: 'Doctor' },
                 { key: 'date', header: 'Date' },
@@ -614,11 +615,11 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                 status: (
                   <span className={`status-badge ${
                     apt.status === 'Completed' ? 'active' :
-                    apt.status === 'Scheduled' ? 'scheduled' :
+                    apt.status === 'Scheduled' || !apt.status ? 'scheduled' :
                     'inactive'
                   }`}>
                   
-                    {apt.status}
+                    {apt.status || 'Scheduled'}
                   </span>
                 ),
                 action: (
@@ -640,6 +641,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
           formConfig={editingDataType === 'patient' ? patientFormConfig : appointmentFormConfig}
           onSubmit={handleEditSubmit}
           loading={editLoading}
+          editingDataType={editingDataType}
         />
         
         <Footer />

@@ -15,7 +15,11 @@ import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
+import EditButton from '../components/EditButton';
+import DeleteButton from '../components/DeleteButton';
+import EditModal from '../components/EditModal';
 import { SelectField, DateField, InputField } from '../components/forms';
+import { billingFormConfig } from '../components/forms/formConfigs';
 import { useDialysis } from '../context/DialysisContext';
 
 interface BillingFormValues {
@@ -41,6 +45,14 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
   const [error, setError] = useState<string>('');
   const [billsSearch, setBillsSearch] = useState<string>('');
 
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [editingData, setEditingData] = useState<BillingType | null>(null);
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+
+  // Service instance
+  const billingService = billingServiceFactory.getService();
+
   // Pagination state for bills
   const [billsPage, setBillsPage] = useState(1);
   const [billsRowsPerPage, setBillsRowsPerPage] = useState(10);
@@ -48,9 +60,16 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
   const paginatedBills = bills.slice((billsPage - 1) * billsRowsPerPage, billsPage * billsRowsPerPage);
 
   useEffect(() => {
-    const billingService = billingServiceFactory.getService();
-    billingService.getAllBills().then(setBills).catch(() => setError('Failed to fetch bills'));
-  }, []);
+    const fetchBills = async () => {
+      try {
+        const billsData = await billingService.getAllBills();
+        setBills(billsData);
+      } catch (err) {
+        setError('Failed to fetch bills');
+      }
+    };
+    fetchBills();
+  }, [billingService]);
 
   const initialValues: BillingFormValues = {
     patientId: '',
@@ -76,11 +95,11 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
       sessionDuration: Number(values.sessionDuration),
     };
     try {
-      const billingService = billingServiceFactory.getService();
       await billingService.addBill(newBill);
       setSuccess(true);
       resetForm();
-      setBills(await billingService.getAllBills());
+      const updatedBills = await billingService.getAllBills();
+      setBills(updatedBills);
       setTimeout(() => setSuccess(false), 2000);
     } catch {
       setError('Failed to add bill');
@@ -128,6 +147,74 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
     }
 
     return filteredBills;
+  };
+
+  // Handle edit
+  const handleEdit = (id: string | number) => {
+    const billToEdit = bills.find(b => b.id === id);
+    if (billToEdit) {
+      setEditingData(billToEdit);
+      setShowEditModal(true);
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async (id: string | number) => {
+    const billToDelete = bills.find(b => b.id === id);
+    const billName = billToDelete ? billToDelete.patientName : 'this bill';
+
+    const isConfirmed = window.confirm(
+      `Are you sure you want to delete ${billName}? This action cannot be undone.`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await billingService.softDeleteBill(id);
+      // Remove from local state
+      setBills(prevBills => prevBills.filter(b => b.id !== id));
+    } catch (err) {
+      console.error('Error deleting bill:', err);
+      setError('Failed to delete bill. Please try again.');
+    }
+  };
+
+  // Handle edit submit
+  const handleEditSubmit = async (values: any) => {
+    if (!editingData) return;
+    
+    setEditLoading(true);
+    try {
+      const updatedBill = await billingService.updateBill(editingData.id!, {
+        patientName: values.patientName,
+        sessionDate: values.sessionDate,
+        sessionDuration: values.sessionDuration,
+        totalAmount: values.totalAmount,
+        status: values.status,
+        description: values.description,
+      });
+      
+      // Update local state
+      setBills(prevBills => 
+        prevBills.map(b => b.id === editingData.id ? updatedBill : b)
+      );
+      
+      setShowEditModal(false);
+      setEditingData(null);
+    } catch (error) {
+      console.error('Error updating bill:', error);
+      throw error;
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingData(null);
+    setEditLoading(false);
   };
 
   const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
@@ -278,21 +365,30 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
               sessionDuration: b.sessionDuration ? `${b.sessionDuration} minutes` : '-',
               totalAmount: b.totalAmount ? `₹${b.totalAmount}` : '-',
               status: (
-                <span className={`badge bg-${b.status === 'PAID' ? 'success' : 'warning'}`}>
+                <span className={`status-badge ${
+                  b.status === 'PAID' ? 'active' :
+                  b.status === 'PENDING' || b.status === 'UNPAID' ? 'scheduled' :
+                  b.status === 'CANCELLED' || b.status === 'OVERDUE' ? 'inactive' :
+                  'scheduled'
+                }`}>
                   {b.status}
                 </span>
               ),
               actions: (
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedBill(b);
-                    setShowPrintModal(true);
-                  }}
-                >
-                  View Bill
-                </Button>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <EditButton onClick={() => handleEdit(b.id!)} />
+                  <DeleteButton onClick={() => handleDelete(b.id!)} />
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedBill(b);
+                      setShowPrintModal(true);
+                    }}
+                  >
+                    View Bill
+                  </Button>
+                </div>
               ),
             }))}
           />
@@ -315,7 +411,16 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
                     <p><strong>Date:</strong> {selectedBill.sessionDate}</p>
                     <p><strong>Duration:</strong> {selectedBill.sessionDuration} minutes</p>
                     <p><strong>Amount:</strong> ₹{selectedBill.totalAmount}</p>
-                    <p><strong>Status:</strong> {selectedBill.status}</p>
+                    <p><strong>Status:</strong> 
+                      <span className={`status-badge ${
+                        selectedBill.status === 'PAID' ? 'active' :
+                        selectedBill.status === 'PENDING' || selectedBill.status === 'UNPAID' ? 'scheduled' :
+                        selectedBill.status === 'CANCELLED' || selectedBill.status === 'OVERDUE' ? 'inactive' :
+                        'scheduled'
+                      }`}>
+                        {selectedBill.status}
+                      </span>
+                    </p>
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -333,6 +438,17 @@ const Billing: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }
             </div>
           </div>
         )}
+
+        {/* Edit Modal */}
+        <EditModal
+          show={showEditModal}
+          onHide={handleCloseEditModal}
+          data={editingData}
+          formConfig={billingFormConfig}
+          onSubmit={handleEditSubmit}
+          loading={editLoading}
+          editingDataType="billing"
+        />
       </PageContainer>
       <Footer />
     </>

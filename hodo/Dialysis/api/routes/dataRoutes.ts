@@ -7,7 +7,17 @@ import {
   getPatients, 
   addPatient, 
   deletePatient, 
-  restorePatient 
+  restorePatient,
+  getBilling,
+  addBilling,
+  updateBilling,
+  deleteBilling,
+  softDeleteBilling,
+  getHistory,
+  addHistory,
+  updateHistory,
+  deleteHistory,
+  softDeleteHistory
 } from '../controllers/dataController';
 
 const router = express.Router();
@@ -119,87 +129,40 @@ router.delete('/patients/:id', deletePatient);
 router.post('/patients/:id/restore', restorePatient);
 
 // Billing endpoints
-router.get('/billing', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    res.json(db.billing || []);
-  } catch (error) {
-    console.error('Error fetching billing:', error);
-    res.status(500).json({ error: 'Failed to fetch billing' });
-  }
-});
+router.get('/billing', getBilling);
 
-router.post('/billing', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    const bill = {
-      ...req.body,
-      id: Date.now().toString()
-    };
+router.post('/billing', addBilling);
 
-    db.billing.push(bill);
-    writeDatabase(db);
+// Update billing by ID
+router.put('/billing/:id', updateBilling);
 
-    res.status(201).json(bill);
-  } catch (error) {
-    console.error('Error adding bill:', error);
-    res.status(500).json({ error: 'Failed to add bill' });
-  }
-});
+// Delete billing by ID (hard delete)
+router.delete('/billing/:id', deleteBilling);
+
+// Soft delete billing by ID
+router.patch('/billing/:id/soft-delete', softDeleteBilling);
 
 // History endpoints
-router.get('/history', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    res.json(db.history || []);
-  } catch (error) {
-    console.error('Error fetching history:', error);
-    res.status(500).json({ error: 'Failed to fetch history' });
-  }
-});
+router.get('/history', getHistory);
 
-router.post('/history', (req: Request, res: Response) => {
-  try {
-    const db = readDatabase();
-    const history = {
-      ...req.body,
-      id: Date.now().toString()
-    };
+router.post('/history', addHistory);
 
-    db.history.push(history);
-    writeDatabase(db);
+// Update history by ID
+router.put('/history/:id', updateHistory);
 
-    res.status(201).json(history);
-  } catch (error) {
-    console.error('Error adding history:', error);
-    res.status(500).json({ error: 'Failed to add history' });
-  }
-});
+// Delete history by ID (hard delete)
+router.delete('/history/:id', deleteHistory);
 
-router.delete('/history/:id', (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const db = readDatabase();
-
-    const index = db.history.findIndex((h: any) => h.id === id);
-    if (index !== -1) {
-      db.history.splice(index, 1);
-      writeDatabase(db);
-      res.json({ message: `History record ${id} deleted successfully` });
-    } else {
-      res.status(404).json({ error: 'History record not found' });
-    }
-  } catch (error) {
-    console.error('Error deleting history:', error);
-    res.status(500).json({ error: 'Failed to delete history' });
-  }
-});
+// Soft delete history by ID
+router.patch('/history/:id/soft-delete', softDeleteHistory);
 
 // Schedule endpoints (appointments)
 router.get('/schedule', (req: Request, res: Response) => {
   try {
     const db = readDatabase();
-    res.json(db.appointments || []);
+    // Filter out soft-deleted appointments
+    const activeAppointments = (db.appointments || []).filter((apt: any) => apt.isDeleted !== 0);
+    res.json(activeAppointments);
   } catch (error) {
     console.error('Error fetching schedule:', error);
     res.status(500).json({ error: 'Failed to fetch schedule' });
@@ -210,7 +173,9 @@ router.get('/schedule', (req: Request, res: Response) => {
 router.get('/schedules', (req: Request, res: Response) => {
   try {
     const db = readDatabase();
-    res.json(db.appointments || []);
+    // Filter out soft-deleted appointments
+    const activeAppointments = (db.appointments || []).filter((apt: any) => apt.isDeleted !== 0);
+    res.json(activeAppointments);
   } catch (error) {
     console.error('Error fetching schedules:', error);
     res.status(500).json({ error: 'Failed to fetch schedules' });
@@ -223,6 +188,7 @@ router.post('/schedule', (req: Request, res: Response) => {
     const schedule = {
       ...req.body,
       id: Date.now().toString(),
+      status: req.body.status || 'Scheduled', // Set default status if not provided
       isDeleted: 10 // Ensure isDeleted is always set
     };
     db.appointments.push(schedule);
@@ -241,6 +207,7 @@ router.post('/schedules', (req: Request, res: Response) => {
     const schedule = {
       ...req.body,
       id: Date.now().toString(),
+      status: req.body.status || 'Scheduled', // Set default status if not provided
       isDeleted: 10 // Ensure isDeleted is always set
     };
     db.appointments.push(schedule);
@@ -258,7 +225,7 @@ router.get('/appointments/:id', (req: Request, res: Response) => {
     const { id } = req.params;
     const db = readDatabase();
     
-    const appointment = db.appointments.find((a: any) => a.id === id);
+    const appointment = db.appointments.find((a: any) => a.id === id && a.isDeleted !== 0);
     if (appointment) {
       res.json(appointment);
     } else {
@@ -295,6 +262,32 @@ router.put('/appointments/:id', (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error updating appointment:', error);
     res.status(500).json({ error: 'Failed to update appointment' });
+  }
+});
+
+// Soft delete appointment by ID
+router.patch('/appointments/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const db = readDatabase();
+    
+    const index = db.appointments.findIndex((a: any) => a.id === id);
+    if (index !== -1) {
+      // Soft delete - mark as deleted instead of removing
+      db.appointments[index] = {
+        ...db.appointments[index],
+        isDeleted: 0,
+        deletedAt: new Date().toISOString()
+      };
+      
+      writeDatabase(db);
+      res.json({ message: `Appointment ${id} soft deleted successfully` });
+    } else {
+      res.status(404).json({ error: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error soft deleting appointment:', error);
+    res.status(500).json({ error: 'Failed to soft delete appointment' });
   }
 });
 

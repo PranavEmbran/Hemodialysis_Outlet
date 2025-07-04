@@ -24,9 +24,7 @@ export class RealScheduleService implements ScheduleService {
   }
 
   async softDeleteSchedule(id: string | number): Promise<boolean> {
-    // For real service, we'll use the existing delete endpoint
-    // In a real implementation, you'd have a separate soft delete endpoint
-    return await scheduleApi.deleteSchedule(id);
+    return await scheduleApi.softDeleteSchedule(id);
   }
 
   async restoreSchedule(id: string | number): Promise<boolean> {

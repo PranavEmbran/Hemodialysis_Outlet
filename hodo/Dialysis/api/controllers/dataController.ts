@@ -16,6 +16,7 @@ interface Patient {
   catheterInsertionDate: string;
   fistulaCreationDate: string;
   isDeleted?: number; // 10 = active, 0 = deleted
+  deletedAt?: string;
 }
 
 interface Appointment {
@@ -168,6 +169,23 @@ function cascadeDeleteByPatientId(db: Database, patientId: string, softDelete = 
   }
 }
 
+// Utility: Cascade restore for all related records by patientId
+function cascadeRestoreByPatientId(db: Database, patientId: string) {
+  // Mark as restored if either patientId or id matches
+  const markRestored = (arr: any[]) =>
+    arr.map(item =>
+      (item.patientId === patientId || item.id === patientId)
+        ? { ...item, isDeleted: 10, deletedAt: undefined }
+        : item
+    );
+  
+  if (db.appointments) db.appointments = markRestored(db.appointments);
+  if (db.history) db.history = markRestored(db.history);
+  if (db.billing) db.billing = markRestored(db.billing);
+  if (db.dialysisFlowCharts) db.dialysisFlowCharts = markRestored(db.dialysisFlowCharts);
+  if (db.haemodialysisRecords) db.haemodialysisRecords = markRestored(db.haemodialysisRecords);
+}
+
 // Patients
 export const getPatients = (req: Request, res: Response): any => {
   try {
@@ -316,10 +334,14 @@ export const restorePatient = (req: Request, res: Response): any => {
 
     // Restore: set isDeleted to 10 (active)
     db.patients[patientIndex].isDeleted = 10;
+    db.patients[patientIndex].deletedAt = undefined;
+    
+    // Cascade restore to all related tables
+    cascadeRestoreByPatientId(db, patientId);
     
     writeDB(db);
-    console.log('Successfully restored patient:', patientId);
-    return res.status(200).json({ message: 'Patient restored successfully' });
+    console.log('Successfully restored patient and related records:', patientId);
+    return res.status(200).json({ message: 'Patient and related records restored successfully' });
   } catch (error) {
     console.error('Error in restorePatient:', error);
     return res.status(500).json({ 
@@ -398,7 +420,7 @@ export const getBilling = (req: Request, res: Response): any => {
   try {
     console.log('Fetching all billing records...');
     const db = readDB();
-    const billing = db.billing || [];
+    const billing = (db.billing || []).filter(b => b.isDeleted !== 0); // Filter out soft-deleted records
     console.log(`Found ${billing.length} billing records`);
     return res.json(billing);
   } catch (error) {
@@ -446,12 +468,68 @@ export const deleteBilling = (req: Request, res: Response): any => {
   }
 };
 
+export const updateBilling = (req: Request, res: Response): any => {
+  try {
+    const billingId = req.params.id;
+    console.log('Updating billing record with ID:', billingId, req.body);
+    const db = readDB();
+    const billingIndex = db.billing.findIndex(b => b.id === billingId);
+    
+    if (billingIndex === -1) {
+      return res.status(404).json({ message: 'Billing record not found' });
+    }
+    
+    // Update the billing record
+    db.billing[billingIndex] = {
+      ...db.billing[billingIndex],
+      ...req.body,
+    };
+    
+    writeDB(db);
+    console.log('Successfully updated billing record:', billingId);
+    return res.json(db.billing[billingIndex]);
+  } catch (error) {
+    console.error('Error in updateBilling:', error);
+    return res.status(500).json({ 
+      message: 'Failed to update billing',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
+export const softDeleteBilling = (req: Request, res: Response): any => {
+  try {
+    const billingId = req.params.id;
+    console.log('Soft deleting billing record with ID:', billingId);
+    const db = readDB();
+    const billingIndex = db.billing.findIndex(b => b.id === billingId);
+    
+    if (billingIndex === -1) {
+      return res.status(404).json({ message: 'Billing record not found' });
+    }
+    
+    // Soft delete - mark as deleted
+    db.billing[billingIndex].isDeleted = 0;
+    db.billing[billingIndex].deletedAt = new Date().toISOString();
+    
+    writeDB(db);
+    console.log('Successfully soft deleted billing record:', billingId);
+    return res.status(200).json({ message: 'Billing record soft deleted successfully' });
+  } catch (error) {
+    console.error('Error in softDeleteBilling:', error);
+    return res.status(500).json({ 
+      message: 'Failed to soft delete billing',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
 // History
 export const getHistory = (req: Request, res: Response): any => {
   try {
     console.log('Fetching all history records...');
     const db = readDB();
-    const history = db.history || [];
+    const history = (db.history || []).filter(h => h.isDeleted !== 0); // Filter out soft-deleted records
     console.log(`Found ${history.length} history records`);
     return res.json(history);
   } catch (error) {
@@ -481,6 +559,35 @@ export const addHistory = (req: Request, res: Response): any => {
   }
 };
 
+export const updateHistory = (req: Request, res: Response): any => {
+  try {
+    const historyId = req.params.id;
+    console.log('Updating history record with ID:', historyId, req.body);
+    const db = readDB();
+    const historyIndex = db.history.findIndex(h => h.id === historyId);
+    
+    if (historyIndex === -1) {
+      return res.status(404).json({ message: 'History record not found' });
+    }
+    
+    // Update the history record
+    db.history[historyIndex] = {
+      ...db.history[historyIndex],
+      ...req.body,
+    };
+    
+    writeDB(db);
+    console.log('Successfully updated history record:', historyId);
+    return res.json(db.history[historyIndex]);
+  } catch (error) {
+    console.error('Error in updateHistory:', error);
+    return res.status(500).json({ 
+      message: 'Failed to update history',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
 export const deleteHistory = (req: Request, res: Response): any => {
   try {
     const historyId = req.params.id;
@@ -494,6 +601,33 @@ export const deleteHistory = (req: Request, res: Response): any => {
     console.error('Error in deleteHistory:', error);
     return res.status(500).json({ 
       message: 'Failed to delete history',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
+export const softDeleteHistory = (req: Request, res: Response): any => {
+  try {
+    const historyId = req.params.id;
+    console.log('Soft deleting history record with ID:', historyId);
+    const db = readDB();
+    const historyIndex = db.history.findIndex(h => h.id === historyId);
+    
+    if (historyIndex === -1) {
+      return res.status(404).json({ message: 'History record not found' });
+    }
+    
+    // Soft delete - mark as deleted
+    db.history[historyIndex].isDeleted = 0;
+    db.history[historyIndex].deletedAt = new Date().toISOString();
+    
+    writeDB(db);
+    console.log('Successfully soft deleted history record:', historyId);
+    return res.status(200).json({ message: 'History record soft deleted successfully' });
+  } catch (error) {
+    console.error('Error in softDeleteHistory:', error);
+    return res.status(500).json({ 
+      message: 'Failed to soft delete history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }

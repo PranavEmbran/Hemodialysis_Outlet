@@ -105,6 +105,19 @@ export const scheduleApi = {
     }
   },
 
+  async softDeleteSchedule(id: string | number): Promise<boolean> {
+    try {
+      await fetchWithRetry(`${API_URL}/appointments/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isDeleted: 0 }),
+      });
+      return true;
+    } catch (error) {
+      console.error('Error soft deleting schedule:', error);
+      throw new Error('Failed to soft delete schedule');
+    }
+  },
+
   async getStaff(): Promise<StaffData> {
     const response = await fetch(`${API_URL}/staff`);
     if (!response.ok) throw new Error('Failed to fetch staff');

@@ -1,897 +1,268 @@
 {
   "patients": [
     {
-      "firstName": "Vikasan",
-      "lastName": "CP",
+      "id": "20250704/001",
+      "firstName": "Vignesh",
+      "lastName": "Sharma",
       "gender": "Male",
-      "dateOfBirth": "1990-07-06",
-      "mobileNo": "9876543555",
+      "dateOfBirth": "1990-12-15",
+      "mobileNo": "9876543215",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
+      "isDeleted": 0
+    },
+    {
+      "id": "20250704/002",
+      "firstName": "Keerthi",
+      "lastName": "Shankar",
+      "gender": "Female",
+      "dateOfBirth": "1999-05-06",
+      "mobileNo": "9876543215",
+      "bloodGroup": "B+",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
+      "isDeleted": 0
+    },
+    {
+      "id": "20250704/003",
+      "firstName": "Jaya",
+      "lastName": "Kumar",
+      "gender": "Male",
+      "dateOfBirth": "1995-09-19",
+      "mobileNo": "9876543444",
       "bloodGroup": "AB+",
-      "catheterInsertionDate": "2025-06-30",
-      "fistulaCreationDate": "2025-06-30",
-      "name": "Vikasan CP",
-      "catheterDate": "2025-06-26",
-      "fistulaDate": "2025-06-26",
-      "phone": "9876543215",
-      "id": "20250630/001",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
+      "isDeleted": 0,
+      "name": "Jaya Kumar"
+    },
+    {
+      "id": "20250704/004",
+      "firstName": "Vigneshan",
+      "lastName": "Sharma",
+      "gender": "Male",
+      "dateOfBirth": "1990-05-15",
+      "mobileNo": "9876543215",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
       "isDeleted": 10
     },
     {
+      "id": "20250704/005",
       "firstName": "Shiva",
       "lastName": "Kumaran",
       "gender": "Male",
-      "dateOfBirth": "2000-12-06",
-      "mobileNo": "6549873216",
+      "dateOfBirth": "1999-09-05",
+      "mobileNo": "9876543444",
       "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-06-26",
-      "fistulaCreationDate": "2025-06-26",
-      "name": "Shiva Kumaran",
-      "catheterDate": "2025-06-26",
-      "fistulaDate": "2025-06-26",
-      "phone": "6549873216",
-      "id": "20250626/003",
-      "isDeleted": 10
-    },
-    {
-      "bloodGroup": "B+",
-      "firstName": "Test2",
-      "dateOfBirth": "1995-01-01",
-      "catheterInsertionDate": "2025-01-29",
-      "fistulaCreationDate": "2025-01-29",
-      "lastName": "User2",
-      "mobileNo": "9876543212",
-      "gender": "Female",
-      "id": "20250129/001",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
       "isDeleted": 10,
-      "name": "Test2 User2"
+      "name": "Shiva Kumaran"
     },
     {
-      "firstName": "Prabhavati",
-      "lastName": "A",
-      "gender": "Female",
-      "dateOfBirth": "1998-11-09",
-      "mobileNo": "1234567897",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-06-29",
-      "fistulaCreationDate": "2025-06-29",
-      "name": "Prabhavati A",
-      "catheterDate": "2025-06-29",
-      "fistulaDate": "2025-06-29",
-      "phone": "1234567897",
-      "id": "20250629/001",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Shankara",
-      "lastName": "Narayanan",
-      "gender": "Male",
-      "dateOfBirth": "1940-04-09",
-      "mobileNo": "9876543213",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-06-29",
-      "fistulaCreationDate": "2025-06-29",
-      "name": "Shankara Narayanan",
-      "catheterDate": "2025-06-29",
-      "fistulaDate": "2025-06-29",
-      "phone": "1234567897",
-      "id": "20250629/002",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Saraswathi",
-      "lastName": "E",
-      "gender": "Female",
-      "dateOfBirth": "2001-04-06",
-      "mobileNo": "9876543214",
-      "bloodGroup": "B+",
-      "catheterInsertionDate": "2025-06-30",
-      "fistulaCreationDate": "2025-06-30",
-      "name": "Saraswathi E",
-      "catheterDate": "2025-06-30",
-      "fistulaDate": "2025-06-30",
-      "phone": "9876543215",
-      "id": "20250630/002",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Parvathi",
-      "lastName": "Devi",
-      "gender": "Female",
-      "dateOfBirth": "2002-03-12",
-      "mobileNo": "9876543216",
-      "bloodGroup": "B+",
-      "catheterInsertionDate": "2025-06-30",
-      "fistulaCreationDate": "2025-06-30",
-      "name": "Parvathi Devi",
-      "catheterDate": "2025-06-30",
-      "fistulaDate": "2025-06-30",
-      "phone": "9876543215",
-      "id": "20250630/003",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Ashwin",
-      "lastName": "Varma",
-      "gender": "Male",
-      "dateOfBirth": "2000-06-08",
-      "mobileNo": "9876543217",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-01",
-      "fistulaCreationDate": "2025-07-01",
-      "name": "Ashwin Varma",
-      "catheterDate": "2025-07-01",
-      "fistulaDate": "2025-07-01",
-      "phone": "9876543215",
-      "id": "20250701/001",
-      "isDeleted": 0
-    },
-    {
-      "firstName": "Vishnu",
-      "lastName": "YK",
-      "gender": "Male",
-      "dateOfBirth": "1999-06-05",
-      "mobileNo": "9876543218",
-      "bloodGroup": "AB+",
-      "catheterInsertionDate": "2025-07-02",
-      "fistulaCreationDate": "2025-07-02",
-      "name": "Vishnu YK",
-      "catheterDate": "2025-07-02",
-      "fistulaDate": "2025-07-02",
-      "phone": "9876543444",
-      "id": "20250702/002",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Vinodh",
-      "lastName": "JK",
-      "gender": "Male",
-      "dateOfBirth": "1990-06-05",
-      "mobileNo": "9876543219",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-02",
-      "fistulaCreationDate": "2025-07-02",
-      "name": "Vinodh JK",
-      "catheterDate": "2025-07-02",
-      "fistulaDate": "2025-07-02",
-      "phone": "9876543215",
-      "id": "20250702/003",
-      "isDeleted": 0
-    },
-    {
-      "firstName": "Gautam ",
-      "lastName": "M",
-      "gender": "Male",
-      "dateOfBirth": "2000-10-20",
-      "mobileNo": "1954872635",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-02",
-      "fistulaCreationDate": "2025-07-02",
-      "name": "Gautam  M",
-      "catheterDate": "2025-07-02",
-      "fistulaDate": "2025-07-02",
-      "phone": "1954872635",
-      "id": "20250702/004",
-      "isDeleted": 10
-    },
-    {
-      "firstName": "Jayaram",
-      "lastName": "Krishnan",
+      "id": "20250704/006",
+      "firstName": "Vikasan",
+      "lastName": "CK",
       "gender": "Male",
       "dateOfBirth": "1990-05-05",
-      "mobileNo": "9876543215",
+      "mobileNo": "9876543212",
       "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "name": "Jayaram Krishnan",
-      "catheterDate": "2025-07-03",
-      "fistulaDate": "2025-07-03",
-      "phone": "9876543215",
-      "id": "20250703/001",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
       "isDeleted": 10
     },
     {
-      "firstName": "Karthik",
-      "lastName": "GS",
-      "gender": "Male",
-      "dateOfBirth": "1990-05-06",
-      "mobileNo": "9876543215",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "name": "Karthik GS",
-      "catheterDate": "2025-07-03",
-      "fistulaDate": "2025-07-03",
-      "phone": "9876543215",
-      "id": "20250703/002",
-      "isDeleted": 0
-    },
-    {
-      "id": "20250703/003",
-      "firstName": "Kannan",
-      "lastName": "TK",
-      "gender": "Male",
-      "dateOfBirth": "1995-04-05",
-      "mobileNo": "9876543215",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "isDeleted": 10
-    },
-    {
-      "id": "20250703/004",
-      "firstName": "Kiran",
-      "lastName": "TK",
-      "gender": "Male",
-      "dateOfBirth": "2001-06-16",
-      "mobileNo": "9876543215",
-      "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "isDeleted": 10
-    },
-    {
-      "id": "20250703/005",
-      "firstName": "Yaskumar",
-      "lastName": "S",
-      "gender": "Male",
-      "dateOfBirth": "2000-05-05",
-      "mobileNo": "9876543215",
-      "bloodGroup": "B+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "isDeleted": 10
-    },
-    {
-      "id": "20250703/006",
-      "firstName": "Anagha",
+      "id": "20250704/007",
+      "firstName": "Nithin",
       "lastName": "Raj",
       "gender": "Male",
-      "dateOfBirth": "1990-07-03",
+      "dateOfBirth": "1990-04-04",
       "mobileNo": "9876543215",
       "bloodGroup": "A+",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
+      "catheterInsertionDate": "2025-07-04",
+      "fistulaCreationDate": "2025-07-04",
       "isDeleted": 0
-    },
-    {
-      "id": "20250703/007",
-      "firstName": "meera",
-      "lastName": "m",
-      "gender": "Female",
-      "dateOfBirth": "2002-12-03",
-      "mobileNo": "1234567895",
-      "bloodGroup": "A-",
-      "catheterInsertionDate": "2025-07-03",
-      "fistulaCreationDate": "2025-07-03",
-      "isDeleted": 10
     }
   ],
   "appointments": [
     {
-      "patientId": "20250626/001",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Williams",
-      "date": "2025-06-25",
-      "time": "13:33",
-      "remarks": "test",
-      "patientName": "Krishna Murthi G",
-      "id": "1750925040413",
-      "staffName": "Dr. Williams",
-      "status": "Cancelled",
-      "notes": "test",
-      "name": "Krishna Murthi G",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/002",
-      "dialysisUnit": "Unit C",
-      "technician": "Dr. Wilson",
-      "admittingDoctor": "Dr. Davis",
-      "date": "2025-06-28",
-      "time": "13:40",
-      "remarks": "q",
-      "patientName": "Kaveri Ammal",
-      "id": "1750925505601",
-      "staffName": "Dr. Davis",
-      "status": "Scheduled",
-      "notes": "q",
-      "name": "Kaveri Ammal",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/003",
-      "dialysisUnit": "Unit C",
-      "technician": "Dr. Davis",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-06-26",
-      "time": "14:00",
-      "remarks": "tt",
-      "patientName": "Shiva Kumaran",
-      "id": "1750926569795",
-      "staffName": "Dr. Johnson",
-      "status": "Scheduled",
-      "notes": "test",
-      "name": "Shiva Kumaran",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/004",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Brown",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-06-29",
-      "time": "16:07",
-      "remarks": "d",
-      "patientName": "Subhadra Sharma GK",
-      "id": "1750927079121",
-      "name": "Subhadra Sharma GK",
-      "isDeleted": 10,
-      "staffName": "Dr. Miller",
-      "status": "Completed",
-      "notes": "d"
-    },
-    {
-      "patientId": "20250626/006",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Brown",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-06-26",
-      "time": "14:18",
-      "remarks": "jj",
-      "patientName": "Subhadra Sharma",
-      "id": "1750927701527",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/004",
+      "patientId": "20250704/002",
       "dialysisUnit": "Unit D",
-      "technician": "Dr. Davis",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-07-12",
-      "time": "14:20",
-      "remarks": "d",
-      "patientName": "Subhadra Sharma GK",
-      "id": "1750927815455",
-      "name": "Subhadra Sharma GK",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/004",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Smith",
+      "technician": "Dr. Miller",
       "admittingDoctor": "Dr. Garcia",
-      "date": "2025-07-30",
-      "time": "14:20",
-      "remarks": "www",
-      "patientName": "Subhadra Sharma GK",
-      "id": "1750927869769",
+      "date": "2025-07-04",
+      "time": "11:00",
+      "remarks": "First",
+      "patientName": "Keerthi Shankar",
+      "id": "1751607116609",
+      "isDeleted": 0,
       "staffName": "Dr. Garcia",
       "status": "Scheduled",
-      "notes": "www",
-      "name": "Subhadra Sharma GK",
-      "isDeleted": 10
+      "notes": "First"
     },
     {
-      "patientId": "20250626/006",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Wilson",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-06-30",
-      "time": "16:21",
-      "remarks": "f",
-      "patientName": "Subhadra Sharma",
-      "id": "1750927913263",
-      "staffName": "Dr. Miller",
-      "status": "Cancelled",
-      "notes": "f",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/005",
-      "dialysisUnit": "Unit B",
+      "patientName": "Test Patient",
+      "date": "2025-01-15",
+      "time": "10:00",
+      "dialysisUnit": "Unit A",
       "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Davis",
-      "date": "2025-06-26",
-      "time": "14:40",
-      "remarks": "555",
-      "patientName": "Shiva Kumar",
-      "id": "1750928843385",
-      "staffName": "Dr. Davis",
-      "status": "Completed",
-      "notes": "555",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250630/002",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Brown",
       "admittingDoctor": "Dr. Johnson",
-      "date": "2025-06-30",
-      "time": "16:12",
-      "remarks": "",
-      "patientName": "Parvathi Devi",
-      "id": "1751280137331",
-      "isDeleted": 10
+      "remarks": "Test appointment",
+      "id": "1751607294143",
+      "isDeleted": 0,
+      "deletedAt": "2025-07-04T05:37:55.265Z"
     },
     {
-      "patientId": "20250701/001",
-      "dialysisUnit": "Unit D",
-      "technician": "Dr. Wilson",
-      "admittingDoctor": "Dr. Davis",
-      "date": "2025-07-08",
-      "time": "12:45",
-      "remarks": "test",
-      "patientName": "Ashwin Varma",
-      "id": "1751350501571",
-      "isDeleted": 0
-    },
-    {
-      "patientId": "20250629/002",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Wilson",
+      "patientId": "20250704/003",
+      "dialysisUnit": "Unit C",
+      "technician": "Dr. Smith",
       "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-02",
-      "time": "13:15",
-      "remarks": "test111",
-      "patientName": "Shankara Narayanan",
-      "id": "1751442232235",
-      "name": "Shankara Narayanan",
-      "isDeleted": 10,
-      "staffName": "Dr. Johnson",
+      "date": "2025-07-04",
+      "time": "11:07",
+      "remarks": "2nd",
+      "patientName": "Jaya Kumar",
       "status": "Scheduled",
-      "notes": "test111"
+      "id": "1751607428911",
+      "isDeleted": 0,
+      "name": "Jaya Kumar"
     },
     {
-      "patientId": "20250702/001",
-      "dialysisUnit": "Unit C",
-      "technician": "Dr. Miller",
-      "admittingDoctor": "Dr. Williams",
-      "date": "2025-07-05",
-      "time": "14:45",
-      "remarks": "test",
-      "patientName": "Vigneshan Sharma RPG",
-      "id": "1751447659493",
-      "name": "Vigneshan Sharma RPG",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250702/002",
-      "dialysisUnit": "Unit C",
+      "patientId": "20250704/005",
+      "dialysisUnit": "Unit A",
       "technician": "Dr. Smith",
       "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-02",
-      "time": "14:50",
+      "date": "2025-07-13",
+      "time": "16:40",
       "remarks": "",
-      "patientName": "Vinodh JK",
-      "id": "1751448033505",
-      "isDeleted": 10
+      "patientName": "Shiva Kumaran",
+      "status": "Scheduled",
+      "id": "1751627380034",
+      "isDeleted": 10,
+      "name": "Shiva Kumaran"
     },
     {
-      "patientId": "20250702/003",
+      "patientId": "20250704/007",
       "dialysisUnit": "Unit A",
       "technician": "Dr. Davis",
-      "admittingDoctor": "Dr. Williams",
-      "date": "2025-07-02",
-      "time": "16:41",
-      "remarks": "",
-      "patientName": "Gautam  M",
-      "id": "1751454716244",
-      "isDeleted": 0
-    },
-    {
-      "patientId": "20250703/001",
-      "dialysisUnit": "Unit C",
-      "technician": "Dr. Brown",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-07-03",
-      "time": "09:30",
-      "remarks": "test",
-      "patientName": "Jayaram Krishnan",
-      "id": "1751515148739",
-      "name": "Jayaram Krishnan",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250703/002",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Wilson",
       "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "14:14",
+      "date": "2025-07-04",
+      "time": "17:44",
       "remarks": "",
-      "patientName": "Karthik GK",
-      "id": "1751532268055",
-      "isDeleted": 0
-    },
-    {
-      "patientId": "20250703/002",
-      "dialysisUnit": "Unit D",
-      "technician": "Dr. Wilson",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "14:14",
-      "remarks": "",
-      "patientName": "Karthik GS",
-      "id": "1751532299373",
-      "isDeleted": 0
-    },
-    {
-      "patientId": "20250702/004",
-      "dialysisUnit": "Unit B",
-      "technician": "Dr. Brown",
-      "admittingDoctor": "Dr. Miller",
-      "date": "2025-07-03",
-      "time": "15:33",
-      "remarks": "",
-      "patientName": "Gautam  M",
-      "id": "1751537027331",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250129/001",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "15:39",
-      "remarks": "",
-      "patientName": "Test2 User2",
-      "id": "1751537388002",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250703/003",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "15:42",
-      "remarks": "",
-      "patientName": "Kannan TK",
-      "id": "1751537557290",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250703/004",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Brown",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "15:47",
-      "remarks": "",
-      "patientName": "Kiran TK",
-      "id": "1751537833423",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250703/005",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "16:09",
-      "remarks": "",
-      "patientName": "Yaskumar S",
-      "id": "1751539154473",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250703/006",
-      "dialysisUnit": "Unit A",
-      "technician": "Dr. Smith",
-      "admittingDoctor": "Dr. Johnson",
-      "date": "2025-07-03",
-      "time": "17:23",
-      "remarks": "",
-      "patientName": "Anagha Raj",
-      "id": "1751543621744",
+      "patientName": "Nithin Raj",
+      "status": "Scheduled",
+      "id": "1751631282339",
       "isDeleted": 0
     }
   ],
   "billing": [
     {
-      "patientId": "20250626/004",
-      "sessionDate": "2025-06-26",
+      "id": "1751607312627",
+      "patientId": "20250704/002",
+      "sessionDate": "2025-07-04",
       "sessionDuration": 120,
       "amount": 1000,
-      "patientName": "Subhadra Sharma GK",
+      "patientName": "Keerthi Shankar",
       "totalAmount": 1000,
       "status": "PAID",
-      "date": "2025-06-26",
-      "id": "1750927228786",
-      "name": "Subhadra Sharma GK",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250629/001",
-      "sessionDate": "2025-06-30",
-      "sessionDuration": 120,
-      "amount": 1000,
-      "patientName": "Prabhavati A",
-      "totalAmount": 1000,
-      "status": "PAID",
-      "date": "2025-06-30",
-      "id": "1751280084297",
-      "name": "Prabhavati A",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250701/001",
-      "sessionDate": "2025-07-01",
-      "sessionDuration": 90,
-      "amount": 700,
-      "patientName": "Ashwin Varma",
-      "totalAmount": 700,
-      "status": "PAID",
-      "date": "2025-07-01",
-      "id": "1751350574555",
+      "date": "2025-07-04",
       "isDeleted": 0
     },
     {
-      "patientId": "20250703/006",
-      "sessionDate": "2025-07-03",
-      "sessionDuration": 120,
+      "id": "1751627447053",
+      "patientId": "20250704/005",
+      "sessionDate": "2025-07-04",
+      "sessionDuration": 2,
       "amount": 1000,
-      "patientName": "Anagha Raj",
+      "patientName": "Shiva Kumaran",
       "totalAmount": 1000,
       "status": "PAID",
-      "date": "2025-07-03",
-      "id": "1751543691475",
+      "date": "2025-07-04",
+      "isDeleted": 10,
+      "name": "Shiva Kumaran"
+    },
+    {
+      "id": "1751631317259",
+      "patientId": "20250704/007",
+      "sessionDate": "2025-07-04",
+      "sessionDuration": 120,
+      "amount": 1000,
+      "patientName": "Nithin Raj",
+      "totalAmount": 1000,
+      "status": "PAID",
+      "date": "2025-07-04",
       "isDeleted": 0
     }
   ],
   "history": [
     {
-      "patientId": "20250626/001",
-      "startTime": "13:50",
-      "endTime": "15:50",
+      "id": "1751607290465",
+      "patientId": "20250704/002",
+      "startTime": "11:05",
+      "endTime": "13:05",
       "vitalSigns": {
         "preDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": "",
-          "weight": ""
+          "bloodPressure": "123",
+          "heartRate": 234,
+          "temperature": 345,
+          "weight": 456
         },
         "postDialysis": {
-          "bloodPressure": "120",
-          "heartRate": "",
-          "temperature": "",
-          "weight": ""
+          "bloodPressure": "123",
+          "heartRate": 234,
+          "temperature": 345,
+          "weight": 456
         }
       },
       "treatmentParameters": {
-        "dialyzer": "",
-        "bloodFlow": "",
-        "dialysateFlow": "",
-        "ultrafiltration": ""
+        "dialyzer": "111",
+        "bloodFlow": 222,
+        "dialysateFlow": 333,
+        "ultrafiltration": 444
       },
-      "nursingNotes": "",
-      "patientName": "Krishna Murthi G",
-      "date": "2025-06-26",
-      "id": "1750925541154",
-      "name": "Krishna Murthi G",
-      "isDeleted": 10
+      "nursingNotes": "Test first",
+      "patientName": "Keerthi Shankar",
+      "date": "2025-07-04",
+      "isDeleted": 0
     },
     {
-      "patientId": "20250626/001",
-      "startTime": "15:25",
-      "endTime": "18:25",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "43",
-          "heartRate": 32,
-          "temperature": 23,
-          "weight": 34
-        },
-        "postDialysis": {
-          "bloodPressure": "234",
-          "heartRate": 43,
-          "temperature": 43,
-          "weight": 23
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "45",
-        "bloodFlow": 23,
-        "dialysateFlow": 23,
-        "ultrafiltration": 43
-      },
-      "nursingNotes": "23",
-      "patientName": "Krishna Murthi G",
-      "date": "2025-06-26",
-      "id": "1750928107532",
-      "name": "Krishna Murthi G",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250626/005",
-      "startTime": "17:56",
-      "endTime": "17:56",
+      "id": "1751627420143",
+      "patientId": "20250704/005",
+      "startTime": "16:40",
+      "endTime": "18:40",
       "vitalSigns": {
         "preDialysis": {
           "bloodPressure": "120",
           "heartRate": 72,
           "temperature": 36,
-          "weight": 70
+          "weight": 55
         },
         "postDialysis": {
           "bloodPressure": "120",
           "heartRate": 72,
           "temperature": 36,
-          "weight": 70
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "67",
-        "bloodFlow": 66,
-        "dialysateFlow": 68,
-        "ultrafiltration": 88
-      },
-      "nursingNotes": "asdfg",
-      "patientName": "Shiva Kumar",
-      "date": "2025-06-30",
-      "id": "1751286427273",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250629/001",
-      "startTime": "17:57",
-      "endTime": "19:57",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "110",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 75
-        },
-        "postDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 75
+          "weight": 55
         }
       },
       "treatmentParameters": {
         "dialyzer": "45",
         "bloodFlow": 54,
-        "dialysateFlow": 54,
-        "ultrafiltration": 78
-      },
-      "nursingNotes": "kkk",
-      "patientName": "Prabhavati A",
-      "date": "2025-06-30",
-      "id": "1751286474787",
-      "name": "Prabhavati A",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250701/001",
-      "startTime": "11:45",
-      "endTime": "13:45",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 37,
-          "weight": 70
-        },
-        "postDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 37,
-          "weight": 70
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "45",
-        "bloodFlow": 65,
-        "dialysateFlow": 21,
-        "ultrafiltration": 45
+        "dialysateFlow": 12,
+        "ultrafiltration": 54
       },
       "nursingNotes": "test",
-      "patientName": "Ashwin Varma",
-      "date": "2025-07-01",
-      "id": "1751350547948",
-      "isDeleted": 0
+      "patientName": "Shiva Kumaran",
+      "date": "2025-07-04",
+      "isDeleted": 10,
+      "name": "Shiva Kumaran"
     },
     {
-      "patientId": "20250626/002",
-      "startTime": "15:10",
-      "endTime": "18:10",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "110",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 50
-        },
-        "postDialysis": {
-          "bloodPressure": "110",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 50
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "34",
-        "bloodFlow": 25,
-        "dialysateFlow": 43,
-        "ultrafiltration": 45
-      },
-      "nursingNotes": "test test",
-      "patientName": "Kaveri Ammal",
-      "date": "2025-07-02",
-      "id": "1751442107968",
-      "name": "Kaveri Ammal",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250629/002",
-      "startTime": "13:15",
-      "endTime": "15:15",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 37,
-          "weight": 50
-        },
-        "postDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 37,
-          "weight": 50
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "111",
-        "bloodFlow": 222,
-        "dialysateFlow": 333,
-        "ultrafiltration": 444
-      },
-      "nursingNotes": "yaya",
-      "patientName": "Shankara Narayanan",
-      "date": "2025-07-02",
-      "id": "1751442303495",
-      "name": "Shankara Narayanan",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250702/001",
-      "startTime": "14:45",
-      "endTime": "16:45",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 65
-        },
-        "postDialysis": {
-          "bloodPressure": "120",
-          "heartRate": 72,
-          "temperature": 36,
-          "weight": 65
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "111",
-        "bloodFlow": 222,
-        "dialysateFlow": 333,
-        "ultrafiltration": 444
-      },
-      "nursingNotes": "ttt",
-      "patientName": "Vigneshan Sharma RPG",
-      "date": "2025-07-02",
-      "id": "1751447729640",
-      "name": "Vigneshan Sharma RPG",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250702/002",
-      "startTime": "14:50",
-      "endTime": "16:50",
+      "id": "1751631301843",
+      "patientId": "20250704/007",
+      "startTime": "17:44",
+      "endTime": "17:44",
       "vitalSigns": {
         "preDialysis": {
           "bloodPressure": "",
@@ -913,80 +284,12 @@
         "ultrafiltration": ""
       },
       "nursingNotes": "",
-      "patientName": "Vinodh JK",
-      "date": "2025-07-02",
-      "id": "1751448049150",
-      "isDeleted": 10
-    },
-    {
-      "patientId": "20250702/003",
-      "startTime": "16:42",
-      "endTime": "18:42",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "",
-          "heartRate": "",
-          "temperature": "",
-          "weight": ""
-        },
-        "postDialysis": {
-          "bloodPressure": "",
-          "heartRate": "",
-          "temperature": "",
-          "weight": ""
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "",
-        "bloodFlow": "",
-        "dialysateFlow": "",
-        "ultrafiltration": ""
-      },
-      "nursingNotes": "",
-      "patientName": "Gautam  M",
-      "date": "2025-07-02",
-      "id": "1751454733048",
-      "isDeleted": 0
-    },
-    {
-      "patientId": "20250703/006",
-      "startTime": "17:24",
-      "endTime": "20:24",
-      "vitalSigns": {
-        "preDialysis": {
-          "bloodPressure": "",
-          "heartRate": "",
-          "temperature": "",
-          "weight": ""
-        },
-        "postDialysis": {
-          "bloodPressure": "",
-          "heartRate": "",
-          "temperature": "",
-          "weight": ""
-        }
-      },
-      "treatmentParameters": {
-        "dialyzer": "",
-        "bloodFlow": "",
-        "dialysateFlow": "",
-        "ultrafiltration": ""
-      },
-      "nursingNotes": "",
-      "patientName": "Anagha Raj",
-      "date": "2025-07-03",
-      "id": "1751543668153",
+      "patientName": "Nithin Raj",
+      "date": "2025-07-04",
       "isDeleted": 0
     }
   ],
   "dialysisFlowCharts": [],
   "haemodialysisRecords": [],
-  "patientSerials": {
-    "20250129": 1,
-    "20250626": 4,
-    "20250629": 2,
-    "20250630": 3,
-    "20250701": 1,
-    "20250702": 4
-  }
+  "patientSerials": {}
 }

@@ -13,7 +13,11 @@ import PageContainer from '../components/PageContainer';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
+import EditButton from '../components/EditButton';
+import DeleteButton from '../components/DeleteButton';
+import EditModal from '../components/EditModal';
 import { SelectField, DateField, TimeField, TextareaField } from '../components/forms';
+import { appointmentFormConfig } from '../components/forms/formConfigs';
 import { useDialysis } from '../context/DialysisContext';
 
 interface ScheduleFormValues {
@@ -43,6 +47,14 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
   const [success, setSuccess] = useState<boolean>(false);
   const [schedulesSearch, setSchedulesSearch] = useState<string>('');
 
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [editingData, setEditingData] = useState<ScheduleEntry | null>(null);
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+
+  // Service instance
+  const scheduleService = scheduleServiceFactory.getService();
+
   // Pagination state for schedules
   const [schedulesPage, setSchedulesPage] = useState(1);
   const [schedulesRowsPerPage, setSchedulesRowsPerPage] = useState(10);
@@ -51,9 +63,8 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
 
   React.useEffect(() => {
     // Only fetch staff data, not patients or schedules
-    const scheduleService = scheduleServiceFactory.getService();
     scheduleService.getStaff().then(setStaff).catch(() => setError('Failed to fetch staff'));
-  }, []);
+  }, [scheduleService]);
 
   const initialValues: ScheduleFormValues = {
     patientId: '',
@@ -74,10 +85,10 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
     }
     const newSchedule = {
       ...values,
-      patientName: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim()
+      patientName: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
+      status: 'Scheduled' // Set default status
     };
     try {
-      const scheduleService = scheduleServiceFactory.getService();
       await scheduleService.createSchedule(newSchedule);
       setSuccess(true);
       resetForm();
@@ -113,6 +124,73 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
     }
 
     return filteredSchedules;
+  };
+
+  // Handle edit
+  const handleEdit = (id: string | number) => {
+    const scheduleToEdit = schedules.find(s => s.id === id);
+    if (scheduleToEdit) {
+      setEditingData(scheduleToEdit);
+      setShowEditModal(true);
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async (id: string | number) => {
+    const scheduleToDelete = schedules.find(s => s.id === id);
+    const scheduleName = scheduleToDelete ? scheduleToDelete.patientName : 'this schedule';
+
+    const isConfirmed = window.confirm(
+      `Are you sure you want to delete ${scheduleName}? This action cannot be undone.`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await scheduleService.softDeleteSchedule(id);
+      // Refresh data to update the UI
+      await refreshAppointments();
+    } catch (err) {
+      console.error('Error deleting schedule:', err);
+      setError('Failed to delete schedule. Please try again.');
+    }
+  };
+
+  // Handle edit submit
+  const handleEditSubmit = async (values: any) => {
+    if (!editingData) return;
+    
+    setEditLoading(true);
+    try {
+      const updatedSchedule = await scheduleService.updateSchedule(editingData.id!, {
+        patientName: values.patientName,
+        date: values.date,
+        time: values.time,
+        dialysisUnit: values.dialysisUnit,
+        admittingDoctor: values.admittingDoctor,
+        status: values.status,
+        remarks: values.remarks,
+      });
+      
+      // Refresh data to update the UI
+      await refreshAppointments();
+      
+      setShowEditModal(false);
+      setEditingData(null);
+    } catch (error) {
+      console.error('Error updating schedule:', error);
+      throw error;
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingData(null);
+    setEditLoading(false);
   };
 
   const renderPagination = (currentPage: number, totalPages: number, setPage: (page: number) => void, rowsPerPage: number, setRowsPerPage: (n: number) => void) => {
@@ -293,6 +371,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
               { key: 'technician', header: 'Technician' },
               { key: 'admittingDoctor', header: 'Doctor' },
               { key: 'status', header: 'Status' },
+              { key: 'actions', header: 'Actions' },
             ]}
             data={getFilteredSchedulesData().map(schedule => ({
               id: schedule.id,
@@ -302,10 +381,35 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
               dialysisUnit: schedule.dialysisUnit,
               technician: schedule.technician,
               admittingDoctor: schedule.admittingDoctor,
-              status: schedule.status,
+              status: (
+                <span className={`status-badge ${
+                  schedule.status === 'Completed' ? 'active' :
+                  schedule.status === 'Scheduled' || !schedule.status ? 'scheduled' :
+                  'inactive'
+                }`}>
+                  {schedule.status || 'Scheduled'}
+                </span>
+              ),
+              actions: (
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <EditButton onClick={() => handleEdit(schedule.id!)} />
+                  <DeleteButton onClick={() => handleDelete(schedule.id!)} />
+                </div>
+              ),
             }))}
           />
         </div>
+
+        {/* Edit Modal */}
+        <EditModal
+          show={showEditModal}
+          onHide={handleCloseEditModal}
+          data={editingData}
+          formConfig={appointmentFormConfig}
+          onSubmit={handleEditSubmit}
+          loading={editLoading}
+          editingDataType="appointment"
+        />
       </PageContainer>
       <Footer />
     </>
