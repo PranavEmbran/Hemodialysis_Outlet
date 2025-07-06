@@ -16,10 +16,10 @@ import EditModal from '../components/EditModal';
 import { historyServiceFactory } from '../services/history/factory';
 import { patientServiceFactory } from '../services/patient/factory';
 import { historyFormConfig } from '../components/forms/formConfigs';
+import { useDialysis } from '../context/DialysisContext';
 
 const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const [history, setHistory] = useState<History[]>([]);
-  const [patients, setPatients] = useState<{ id?: string; firstName?: string; lastName?: string; name?: string }[]>([]);
+  const { history, patients, refreshHistory, refreshPatients } = useDialysis();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [selectedPatient, setSelectedPatient] = useState<string>('');
@@ -32,28 +32,6 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
 
   // Service instances
   const historyService = historyServiceFactory.getService();
-  const patientService = patientServiceFactory.getService();
-
-  // Fetch history and patients on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const [historyData, patientsData] = await Promise.all([
-          historyService.getAllHistory(),
-          patientService.getAllPatients(),
-        ]);
-        setHistory(historyData);
-        setPatients(patientsData);
-      } catch (err) {
-        setError('Failed to load history or patients.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [historyService, patientService]);
 
   // Filter history based on search term and selected patient
   const getFilteredHistory = () => {
@@ -63,7 +41,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     }
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
-      filteredHistory = filteredHistory.filter(h => 
+      filteredHistory = filteredHistory.filter(h =>
         h.patientName?.toLowerCase().includes(searchLower) ||
         h.date?.toLowerCase().includes(searchLower) ||
         h.parameters?.toLowerCase().includes(searchLower) ||
@@ -107,8 +85,8 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
 
     try {
       await historyService.softDeleteHistory(id);
-      // Remove from local state
-      setHistory(prevHistory => prevHistory.filter(h => h.id !== id));
+      // Refresh data to update the UI
+      await refreshHistory();
     } catch (err) {
       console.error('Error deleting history:', err);
       setError('Failed to delete history record. Please try again.');
@@ -118,7 +96,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   // Handle edit submit
   const handleEditSubmit = async (values: any) => {
     if (!editingData) return;
-    
+
     setEditLoading(true);
     try {
       const updatedHistory = await historyService.updateHistory(editingData.id!, {
@@ -131,12 +109,10 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         notes: values.notes,
         nursingNotes: values.nursingNotes,
       });
-      
-      // Update local state
-      setHistory(prevHistory => 
-        prevHistory.map(h => h.id === editingData.id ? updatedHistory : h)
-      );
-      
+
+      // Refresh data to update the UI
+      await refreshHistory();
+
       setShowEditModal(false);
       setEditingData(null);
     } catch (error) {
@@ -184,7 +160,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
               </div>
             </div>
             <div className="history-search-group">
-              <Searchbar 
+              <Searchbar
                 value={searchTerm}
                 onChange={handleSearchChange}
               />

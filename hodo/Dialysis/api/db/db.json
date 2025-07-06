@@ -85,6 +85,30 @@
       "catheterInsertionDate": "2025-07-04",
       "fistulaCreationDate": "2025-07-04",
       "isDeleted": 0
+    },
+    {
+      "id": "20250706/001",
+      "firstName": "Govind",
+      "lastName": "Das",
+      "gender": "Male",
+      "dateOfBirth": "2000-08-08",
+      "mobileNo": "1234567897",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-06",
+      "fistulaCreationDate": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "20250706/002",
+      "firstName": "Hema",
+      "lastName": "Latha",
+      "gender": "Female",
+      "dateOfBirth": "1978-05-05",
+      "mobileNo": "1234567897",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-06",
+      "fistulaCreationDate": "2025-07-06",
+      "isDeleted": 10
     }
   ],
   "appointments": [
@@ -155,6 +179,32 @@
       "status": "Scheduled",
       "id": "1751631282339",
       "isDeleted": 0
+    },
+    {
+      "patientId": "20250706/001",
+      "dialysisUnit": "Unit A",
+      "technician": "Dr. Smith",
+      "admittingDoctor": "Dr. Johnson",
+      "date": "2025-07-06",
+      "time": "19:37",
+      "remarks": "TEST 2 @ 06",
+      "patientName": "Govind Das",
+      "status": "Scheduled",
+      "id": "1751810871406",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250704/004",
+      "dialysisUnit": "Unit A",
+      "technician": "Dr. Smith",
+      "admittingDoctor": "Dr. Johnson",
+      "date": "2025-07-06",
+      "time": "20:25",
+      "remarks": "Testing @06",
+      "patientName": "Vigneshan Sharma",
+      "status": "Scheduled",
+      "id": "1751813598925",
+      "isDeleted": 10
     }
   ],
   "billing": [
@@ -194,6 +244,18 @@
       "status": "PAID",
       "date": "2025-07-04",
       "isDeleted": 0
+    },
+    {
+      "id": "1751810917728",
+      "patientId": "20250706/001",
+      "sessionDate": "2025-07-06",
+      "sessionDuration": 2,
+      "amount": 1000,
+      "patientName": "Govind Das",
+      "totalAmount": 1000,
+      "status": "PAID",
+      "date": "2025-07-06",
+      "isDeleted": 10
     }
   ],
   "history": [
@@ -287,6 +349,216 @@
       "patientName": "Nithin Raj",
       "date": "2025-07-04",
       "isDeleted": 0
+    },
+    {
+      "id": "1751810894627",
+      "patientId": "20250706/001",
+      "startTime": "19:38",
+      "endTime": "21:38",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Govind Das",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751813666547",
+      "patientId": "20250704/004",
+      "startTime": "20:25",
+      "endTime": "22:25",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Vigneshan Sharma",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751823102971",
+      "patientId": "P001",
+      "startTime": "23:01",
+      "endTime": "01:01",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "John Doe",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751823146643",
+      "patientId": "mcry27ak0786enf3i9ms",
+      "startTime": "23:02",
+      "endTime": "02:02",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Sivadassan N",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751823894561",
+      "patientId": "mcryohxfss0wu3bbwsl",
+      "startTime": "23:14",
+      "endTime": "01:14",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Aishwarya Ammal",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751825617952",
+      "patientId": "mcrz53566fqvog86xhi",
+      "startTime": "23:43",
+      "endTime": "01:43",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Renjini Kumari",
+      "date": "2025-07-06",
+      "isDeleted": 10
+    },
+    {
+      "id": "1751826579218",
+      "patientId": "20250704/006",
+      "startTime": "03:59",
+      "endTime": "05:59",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        },
+        "postDialysis": {
+          "bloodPressure": "",
+          "heartRate": "",
+          "temperature": "",
+          "weight": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": "",
+        "bloodFlow": "",
+        "dialysateFlow": "",
+        "ultrafiltration": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Vikasan CK",
+      "date": "2025-07-06",
+      "isDeleted": 10
     }
   ],
   "dialysisFlowCharts": [],

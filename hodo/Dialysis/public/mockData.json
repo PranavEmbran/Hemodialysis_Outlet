@@ -1,0 +1,253 @@
+{
+    "patients": [
+        {
+            "id": "P001",
+            "name": "John Doe",
+            "firstName": "John",
+            "lastName": "Doe",
+            "gender": "Male",
+            "dateOfBirth": "1980-01-01",
+            "mobileNo": "1234567890",
+            "bloodGroup": "A+",
+            "catheterInsertionDate": "2023-01-01",
+            "fistulaCreationDate": "2023-02-01",
+            "catheterDate": "2023-01-01",
+            "fistulaDate": "2023-02-01",
+            "isDeleted": 10
+        },
+        {
+            "id": "P002",
+            "name": "Jane Smith",
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "gender": "Female",
+            "dateOfBirth": "1990-05-15",
+            "mobileNo": "0987654321",
+            "bloodGroup": "B-",
+            "catheterInsertionDate": "2023-03-01",
+            "fistulaCreationDate": "2023-04-01",
+            "catheterDate": "2023-03-01",
+            "fistulaDate": "2023-04-01",
+            "isDeleted": 10
+        }
+    ],
+    "appointments": [
+        {
+            "id": "A001",
+            "patientId": "P001",
+            "patientName": "John Doe",
+            "date": "2024-07-10",
+            "time": "09:00",
+            "dialysisUnit": "Unit A",
+            "technician": "Dr. Smith",
+            "admittingDoctor": "Dr. Brown",
+            "status": "Scheduled",
+            "remarks": "First session",
+            "isDeleted": 10
+        },
+        {
+            "id": "A002",
+            "patientId": "P002",
+            "patientName": "Jane Smith",
+            "date": "2024-07-11",
+            "time": "10:00",
+            "dialysisUnit": "Unit B",
+            "technician": "Dr. Wilson",
+            "admittingDoctor": "Dr. Davis",
+            "status": "Completed",
+            "remarks": "Follow-up",
+            "isDeleted": 10
+        }
+    ],
+    "billing": [
+        {
+            "id": "B001",
+            "patientName": "John Doe",
+            "sessionDate": "2024-07-10",
+            "sessionDuration": 4,
+            "totalAmount": 2000,
+            "status": "PAID",
+            "description": "Routine dialysis",
+            "isDeleted": 10
+        },
+        {
+            "id": "B002",
+            "patientName": "Jane Smith",
+            "sessionDate": "2024-07-11",
+            "sessionDuration": 3,
+            "totalAmount": 1800,
+            "status": "PENDING",
+            "description": "Dialysis with consultation",
+            "isDeleted": 10
+        }
+    ],
+    "history": [
+        {
+            "id": "H001",
+            "patientId": "P001",
+            "patientName": "John Doe",
+            "date": "2024-07-10",
+            "parameters": "BP: 120/80, Weight: 70kg",
+            "amount": "2000",
+            "age": "44",
+            "gender": "Male",
+            "notes": "Stable",
+            "nursingNotes": "No issues",
+            "isDeleted": 10
+        },
+        {
+            "id": "H002",
+            "patientId": "P002",
+            "patientName": "Jane Smith",
+            "date": "2024-07-11",
+            "parameters": "BP: 110/70, Weight: 60kg",
+            "amount": "1800",
+            "age": "34",
+            "gender": "Female",
+            "notes": "Mild cramps",
+            "nursingNotes": "Observed for 30 min",
+            "isDeleted": 10
+        }
+    ],
+    "haemodialysisRecords": [
+        {
+            "id": "HR001",
+            "patientId": "P001",
+            "patientName": "John Doe",
+            "date": "2024-01-15",
+            "rows": [
+                {
+                    "time": "09:00",
+                    "bp": "120/80",
+                    "pulse": "72",
+                    "temperature": "36.8",
+                    "venousPressure": "150",
+                    "negativePressure": "200",
+                    "tmp": "180",
+                    "heparin": "2000",
+                    "medicationRemarks": "Routine session"
+                },
+                {
+                    "time": "10:00",
+                    "bp": "118/78",
+                    "pulse": "70",
+                    "temperature": "36.9",
+                    "venousPressure": "145",
+                    "negativePressure": "195",
+                    "tmp": "175",
+                    "heparin": "1800",
+                    "medicationRemarks": "Stable condition"
+                }
+            ]
+        },
+        {
+            "id": "HR002",
+            "patientId": "P002",
+            "patientName": "Jane Smith",
+            "date": "2024-01-16",
+            "rows": [
+                {
+                    "time": "10:00",
+                    "bp": "118/78",
+                    "pulse": "70",
+                    "temperature": "36.9",
+                    "venousPressure": "145",
+                    "negativePressure": "195",
+                    "tmp": "175",
+                    "heparin": "1800",
+                    "medicationRemarks": "Stable condition"
+                }
+            ]
+        }
+    ],
+    "dialysisFlowCharts": [
+        {
+            "id": "DFC001",
+            "patientId": "P001",
+            "patientName": "John Doe",
+            "date": "2024-01-15",
+            "hemodialysisNIO": "HD001",
+            "bloodAccess": "AV Fistula",
+            "hdStartingTime": "09:00",
+            "hdClosingTime": "13:00",
+            "durationHours": "4",
+            "bloodFlowRate": "300",
+            "injHeparinPrime": "2000",
+            "injHeparinBolus": "1000",
+            "startingWithSaline": true,
+            "closingWithAir": false,
+            "closingWithSaline": true,
+            "bloodTransfusion": false,
+            "bloodTransfusionComment": "",
+            "bpBeforeDialysis": "120/80",
+            "bpAfterDialysis": "110/70",
+            "bpDuringDialysis": "115/75",
+            "weightPreDialysis": "75.5",
+            "weightPostDialysis": "73.2",
+            "weightLoss": "2.3",
+            "dryWeight": "72.0",
+            "weightGain": "3.5",
+            "dialysisMonitorNameFO": "Monitor A",
+            "dialysisNameSize": "F8",
+            "dialysisNumberOfRefuse": "2",
+            "bloodTubeNumberOfRefuse": "1",
+            "dialysisFlowRate": "500",
+            "bathacetete": "Bath A",
+            "bathBicarb": "35",
+            "naConductivity": "14.0",
+            "profilesNo": "P001",
+            "equipmentsComplaints": "None",
+            "patientsComplaints": "None",
+            "spo2": "98",
+            "fever": false,
+            "rigor": false,
+            "hypertension": false,
+            "hypoglycemia": false,
+            "deptInChargeSign": "Dr. Smith"
+        },
+        {
+            "id": "DFC002",
+            "patientId": "P002",
+            "patientName": "Jane Smith",
+            "date": "2024-01-16",
+            "hemodialysisNIO": "HD002",
+            "bloodAccess": "Catheter",
+            "hdStartingTime": "10:00",
+            "hdClosingTime": "14:00",
+            "durationHours": "4",
+            "bloodFlowRate": "280",
+            "injHeparinPrime": "1800",
+            "injHeparinBolus": "800",
+            "startingWithSaline": true,
+            "closingWithAir": true,
+            "closingWithSaline": false,
+            "bloodTransfusion": false,
+            "bloodTransfusionComment": "",
+            "bpBeforeDialysis": "118/78",
+            "bpAfterDialysis": "105/68",
+            "bpDuringDialysis": "112/73",
+            "weightPreDialysis": "68.0",
+            "weightPostDialysis": "65.8",
+            "weightLoss": "2.2",
+            "dryWeight": "65.0",
+            "weightGain": "3.0",
+            "dialysisMonitorNameFO": "Monitor B",
+            "dialysisNameSize": "F6",
+            "dialysisNumberOfRefuse": "1",
+            "bloodTubeNumberOfRefuse": "0",
+            "dialysisFlowRate": "450",
+            "bathacetete": "Bath B",
+            "bathBicarb": "32",
+            "naConductivity": "13.5",
+            "profilesNo": "P002",
+            "equipmentsComplaints": "None",
+            "patientsComplaints": "Slight dizziness",
+            "spo2": "97",
+            "fever": false,
+            "rigor": false,
+            "hypertension": false,
+            "hypoglycemia": false,
+            "deptInChargeSign": "Dr. Johnson"
+        }
+    ]
+}

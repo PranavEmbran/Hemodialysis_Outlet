@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { patientsApi } from '../api/patientsApi';
 import type { Patient } from '../types';
-import { haemodialysisRecordApi } from '../api/haemodialysisRecordApi';
 import ButtonWithGradient from './ButtonWithGradient';
 import { SelectField, InputField, TimeField, TextareaField } from './forms';
+import { patientServiceFactory } from '../services/patient/factory';
+import { haemodialysisRecordServiceFactory } from '../services/haemodialysisRecord/factory';
 import './HaemodialysisRecordDetails.css';
 
 interface Row {
@@ -64,12 +64,16 @@ const HaemodialysisRecordDetails: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
+  // Get services from factories
+  const patientService = patientServiceFactory.getService();
+  const haemodialysisRecordService = haemodialysisRecordServiceFactory.getService();
+
   useEffect(() => {
-    patientsApi.getAllPatients()
+    patientService.getAllPatients()
       .then(setPatients)
       .catch(() => setError('Failed to fetch patients'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [patientService]);
 
   const initialValues: FormValues = {
     patientId: '',
@@ -95,7 +99,7 @@ const HaemodialysisRecordDetails: React.FC = () => {
       rows: values.rows,
     };
     try {
-      await haemodialysisRecordApi.addRecord(record);
+      await haemodialysisRecordService.addRecord(record);
       setSuccess('Record saved successfully!');
       resetForm();
       setTimeout(() => setSuccess(''), 3000);

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Formik, Form } from 'formik';
-import type { FormikHelpers } from 'formik';
+import { Formik, Form, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { historyApi } from '../api/historyApi';
-import { patientsApi } from '../api/patientsApi';
-import './DialysisProcess.css';
+import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
-import Header from '../components/Header';
-import type { Patient } from '../types';
 import SectionHeading from '../components/SectionHeading';
+import SelectField from '../components/forms/SelectField';
+import InputField from '../components/forms/InputField';
+import TimeField from '../components/forms/TimeField';
+import TextareaField from '../components/forms/TextareaField';
 import ButtonWithGradient from '../components/ButtonWithGradient';
-import { InputField, SelectField, TimeField, TextareaField } from '../components/forms';
+import type { Patient } from '../types';
+import { patientServiceFactory } from '../services/patient/factory';
+import { historyServiceFactory } from '../services/history/factory';
 import { useDialysis } from '../context/DialysisContext';
 
 interface VitalSigns {
@@ -81,17 +82,20 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   const [error, setError] = useState<string>('');
   const { refreshHistory } = useDialysis();
 
+  // Get patient service from factory
+  const patientService = patientServiceFactory.getService();
+
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const patientsData = await patientsApi.getAllPatients();
+        const patientsData = await patientService.getAllPatients();
         setPatients(patientsData);
       } catch (err) {
         setError('Failed to load patients. Please try again.');
       }
     };
     fetchPatients();
-  }, []);
+  }, [patientService]);
 
   const initialValues: DialysisProcessFormValues = {
     patientId: '',
@@ -131,7 +135,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
         date: new Date().toISOString().split('T')[0]
       };
       console.log('Sending to API:', newHistory);
-      const response = await historyApi.addHistory(newHistory);
+      const response = await historyServiceFactory.getService().addHistory(newHistory);
       console.log('API response:', response);
       await refreshHistory();
       setSuccess(true);

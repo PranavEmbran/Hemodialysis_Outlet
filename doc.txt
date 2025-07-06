@@ -22,5 +22,8 @@ npm install html2pdf.js
 
 npm install react-toastify @types/react-toastify
 
+npm install vite-plugin-mock --save-dev
+
+
 
 npm audit fix --force

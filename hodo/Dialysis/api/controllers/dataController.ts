@@ -178,7 +178,7 @@ function cascadeRestoreByPatientId(db: Database, patientId: string) {
         ? { ...item, isDeleted: 10, deletedAt: undefined }
         : item
     );
-  
+
   if (db.appointments) db.appointments = markRestored(db.appointments);
   if (db.history) db.history = markRestored(db.history);
   if (db.billing) db.billing = markRestored(db.billing);
@@ -192,15 +192,15 @@ export const getPatients = (req: Request, res: Response): any => {
     console.log('Fetching all patients...');
     const db = readDB();
     const allPatients = db.patients || [];
-    
+
     // Filter out soft-deleted patients (only return active patients where isDeleted !== 0)
     const patients = allPatients.filter(patient => patient.isDeleted !== 0);
-    
+
     console.log(`Found ${patients.length} active patients out of ${allPatients.length} total`);
     return res.json(patients);
   } catch (error) {
     console.error('Error in getPatients:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get patients',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -211,21 +211,21 @@ export const addPatient = (req: Request, res: Response): any => {
   try {
     console.log('Adding new patient:', req.body);
     const { firstName, lastName, gender, dateOfBirth, mobileNo, bloodGroup, catheterInsertionDate, fistulaCreationDate } = req.body;
-    
+
     // Validate required fields
     const requiredFields = {
       firstName, lastName, gender, dateOfBirth, mobileNo, bloodGroup, catheterInsertionDate, fistulaCreationDate
     };
-    
+
     const missingFields = Object.entries(requiredFields)
       .filter(([_, value]) => !value)
       .map(([key]) => key);
 
     if (missingFields.length > 0) {
       console.error('Missing required fields:', missingFields);
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'All fields are required',
-        missingFields 
+        missingFields
       });
     }
 
@@ -268,7 +268,7 @@ export const addPatient = (req: Request, res: Response): any => {
     return res.status(201).json(newPatient);
   } catch (error) {
     console.error('Error in addPatient:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to add patient',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -279,7 +279,7 @@ export const deletePatient = (req: Request, res: Response): any => {
   try {
     const patientId = req.params.id;
     console.log('Soft deleting patient with ID:', patientId);
-    
+
     if (!patientId) {
       console.error('No patient ID provided');
       return res.status(400).json({ message: 'Patient ID is required' });
@@ -289,7 +289,7 @@ export const deletePatient = (req: Request, res: Response): any => {
     // Ensure all records have isDeleted field before operation
     normalizeIsDeletedFields(db);
     const patientIndex = db.patients.findIndex(p => p.id === patientId);
-    
+
     if (patientIndex === -1) {
       console.error('Patient not found:', patientId);
       return res.status(404).json({ message: 'Patient not found' });
@@ -306,7 +306,7 @@ export const deletePatient = (req: Request, res: Response): any => {
     return res.status(200).json({ message: 'Patient and related records soft deleted successfully' });
   } catch (error) {
     console.error('Error in deletePatient:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to delete patient',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -318,7 +318,7 @@ export const restorePatient = (req: Request, res: Response): any => {
   try {
     const patientId = req.params.id;
     console.log('Restoring patient with ID:', patientId);
-    
+
     if (!patientId) {
       console.error('No patient ID provided');
       return res.status(400).json({ message: 'Patient ID is required' });
@@ -326,7 +326,7 @@ export const restorePatient = (req: Request, res: Response): any => {
 
     const db = readDB();
     const patientIndex = db.patients.findIndex(p => p.id === patientId);
-    
+
     if (patientIndex === -1) {
       console.error('Patient not found:', patientId);
       return res.status(404).json({ message: 'Patient not found' });
@@ -335,16 +335,16 @@ export const restorePatient = (req: Request, res: Response): any => {
     // Restore: set isDeleted to 10 (active)
     db.patients[patientIndex].isDeleted = 10;
     db.patients[patientIndex].deletedAt = undefined;
-    
+
     // Cascade restore to all related tables
     cascadeRestoreByPatientId(db, patientId);
-    
+
     writeDB(db);
     console.log('Successfully restored patient and related records:', patientId);
     return res.status(200).json({ message: 'Patient and related records restored successfully' });
   } catch (error) {
     console.error('Error in restorePatient:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to restore patient',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -361,7 +361,7 @@ export const getAppointments = (req: Request, res: Response): any => {
     return res.json(appointments);
   } catch (error) {
     console.error('Error in getAppointments:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get appointments',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -379,7 +379,7 @@ export const addAppointment = (req: Request, res: Response): any => {
     return res.status(201).json(newAppointment);
   } catch (error) {
     console.error('Error in addAppointment:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to add appointment',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -408,7 +408,7 @@ export const deleteAppointment = (req: Request, res: Response): any => {
     return res.status(204).end();
   } catch (error) {
     console.error('Error in deleteAppointment:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to delete appointment',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -425,7 +425,7 @@ export const getBilling = (req: Request, res: Response): any => {
     return res.json(billing);
   } catch (error) {
     console.error('Error in getBilling:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get billing',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -443,7 +443,7 @@ export const addBilling = (req: Request, res: Response): any => {
     return res.status(201).json(newBilling);
   } catch (error) {
     console.error('Error in addBilling:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to add billing',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -461,7 +461,7 @@ export const deleteBilling = (req: Request, res: Response): any => {
     return res.status(204).end();
   } catch (error) {
     console.error('Error in deleteBilling:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to delete billing',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -474,23 +474,23 @@ export const updateBilling = (req: Request, res: Response): any => {
     console.log('Updating billing record with ID:', billingId, req.body);
     const db = readDB();
     const billingIndex = db.billing.findIndex(b => b.id === billingId);
-    
+
     if (billingIndex === -1) {
       return res.status(404).json({ message: 'Billing record not found' });
     }
-    
+
     // Update the billing record
     db.billing[billingIndex] = {
       ...db.billing[billingIndex],
       ...req.body,
     };
-    
+
     writeDB(db);
     console.log('Successfully updated billing record:', billingId);
     return res.json(db.billing[billingIndex]);
   } catch (error) {
     console.error('Error in updateBilling:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to update billing',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -503,21 +503,21 @@ export const softDeleteBilling = (req: Request, res: Response): any => {
     console.log('Soft deleting billing record with ID:', billingId);
     const db = readDB();
     const billingIndex = db.billing.findIndex(b => b.id === billingId);
-    
+
     if (billingIndex === -1) {
       return res.status(404).json({ message: 'Billing record not found' });
     }
-    
+
     // Soft delete - mark as deleted
     db.billing[billingIndex].isDeleted = 0;
     db.billing[billingIndex].deletedAt = new Date().toISOString();
-    
+
     writeDB(db);
     console.log('Successfully soft deleted billing record:', billingId);
     return res.status(200).json({ message: 'Billing record soft deleted successfully' });
   } catch (error) {
     console.error('Error in softDeleteBilling:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to soft delete billing',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -534,7 +534,7 @@ export const getHistory = (req: Request, res: Response): any => {
     return res.json(history);
   } catch (error) {
     console.error('Error in getHistory:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -552,7 +552,7 @@ export const addHistory = (req: Request, res: Response): any => {
     return res.status(201).json(newHistory);
   } catch (error) {
     console.error('Error in addHistory:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to add history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -565,23 +565,23 @@ export const updateHistory = (req: Request, res: Response): any => {
     console.log('Updating history record with ID:', historyId, req.body);
     const db = readDB();
     const historyIndex = db.history.findIndex(h => h.id === historyId);
-    
+
     if (historyIndex === -1) {
       return res.status(404).json({ message: 'History record not found' });
     }
-    
+
     // Update the history record
     db.history[historyIndex] = {
       ...db.history[historyIndex],
       ...req.body,
     };
-    
+
     writeDB(db);
     console.log('Successfully updated history record:', historyId);
     return res.json(db.history[historyIndex]);
   } catch (error) {
     console.error('Error in updateHistory:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to update history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -599,7 +599,7 @@ export const deleteHistory = (req: Request, res: Response): any => {
     return res.status(204).end();
   } catch (error) {
     console.error('Error in deleteHistory:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to delete history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -612,21 +612,21 @@ export const softDeleteHistory = (req: Request, res: Response): any => {
     console.log('Soft deleting history record with ID:', historyId);
     const db = readDB();
     const historyIndex = db.history.findIndex(h => h.id === historyId);
-    
+
     if (historyIndex === -1) {
       return res.status(404).json({ message: 'History record not found' });
     }
-    
+
     // Soft delete - mark as deleted
     db.history[historyIndex].isDeleted = 0;
     db.history[historyIndex].deletedAt = new Date().toISOString();
-    
+
     writeDB(db);
     console.log('Successfully soft deleted history record:', historyId);
     return res.status(200).json({ message: 'History record soft deleted successfully' });
   } catch (error) {
     console.error('Error in softDeleteHistory:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to soft delete history',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -645,7 +645,7 @@ export const getStaff = (req: Request, res: Response): any => {
     return res.json(staffData);
   } catch (error) {
     console.error('Error in getStaff:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get staff data',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -662,7 +662,7 @@ export const getDialysisFlowCharts = (req: Request, res: Response): any => {
     return res.json(dialysisFlowCharts);
   } catch (error) {
     console.error('Error in getDialysisFlowCharts:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to get dialysis flow charts',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -673,8 +673,8 @@ export const addDialysisFlowChart = (req: Request, res: Response): any => {
   try {
     console.log('Adding new dialysis flow chart:', req.body);
     const db = readDB();
-    const newDialysisFlowChart: DialysisFlowChart = { 
-      id: Date.now().toString(), 
+    const newDialysisFlowChart: DialysisFlowChart = {
+      id: Date.now().toString(),
       ...req.body,
       isDeleted: 10
     };
@@ -684,7 +684,7 @@ export const addDialysisFlowChart = (req: Request, res: Response): any => {
     return res.status(201).json(newDialysisFlowChart);
   } catch (error) {
     console.error('Error in addDialysisFlowChart:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to add dialysis flow chart',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -702,7 +702,7 @@ export const deleteDialysisFlowChart = (req: Request, res: Response): any => {
     return res.status(204).end();
   } catch (error) {
     console.error('Error in deleteDialysisFlowChart:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to delete dialysis flow chart',
       error: error instanceof Error ? error.message : 'Unknown error'
     });

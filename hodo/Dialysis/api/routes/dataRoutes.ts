@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { generatePatientId } from '../utils/patientIdGenerator';
 import { updatePatientNameReferences } from '../db/dbOperations';
-import { 
-  getPatients, 
-  addPatient, 
-  deletePatient, 
+import {
+  getPatients,
+  addPatient,
+  deletePatient,
   restorePatient,
   getBilling,
   addBilling,
@@ -73,7 +73,7 @@ router.get('/patients/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const patient = db.patients.find((p: any) => p.id === id);
     if (patient) {
       res.json(patient);
@@ -91,7 +91,7 @@ router.put('/patients/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const index = db.patients.findIndex((p: any) => p.id === id);
     if (index !== -1) {
       // Always compute the name field from firstName and lastName
@@ -111,7 +111,7 @@ router.put('/patients/:id', (req: Request, res: Response) => {
 
       // Save the updated database
       writeDatabase(db);
-      
+
       res.json(updatedPatient);
     } else {
       res.status(404).json({ error: 'Patient not found' });
@@ -224,7 +224,7 @@ router.get('/appointments/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const appointment = db.appointments.find((a: any) => a.id === id && a.isDeleted !== 0);
     if (appointment) {
       res.json(appointment);
@@ -242,7 +242,7 @@ router.put('/appointments/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const index = db.appointments.findIndex((a: any) => a.id === id);
     if (index !== -1) {
       // Update the appointment data while preserving the ID
@@ -251,10 +251,10 @@ router.put('/appointments/:id', (req: Request, res: Response) => {
         ...req.body,
         id: id // Ensure ID is preserved
       };
-      
+
       db.appointments[index] = updatedAppointment;
       writeDatabase(db);
-      
+
       res.json(updatedAppointment);
     } else {
       res.status(404).json({ error: 'Appointment not found' });
@@ -270,7 +270,7 @@ router.patch('/appointments/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const index = db.appointments.findIndex((a: any) => a.id === id);
     if (index !== -1) {
       // Soft delete - mark as deleted instead of removing
@@ -279,7 +279,7 @@ router.patch('/appointments/:id', (req: Request, res: Response) => {
         isDeleted: 0,
         deletedAt: new Date().toISOString()
       };
-      
+
       writeDatabase(db);
       res.json({ message: `Appointment ${id} soft deleted successfully` });
     } else {
@@ -296,7 +296,7 @@ router.delete('/appointments/:id', (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = readDatabase();
-    
+
     const index = db.appointments.findIndex((a: any) => a.id === id);
     if (index !== -1) {
       db.appointments.splice(index, 1);

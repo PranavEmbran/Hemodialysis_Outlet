@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
-import { patientsApi } from '../api/patientsApi';
-import { dialysisFlowChartApi } from '../api/dialysisFlowChartApi';
 import type { Patient } from '../types';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -9,6 +7,8 @@ import ButtonWithGradient from './ButtonWithGradient';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { InputField, SelectField, DateField, TimeField, TextareaField, CheckboxField } from './forms';
+import { patientServiceFactory } from '../services/patient/factory';
+import { dialysisFlowChartServiceFactory } from '../services/dialysisFlowChart/factory';
 import './DialysisFlowChart.css';
 
 interface DialysisFlowChartForm {
@@ -111,12 +111,16 @@ const DialysisFlowChart: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
+  // Get services from factories
+  const patientService = patientServiceFactory.getService();
+  const dialysisFlowChartService = dialysisFlowChartServiceFactory.getService();
+
   useEffect(() => {
     const fetchPatients = async () => {
       try {
         setLoading(true);
         setError('');
-        const patientsData = await patientsApi.getAllPatients();
+        const patientsData = await patientService.getAllPatients();
         setPatients(patientsData);
       } catch (err) {
         setError('Failed to load patients. Please try again.');
@@ -125,7 +129,7 @@ const DialysisFlowChart: React.FC = () => {
       }
     };
     fetchPatients();
-  }, []);
+  }, [patientService]);
 
   const getSelectedPatient = (patientId: string) => {
     return patients.find(patient => patient.id === patientId);
@@ -260,25 +264,69 @@ const DialysisFlowChart: React.FC = () => {
   };
 
   const handleSubmit = async (values: DialysisFlowChartForm, { resetForm }: any) => {
-    setError('');
-    setSuccess('');
     try {
+      setLoading(true);
+      setError('');
+      setSuccess('');
+
       const selectedPatient = getSelectedPatient(values.patientId);
       if (!selectedPatient) {
-        setError('Please select a valid patient');
+        setError('Please select a valid patient.');
         return;
       }
+
       const dialysisFlowChartData = {
-        ...values,
-        patientName: (selectedPatient.firstName || selectedPatient.name) +
-          (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')
+        patientId: values.patientId,
+        patientName: (selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : ''),
+        date: values.date,
+        hemodialysisNIO: values.hemodialysisNIO,
+        bloodAccess: values.bloodAccess,
+        hdStartingTime: values.hdStartingTime,
+        hdClosingTime: values.hdClosingTime,
+        durationHours: values.durationHours,
+        bloodFlowRate: values.bloodFlowRate,
+        injHeparinPrime: values.injHeparinPrime,
+        injHeparinBolus: values.injHeparinBolus,
+        startingWithSaline: values.startingWithSaline,
+        closingWithAir: values.closingWithAir,
+        closingWithSaline: values.closingWithSaline,
+        bloodTransfusion: values.bloodTransfusion,
+        bloodTransfusionComment: values.bloodTransfusionComment,
+        bpBeforeDialysis: values.bpBeforeDialysis,
+        bpAfterDialysis: values.bpAfterDialysis,
+        bpDuringDialysis: values.bpDuringDialysis,
+        weightPreDialysis: values.weightPreDialysis,
+        weightPostDialysis: values.weightPostDialysis,
+        weightLoss: values.weightLoss,
+        dryWeight: values.dryWeight,
+        weightGain: values.weightGain,
+        dialysisMonitorNameFO: values.dialysisMonitorNameFO,
+        dialysisNameSize: values.dialysisNameSize,
+        dialysisNumberOfRefuse: values.dialysisNumberOfRefuse,
+        bloodTubeNumberOfRefuse: values.bloodTubeNumberOfRefuse,
+        dialysisFlowRate: values.dialysisFlowRate,
+        bathacetete: values.bathacetete,
+        bathBicarb: values.bathBicarb,
+        naConductivity: values.naConductivity,
+        profilesNo: values.profilesNo,
+        equipmentsComplaints: values.equipmentsComplaints,
+        patientsComplaints: values.patientsComplaints,
+        spo2: values.spo2,
+        fever: values.fever,
+        rigor: values.rigor,
+        hypertension: values.hypertension,
+        hypoglycemia: values.hypoglycemia,
+        deptInChargeSign: values.deptInChargeSign,
       };
-      await dialysisFlowChartApi.addDialysisFlowChart(dialysisFlowChartData);
+
+      await dialysisFlowChartService.addDialysisFlowChart(dialysisFlowChartData);
       setSuccess('Dialysis flow chart saved successfully!');
       resetForm();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Failed to save dialysis flow chart. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -318,10 +366,12 @@ const DialysisFlowChart: React.FC = () => {
                     <SelectField
                       label="Patient"
                       name="patientId"
-                      options={patients.map(patient => ({
-                        label: (patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : ''),
-                        value: patient.id
-                      }))}
+                      options={patients
+                        .filter(patient => patient.id)
+                        .map(patient => ({
+                          label: (patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : ''),
+                          value: patient.id!
+                        }))}
                       placeholder={loading ? 'Loading patients...' : 'Select Patient'}
                       required
                       disabled={loading}
@@ -377,7 +427,7 @@ const DialysisFlowChart: React.FC = () => {
                   <div className="form-grid">
                     <TimeField label="HD Starting Time" name="hdStartingTime" required />
                     <TimeField label="HD Closing Time" name="hdClosingTime" required />
-                    <InputField label="Duration Hours" name="durationHours" type="number" min="0" />
+                    <InputField label="Duration Hours" name="durationHours" type="number" />
                   </div>
                 </div>
 
@@ -388,12 +438,12 @@ const DialysisFlowChart: React.FC = () => {
                     <InputField label="B.P. Before Dialysis" name="bpBeforeDialysis" placeholder="e.g., 120/80" />
                     <InputField label="B.P. After Dialysis" name="bpAfterDialysis" placeholder="e.g., 110/70" />
                     <InputField label="B.P. During Dialysis (Average)" name="bpDuringDialysis" placeholder="e.g., 115/75" />
-                    <InputField label="Weight Pre Dialysis (kg)" name="weightPreDialysis" type="number" min="0" />
-                    <InputField label="Weight Post Dialysis (kg)" name="weightPostDialysis" type="number" min="0" />
-                    <InputField label="Weight Loss (kg)" name="weightLoss" type="number" min="0" />
-                    <InputField label="Dry Weight (kg)" name="dryWeight" type="number" min="0" />
-                    <InputField label="Weight Gain (kg)" name="weightGain" type="number" min="0" />
-                    <InputField label="SPO2 (%)" name="spo2" type="number" min="0" max="100" />
+                    <InputField label="Weight Pre Dialysis (kg)" name="weightPreDialysis" type="number" />
+                    <InputField label="Weight Post Dialysis (kg)" name="weightPostDialysis" type="number" />
+                    <InputField label="Weight Loss (kg)" name="weightLoss" type="number" />
+                    <InputField label="Dry Weight (kg)" name="dryWeight" type="number" />
+                    <InputField label="Weight Gain (kg)" name="weightGain" type="number" />
+                    <InputField label="SPO2 (%)" name="spo2" type="number" />
                   </div>
                 </div>
 
@@ -401,9 +451,9 @@ const DialysisFlowChart: React.FC = () => {
                 <div className="form-section">
                   <h3>Dialysis Setup</h3>
                   <div className="form-grid">
-                    <InputField label="Blood Flow Rate (ml/min)" name="bloodFlowRate" type="number" min="0" />
-                    <InputField label="Inj Heparin Prime (units)" name="injHeparinPrime" type="number" min="0" />
-                    <InputField label="Inj. Heparin Bolus (units)" name="injHeparinBolus" type="number" min="0" />
+                    <InputField label="Blood Flow Rate (ml/min)" name="bloodFlowRate" type="number" />
+                    <InputField label="Inj Heparin Prime (units)" name="injHeparinPrime" type="number" />
+                    <InputField label="Inj. Heparin Bolus (units)" name="injHeparinBolus" type="number" />
                     <CheckboxField label="Starting with Saline" name="startingWithSaline" />
                     <div className="form-field checkbox-group">
                       <label>Closing with:</label>
@@ -419,9 +469,9 @@ const DialysisFlowChart: React.FC = () => {
                     </div>
                     <InputField label="Dialysis Monitor Name FO No" name="dialysisMonitorNameFO" />
                     <InputField label="Dialysis Name / Size" name="dialysisNameSize" />
-                    <InputField label="Dialysis Number of Refuse" name="dialysisNumberOfRefuse" type="number" min="0" />
-                    <InputField label="Blood Tube Number of Refuse" name="bloodTubeNumberOfRefuse" type="number" min="0" />
-                    <InputField label="Dialysis Flow Rate" name="dialysisFlowRate" type="number" min="0" />
+                    <InputField label="Dialysis Number of Refuse" name="dialysisNumberOfRefuse" type="number" />
+                    <InputField label="Blood Tube Number of Refuse" name="bloodTubeNumberOfRefuse" type="number" />
+                    <InputField label="Dialysis Flow Rate" name="dialysisFlowRate" type="number" />
                     <InputField label="Bathacetete" name="bathacetete" />
                     <InputField label="Bath Bicarb" name="bathBicarb" />
                     <InputField label="Na / Conductivity" name="naConductivity" />

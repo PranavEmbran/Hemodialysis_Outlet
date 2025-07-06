@@ -12,14 +12,14 @@ interface DialysisContextType {
   history: History[];
   loading: boolean;
   error: string;
-  
+
   // State setters
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
   setAppointments: React.Dispatch<React.SetStateAction<ScheduleEntry[]>>;
   setHistory: React.Dispatch<React.SetStateAction<History[]>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string>>;
-  
+
   // Centralized update functions
   updatePatient: (patientId: string, updatedData: Partial<Patient>) => Promise<void>;
   updateAppointment: (appointmentId: string, updatedData: Partial<ScheduleEntry>) => Promise<void>;
@@ -93,14 +93,14 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       const fullName = `${updatedPatient.firstName || updatedPatient.name || ''} ${updatedPatient.lastName || ''}`.trim();
 
       // Optimistically update patients state, and update the 'name' field as well
-      setPatients(prevPatients => 
-        prevPatients.map(p => 
+      setPatients(prevPatients =>
+        prevPatients.map(p =>
           p.id === patientId ? { ...p, ...updatedPatient, name: fullName } : p
         )
       );
 
       // Update patient references in appointments, including 'patientName' and 'name' if present
-      setAppointments(prevAppointments => 
+      setAppointments(prevAppointments =>
         prevAppointments.map(apt => {
           if (apt.patientId === patientId) {
             return {
@@ -114,7 +114,7 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
       );
 
       // Update patient references in history, including 'patientName' and 'name' if present
-      setHistory(prevHistory => 
+      setHistory(prevHistory =>
         prevHistory.map(h => {
           if (h.patientId === patientId) {
             return {
@@ -205,8 +205,11 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     try {
       setLoading(true);
       const historyService = historyServiceFactory.getService();
+      console.log('DialysisContext: Refreshing history data...');
       const historyData = await historyService.getAllHistory();
+      console.log('DialysisContext: Received history data:', historyData);
       setHistory(historyData);
+      console.log('DialysisContext: History state updated with', historyData.length, 'records');
     } catch (err) {
       console.error('Error refreshing history:', err);
       setError('Failed to refresh history data.');
@@ -272,14 +275,14 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     history: visibleHistory,
     loading,
     error,
-    
+
     // State setters
     setPatients,
     setAppointments,
     setHistory,
     setLoading,
     setError,
-    
+
     // Centralized update functions
     updatePatient,
     updateAppointment,

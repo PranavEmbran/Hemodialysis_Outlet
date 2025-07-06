@@ -1,27 +1,6 @@
 import type { History, HistoryRecord } from '../../../types';
 import type { HistoryService } from '../historyService';
-
-const STORAGE_KEY = 'dialysis_history';
-
-// Helper function to get history from localStorage
-const getHistoryFromStorage = (): History[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.error('Error reading history from localStorage:', error);
-    return [];
-  }
-};
-
-// Helper function to save history to localStorage
-const saveHistoryToStorage = (history: History[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (error) {
-    console.error('Error saving history to localStorage:', error);
-  }
-};
+import { filePersistence } from '../../../utils/filePersistence';
 
 // Generate a unique ID
 const generateId = (): number => {
@@ -31,105 +10,82 @@ const generateId = (): number => {
 export class MockHistoryService implements HistoryService {
   async getAllHistory(): Promise<History[]> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const allHistory = getHistoryFromStorage();
-    
-    // Filter out soft-deleted records (isDeleted = 0)
-    const activeHistory = allHistory.filter(history => history.isDeleted !== 0);
-    
-    if (activeHistory.length === 0) {
-      const mockHistory: History[] = [
-        {
-          id: 1,
-          date: '2024-01-15',
-          patientId: '1',
-          patientName: 'John Doe',
-          parameters: 'BP: 120/80, Weight: 70kg',
-          notes: 'Regular dialysis session completed successfully',
-          amount: '1500',
-          age: '45',
-          gender: 'Male',
-          isDeleted: 10,
-        },
-        {
-          id: 2,
-          date: '2024-01-16',
-          patientId: '2',
-          patientName: 'Jane Smith',
-          parameters: 'BP: 110/75, Weight: 65kg',
-          notes: 'Patient reported mild discomfort during session',
-          amount: '1800',
-          age: '52',
-          gender: 'Female',
-          isDeleted: 10,
-        },
-        {
-          id: 3,
-          date: '2024-01-17',
-          patientId: '3',
-          patientName: 'Michael Johnson',
-          parameters: 'BP: 125/85, Weight: 75kg',
-          notes: 'Standard dialysis session, no complications',
-          amount: '1200',
-          age: '38',
-          gender: 'Male',
-          isDeleted: 10,
-        }
-      ];
-      
-      saveHistoryToStorage(mockHistory);
-      return mockHistory;
+
+    try {
+      // Get history from file persistence
+      const history = await filePersistence.getResourceData('history');
+      // Return only active history records (not soft-deleted)
+      const activeHistory = history.filter((h: History) => h.isDeleted !== 0);
+      console.log(`MockHistoryService: Returning ${activeHistory.length} active history records`);
+      return activeHistory;
+    } catch (error) {
+      console.error('MockHistoryService: Error loading history:', error);
+      throw error;
     }
-    
-    return activeHistory;
   }
 
   async getHistoryByPatientId(patientId: string): Promise<HistoryRecord[]> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const allHistory = getHistoryFromStorage();
-    
-    // Filter by patientId and exclude soft-deleted records
-    return allHistory.filter(history => 
-      history.patientId === patientId && history.isDeleted !== 0
-    ) as HistoryRecord[];
+
+    try {
+      const history = await filePersistence.getResourceData('history');
+      return history.filter((h: History) =>
+        h.patientId === patientId && h.isDeleted !== 0
+      ) as HistoryRecord[];
+    } catch (error) {
+      console.error('MockHistoryService: Error loading history by patient ID:', error);
+      throw error;
+    }
   }
 
   async addHistory(history: Omit<History, 'id'>): Promise<History> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
-    const allHistory = getHistoryFromStorage();
-    const newHistory: History = {
-      ...history,
-      id: generateId(),
-      isDeleted: 10,
-    };
-    
-    allHistory.push(newHistory);
-    saveHistoryToStorage(allHistory);
-    
-    return newHistory;
+
+    try {
+      const newHistory: History = {
+        ...history,
+        id: generateId(),
+        isDeleted: 10, // Ensure new history records are active
+      };
+
+      // Add to file persistence
+      await filePersistence.addItem('history', newHistory);
+
+      console.log(`MockHistoryService: Added new history record with ID ${newHistory.id}`);
+      return newHistory;
+    } catch (error) {
+      console.error('MockHistoryService: Error adding history:', error);
+      throw error;
+    }
   }
 
   async updateHistory(id: string | number, historyData: Partial<History>): Promise<History> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
-    const allHistory = getHistoryFromStorage();
-    const historyIndex = allHistory.findIndex(h => h.id === id);
-    
-    if (historyIndex === -1) {
-      throw new Error(`History record with ID ${id} not found`);
+
+    try {
+      const history = await filePersistence.getResourceData('history');
+      const historyIndex = history.findIndex((h: History) => h.id === Number(id));
+
+      if (historyIndex === -1) {
+        console.warn(`MockHistoryService: Cannot update - History record with ID ${id} not found`);
+        throw new Error(`History record with ID ${id} not found`);
+      }
+
+      const updatedHistory = {
+        ...history[historyIndex],
+        ...historyData,
+        id: Number(id), // Ensure ID remains the same
+      };
+
+      // Update in file persistence
+      await filePersistence.updateItem('history', String(id), updatedHistory);
+
+      console.log(`MockHistoryService: Updated history record with ID ${id}`);
+      return updatedHistory;
+    } catch (error) {
+      console.error(`MockHistoryService: Error updating history ${id}:`, error);
+      throw error;
     }
-    
-    // Update the history record with new data
-    allHistory[historyIndex] = {
-      ...allHistory[historyIndex],
-      ...historyData,
-    };
-    
-    saveHistoryToStorage(allHistory);
-    
-    return allHistory[historyIndex];
   }
 
   async deleteHistory(id: number): Promise<boolean> {
@@ -138,23 +94,22 @@ export class MockHistoryService implements HistoryService {
 
   async softDeleteHistory(id: string | number): Promise<boolean> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const allHistory = getHistoryFromStorage();
-    const historyIndex = allHistory.findIndex(h => h.id === id);
-    
-    if (historyIndex === -1) {
-      throw new Error(`History record with ID ${id} not found`);
+
+    try {
+      // Soft delete in file persistence
+      await filePersistence.deleteItem('history', String(id));
+
+      console.log(`MockHistoryService: Soft deleted history record with ID ${id}`);
+      return true;
+    } catch (error) {
+      console.error(`MockHistoryService: Error deleting history ${id}:`, error);
+      throw error;
     }
-    
-    // Soft delete - mark as deleted instead of removing
-    allHistory[historyIndex] = {
-      ...allHistory[historyIndex],
-      isDeleted: 0,
-      deletedAt: new Date().toISOString()
-    };
-    
-    saveHistoryToStorage(allHistory);
-    
-    return true;
+  }
+
+  // Helper method to reset the service (useful for testing)
+  static reset(): void {
+    filePersistence.clearCache();
+    console.log('MockHistoryService: Reset completed - cleared cache');
   }
 } 

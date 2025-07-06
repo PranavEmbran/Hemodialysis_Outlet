@@ -19,6 +19,7 @@ import SideBar from './components/SideBar';
 // import StartDialysis from './components/StartDialysis';
 import DialysisFlowChartPage from "./pages/DialysisFlowChartPage";
 import HaemodialysisRecordDetailsPage from "./pages/HaemodialysisRecordDetailsPage";
+import DataLoaderTest from "./components/DataLoaderTest";
 import { DialysisProvider } from './context/DialysisContext';
 
 const App: React.FC = () => {
@@ -50,6 +51,7 @@ const App: React.FC = () => {
                 {/* <Route path="/start" element={<StartDialysis />} /> */}
                 <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/test" element={<DataLoaderTest />} />
               </Routes>
             </div>
           </div>

@@ -18,7 +18,7 @@ export const readDatabase = (): any => {
       writeDatabase(defaultDB);
       return defaultDB;
     }
-    
+
     const data = fs.readFileSync(DB_PATH, 'utf8');
     return JSON.parse(data);
   } catch (error) {
@@ -34,7 +34,7 @@ export const writeDatabase = (data: any): void => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
   } catch (error) {
     console.error('Error writing database:', error);
@@ -46,12 +46,12 @@ export const backupDatabase = (): string => {
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupPath = path.join(__dirname, `db-backup-${timestamp}.json`);
-    
+
     if (fs.existsSync(DB_PATH)) {
       fs.copyFileSync(DB_PATH, backupPath);
       return backupPath;
     }
-    
+
     throw new Error('Database file does not exist');
   } catch (error) {
     console.error('Error backing up database:', error);
@@ -64,7 +64,7 @@ export const restoreDatabase = (backupPath: string): void => {
     if (!fs.existsSync(backupPath)) {
       throw new Error('Backup file does not exist');
     }
-    
+
     fs.copyFileSync(backupPath, DB_PATH);
   } catch (error) {
     console.error('Error restoring database:', error);

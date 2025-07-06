@@ -1,27 +1,6 @@
 import type { Patient } from '../../../types';
 import type { PatientService } from '../patientService';
-
-const STORAGE_KEY = 'dialysis_patients';
-
-// Helper function to get patients from localStorage
-const getPatientsFromStorage = (): Patient[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.error('Error reading patients from localStorage:', error);
-    return [];
-  }
-};
-
-// Helper function to save patients to localStorage
-const savePatientsToStorage = (patients: Patient[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-  } catch (error) {
-    console.error('Error saving patients to localStorage:', error);
-  }
-};
+import { filePersistence } from '../../../utils/filePersistence';
 
 // Generate a unique ID
 const generateId = (): string => {
@@ -32,114 +11,87 @@ export class MockPatientService implements PatientService {
   async getAllPatients(): Promise<Patient[]> {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const patients = getPatientsFromStorage();
-    
-    // Filter out soft-deleted patients
-    const activePatients = patients.filter(p => !p.isDeleted);
-    
-    // If no active patients exist, initialize with some mock data
-    if (activePatients.length === 0) {
-      const mockPatients: Patient[] = [
-        {
-          id: '1',
-          name: 'John Doe',
-          firstName: 'John',
-          lastName: 'Doe',
-          gender: 'Male',
-          dateOfBirth: '1980-05-15',
-          mobileNo: '+1234567890',
-          bloodGroup: 'A+',
-          catheterDate: '2023-01-15',
-          fistulaDate: '2023-02-20',
-          catheterInsertionDate: '2023-01-15',
-          fistulaCreationDate: '2023-02-20',
-        },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          gender: 'Female',
-          dateOfBirth: '1975-08-22',
-          mobileNo: '+1234567891',
-          bloodGroup: 'O+',
-          catheterDate: '2023-03-10',
-          fistulaDate: '2023-04-05',
-          catheterInsertionDate: '2023-03-10',
-          fistulaCreationDate: '2023-04-05',
-        },
-        {
-          id: '3',
-          name: 'Michael Johnson',
-          firstName: 'Michael',
-          lastName: 'Johnson',
-          gender: 'Male',
-          dateOfBirth: '1965-12-03',
-          mobileNo: '+1234567892',
-          bloodGroup: 'B+',
-          catheterDate: '2023-05-20',
-          fistulaDate: '2023-06-15',
-          catheterInsertionDate: '2023-05-20',
-          fistulaCreationDate: '2023-06-15',
-        }
-      ];
-      
-      savePatientsToStorage(mockPatients);
-      return mockPatients;
+
+    try {
+      // Get patients from file
+      const patients = await filePersistence.getResourceData('patients');
+      // Return only active patients (not soft-deleted)
+      const activePatients = patients.filter((p: Patient) => p.isDeleted !== 0);
+      console.log(`MockPatientService: Returning ${activePatients.length} active patients`);
+      return activePatients;
+    } catch (error) {
+      console.error('MockPatientService: Error loading patients:', error);
+      throw error;
     }
-    
-    return activePatients;
   }
 
   async getPatientById(id: string | number): Promise<Patient> {
     await new Promise(resolve => setTimeout(resolve, 50));
-    
-    const patients = getPatientsFromStorage();
-    const patient = patients.find(p => p.id === id);
-    
-    if (!patient) {
-      throw new Error(`Patient with ID ${id} not found`);
+
+    try {
+      const patients = await filePersistence.getResourceData('patients');
+      const patient = patients.find((p: Patient) => p.id === String(id) && p.isDeleted !== 0);
+
+      if (!patient) {
+        console.warn(`MockPatientService: Patient with ID ${id} not found`);
+        throw new Error(`Patient with ID ${id} not found`);
+      }
+
+      return patient;
+    } catch (error) {
+      console.error(`MockPatientService: Error loading patient ${id}:`, error);
+      throw error;
     }
-    
-    return patient;
   }
 
   async addPatient(patientData: Omit<Patient, 'id'>): Promise<Patient> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
-    const patients = getPatientsFromStorage();
-    const newPatient: Patient = {
-      ...patientData,
-      id: generateId(),
-    };
-    
-    patients.push(newPatient);
-    savePatientsToStorage(patients);
-    
-    return newPatient;
+
+    try {
+      const newPatient: Patient = {
+        ...patientData,
+        id: generateId(),
+        isDeleted: 10, // Ensure new patients are active
+      };
+
+      // Add to file
+      await filePersistence.addItem('patients', newPatient);
+
+      console.log(`MockPatientService: Added new patient with ID ${newPatient.id}`);
+      return newPatient;
+    } catch (error) {
+      console.error('MockPatientService: Error adding patient:', error);
+      throw error;
+    }
   }
 
   async updatePatient(id: string | number, patientData: Partial<Patient>): Promise<Patient> {
     await new Promise(resolve => setTimeout(resolve, 150));
-    
-    const patients = getPatientsFromStorage();
-    const patientIndex = patients.findIndex(p => p.id === id);
-    
-    if (patientIndex === -1) {
-      throw new Error(`Patient with ID ${id} not found`);
+
+    try {
+      const patients = await filePersistence.getResourceData('patients');
+      const patientIndex = patients.findIndex((p: Patient) => p.id === String(id));
+
+      if (patientIndex === -1) {
+        console.warn(`MockPatientService: Cannot update - Patient with ID ${id} not found`);
+        throw new Error(`Patient with ID ${id} not found`);
+      }
+
+      const updatedPatient = {
+        ...patients[patientIndex],
+        ...patientData,
+        id: String(id), // Ensure ID remains the same
+      };
+
+      // Update in file
+      await filePersistence.updateItem('patients', String(id), updatedPatient);
+
+      console.log(`MockPatientService: Updated patient with ID ${id}`);
+      return updatedPatient;
+    } catch (error) {
+      console.error(`MockPatientService: Error updating patient ${id}:`, error);
+      throw error;
     }
-    
-    const updatedPatient = {
-      ...patients[patientIndex],
-      ...patientData,
-      id: String(id), // Convert to string to match Patient type
-    };
-    
-    patients[patientIndex] = updatedPatient;
-    savePatientsToStorage(patients);
-    
-    return updatedPatient;
   }
 
   async deletePatient(id: string | number): Promise<boolean> {
@@ -148,43 +100,85 @@ export class MockPatientService implements PatientService {
 
   async softDeletePatient(id: string | number): Promise<boolean> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const patients = getPatientsFromStorage();
-    const patientIndex = patients.findIndex(p => p.id === id);
-    
-    if (patientIndex === -1) {
-      throw new Error(`Patient with ID ${id} not found`);
+
+    try {
+      // Soft delete in file
+      await filePersistence.deleteItem('patients', String(id));
+
+      console.log(`MockPatientService: Soft deleted patient with ID ${id}`);
+      return true;
+    } catch (error) {
+      console.error(`MockPatientService: Error deleting patient ${id}:`, error);
+      throw error;
     }
-    
-    // Soft delete - mark as deleted instead of removing
-    patients[patientIndex] = {
-      ...patients[patientIndex],
-      isDeleted: 0,
-      deletedAt: new Date().toISOString()
-    };
-    
-    savePatientsToStorage(patients);
-    return true;
   }
 
   async restorePatient(id: string | number): Promise<boolean> {
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const patients = getPatientsFromStorage();
-    const patientIndex = patients.findIndex(p => p.id === id);
-    
-    if (patientIndex === -1) {
-      throw new Error(`Patient with ID ${id} not found`);
+
+    try {
+      const patients = await filePersistence.getResourceData('patients');
+      const patientIndex = patients.findIndex((p: Patient) => p.id === String(id));
+
+      if (patientIndex === -1) {
+        console.warn(`MockPatientService: Cannot restore - Patient with ID ${id} not found`);
+        throw new Error(`Patient with ID ${id} not found`);
+      }
+
+      // Restore - mark as active
+      const restoredPatient = {
+        ...patients[patientIndex],
+        isDeleted: 10,
+        deletedAt: undefined
+      };
+
+      // Update in file
+      await filePersistence.updateItem('patients', String(id), restoredPatient);
+
+      console.log(`MockPatientService: Restored patient with ID ${id}`);
+      return true;
+    } catch (error) {
+      console.error(`MockPatientService: Error restoring patient ${id}:`, error);
+      throw error;
     }
-    
-    // Restore - mark as active
-    patients[patientIndex] = {
-      ...patients[patientIndex],
-      isDeleted: 10,
-      deletedAt: undefined
-    };
-    
-    savePatientsToStorage(patients);
-    return true;
+  }
+
+  // Helper method to reset the service (useful for testing)
+  static reset(): void {
+    filePersistence.clearCache();
+    console.log('MockPatientService: Reset completed - cleared cache');
+  }
+
+  // Helper method to export current mock data
+  static exportData(): void {
+    const backup = filePersistence.getBackupData();
+    if (backup) {
+      console.log('MockPatientService: Current data (from backup):', backup);
+    } else {
+      console.log('MockPatientService: No backup data available');
+    }
+  }
+
+  // Helper method to import mock data
+  static importData(jsonData: string): boolean {
+    try {
+      const data = JSON.parse(jsonData);
+      if (data.patients && Array.isArray(data.patients)) {
+        localStorage.setItem('mockData_backup', jsonData);
+        console.log('MockPatientService: Imported data successfully');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('MockPatientService: Failed to import data:', error);
+      return false;
+    }
+  }
+
+  // Helper method to clear persistent data
+  static clearPersistentData(): void {
+    filePersistence.clearCache();
+    localStorage.removeItem('mockData_backup');
+    console.log('MockPatientService: Cleared persistent data');
   }
 } 
