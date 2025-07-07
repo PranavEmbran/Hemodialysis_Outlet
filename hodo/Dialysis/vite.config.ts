@@ -9,7 +9,7 @@ export default defineConfig({
     viteMockServe({
       mockPath: 'src/mock',
       enable: true,
-      supportTs: true,
+      // supportTs: true,
       logger: true,
     })
   ],

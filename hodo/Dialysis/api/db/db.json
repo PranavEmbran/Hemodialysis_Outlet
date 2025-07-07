@@ -120,7 +120,7 @@
       "bloodGroup": "A+",
       "catheterInsertionDate": "2025-07-07",
       "fistulaCreationDate": "2025-07-07",
-      "isDeleted": 10,
+      "isDeleted": 0,
       "name": "Alex Raj K"
     }
   ],
@@ -230,7 +230,7 @@
       "patientName": "Alex Raj K",
       "status": "Scheduled",
       "id": "1751873401870",
-      "isDeleted": 10,
+      "isDeleted": 0,
       "name": "Alex Raj K"
     }
   ],
@@ -294,7 +294,7 @@
       "totalAmount": 2000,
       "status": "PAID",
       "date": "2025-07-07",
-      "isDeleted": 10,
+      "isDeleted": 0,
       "name": "Alex Raj K"
     }
   ],
@@ -628,7 +628,7 @@
       "nursingNotes": "",
       "patientName": "Alex Raj K",
       "date": "2025-07-07",
-      "isDeleted": 10,
+      "isDeleted": 0,
       "name": "Alex Raj K"
     }
   ],
