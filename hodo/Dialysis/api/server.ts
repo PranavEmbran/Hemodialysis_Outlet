@@ -5,6 +5,7 @@ import dataRoutes from './routes/dataRoutes';
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '5000', 10);
+// const PORT: number = parseInt(process.env.PORT || '5001', 10);
 
 // Middleware
 app.use(express.json());

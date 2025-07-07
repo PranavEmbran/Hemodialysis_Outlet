@@ -5,14 +5,29 @@ import ButtonWithGradient from './ButtonWithGradient';
 import { filePersistence } from '../utils/filePersistence';
 
 const MockDataManager: React.FC = () => {
-    const [message, setMessage] = useState<{ type: 'success' | 'danger'; text: string } | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'danger' | 'warning'; text: string } | null>(null);
     const [dataSource, setDataSource] = useState<'backup' | 'file' | 'none'>('none');
+    const [apiServerStatus, setApiServerStatus] = useState<'checking' | 'available' | 'unavailable'>('checking');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Check data source on component mount
+    // Check data source and API server status on component mount
     React.useEffect(() => {
         const backupExists = filePersistence.hasBackupData();
         setDataSource(backupExists ? 'backup' : 'file');
+        
+        // Check API server status
+        // fetch('http://localhost:5001/api/test')
+        fetch('http://localhost:5000/api/test')
+            .then(response => {
+                if (response.ok) {
+                    setApiServerStatus('available');
+                } else {
+                    setApiServerStatus('unavailable');
+                }
+            })
+            .catch(() => {
+                setApiServerStatus('unavailable');
+            });
     }, []);
 
     const handleExport = () => {
@@ -127,18 +142,46 @@ const MockDataManager: React.FC = () => {
         }
     };
 
-    const handleCopyToClipboard = () => {
+    const handleCopyToClipboard = async () => {
         try {
             const backupData = filePersistence.getBackupData();
             if (backupData) {
                 const dataStr = JSON.stringify(backupData, null, 2);
-                navigator.clipboard.writeText(dataStr).then(() => {
-                    setMessage({ type: 'success', text: 'Data copied to clipboard! You can now paste it into mockData.json' });
-                    setTimeout(() => setMessage(null), 3000);
-                }).catch(() => {
-                    setMessage({ type: 'danger', text: 'Failed to copy to clipboard.' });
-                    setTimeout(() => setMessage(null), 3000);
-                });
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(dataStr);
+                
+                // Also update mockData.json via API
+                try {
+                    // const response = await fetch('http://localhost:5001/api/mock-data/update', {
+                    const response = await fetch('http://localhost:5000/api/mock-data/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ data: backupData })
+                    });
+                    
+                    if (response.ok) {
+                        setMessage({ 
+                            type: 'success', 
+                            text: 'Data copied to clipboard AND updated mockData.json automatically!' 
+                        });
+                    } else {
+                        setMessage({ 
+                            type: 'warning', 
+                            text: 'Data copied to clipboard, but failed to update mockData.json. Please check if the API server is running.' 
+                        });
+                    }
+                } catch (apiError) {
+                    console.warn('API update failed:', apiError);
+                    setMessage({ 
+                        type: 'warning', 
+                        text: 'Data copied to clipboard, but failed to update mockData.json. Please check if the API server is running.' 
+                    });
+                }
+                
+                setTimeout(() => setMessage(null), 5000);
             } else {
                 setMessage({ type: 'danger', text: 'No data available to copy.' });
                 setTimeout(() => setMessage(null), 3000);
@@ -176,6 +219,20 @@ const MockDataManager: React.FC = () => {
                             <span className="text-warning"> No data available</span>
                         )}
                     </small>
+                    <br />
+                    <small className="text-muted">
+                        <strong>API Server:</strong>
+                        {apiServerStatus === 'checking' && (
+                            <span className="text-warning"> Checking...</span>
+                        )}
+                        {apiServerStatus === 'available' && (
+                            <span className="text-success"> Available (automatic file updates enabled)</span>
+                        )}
+                        {apiServerStatus === 'unavailable' && (
+                            // <span className="text-danger"> Unavailable (start with: cd api && npm start - runs on port 5001)</span>
+                            <span className="text-danger"> Unavailable (start with: cd api && npm start - runs on port 5000)</span>
+                        )}
+                    </small>
                 </div>
 
                 <Row>
@@ -208,7 +265,7 @@ const MockDataManager: React.FC = () => {
                                 size="sm"
                                 onClick={handleCopyToClipboard}
                             >
-                                Copy to Clipboard
+                                Copy & Update File
                             </Button>
                         </div>
                     </Col>
@@ -238,7 +295,9 @@ const MockDataManager: React.FC = () => {
                     <small className="text-muted">
                         <strong>Note:</strong> In mock mode, data is persisted in localStorage as backup.
                         All CRUD operations automatically save to localStorage. Use export/import to backup or restore your mock data.
-                        Use "Copy to Clipboard" to easily update mockData.json file.
+                        Use "Copy & Update File" to copy data to clipboard AND automatically update mockData.json via the API server.
+                        <br />
+                        <strong>API Server:</strong> Make sure the API server is running (cd api && npm start) for automatic file updates.
                     </small>
                 </div>
             </Card.Body>

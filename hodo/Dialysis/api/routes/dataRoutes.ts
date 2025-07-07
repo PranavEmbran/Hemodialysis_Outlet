@@ -417,4 +417,49 @@ router.post('/haemodialysis-records', (req: Request, res: Response) => {
   }
 });
 
+// Mock data management endpoint
+router.post('/mock-data/update', (req: Request, res: Response): void => {
+  try {
+    const { data } = req.body;
+    
+    if (!data) {
+      res.status(400).json({ error: 'Data is required' });
+      return;
+    }
+
+    // Path to mockData.json file
+    const mockDataPath = path.join(__dirname, '../../src/mock/mockData.json');
+    
+    // Write the data to mockData.json
+    fs.writeFileSync(mockDataPath, JSON.stringify(data, null, 2));
+    
+    console.log('✅ Mock data updated successfully via API');
+    
+    res.json({ 
+      message: 'Mock data updated successfully',
+      filePath: mockDataPath
+    });
+  } catch (error) {
+    console.error('Error updating mock data:', error);
+    res.status(500).json({ error: 'Failed to update mock data' });
+  }
+});
+
+// Get current mock data
+router.get('/mock-data', (req: Request, res: Response) => {
+  try {
+    const mockDataPath = path.join(__dirname, '../../src/mock/mockData.json');
+    
+    if (fs.existsSync(mockDataPath)) {
+      const data = fs.readFileSync(mockDataPath, 'utf8');
+      res.json(JSON.parse(data));
+    } else {
+      res.status(404).json({ error: 'Mock data file not found' });
+    }
+  } catch (error) {
+    console.error('Error reading mock data:', error);
+    res.status(500).json({ error: 'Failed to read mock data' });
+  }
+});
+
 export default router; 

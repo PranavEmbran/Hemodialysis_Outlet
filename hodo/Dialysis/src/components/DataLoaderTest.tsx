@@ -83,7 +83,7 @@ const DataLoaderTest: React.FC = () => {
             <div className="mb-6">
                 <button
                     onClick={() => setShowDataFlowTest(!showDataFlowTest)}
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mb-4"
+                    className="px-4 py-2 bg-green-500 text-black rounded hover:bg-green-600 mb-4"
                 >
                     {showDataFlowTest ? 'Hide' : 'Show'} Data Flow Test
                 </button>
@@ -103,7 +103,8 @@ const DataLoaderTest: React.FC = () => {
                     <div className="mt-4">
                         <button
                             onClick={() => setShowFileManager(!showFileManager)}
-                            className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                            // className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                            className="px-4 py-2 bg-purple-500 text-black rounded hover:bg-purple-600"
                         >
                             {showFileManager ? 'Hide' : 'Show'} File Manager
                         </button>
@@ -198,7 +199,7 @@ const DataLoaderTest: React.FC = () => {
                             alert('Error creating history: ' + error);
                         }
                     }}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="px-4 py-2 bg-blue-500 text-black rounded hover:bg-blue-600"
                 >
                     Create Test History Record
                 </button>
@@ -215,7 +216,7 @@ const DataLoaderTest: React.FC = () => {
                             alert('Error fetching history: ' + error);
                         }
                     }}
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ml-2"
+                    className="px-4 py-2 bg-green-500 text-black rounded hover:bg-green-600 ml-2"
                 >
                     Fetch All History
                 </button>

@@ -7,6 +7,7 @@ const getApiUrl = (): string => {
   // Fallback to dynamic URL based on hostname
   const hostname: string = window.location.hostname;
   const port: number = 5000; // API server port
+  // const port: number = 5001; // API server port
   
   // For localhost
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
