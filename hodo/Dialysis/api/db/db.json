@@ -52,7 +52,7 @@
     {
       "id": "20250704/005",
       "firstName": "Shiva",
-      "lastName": "Kumaran",
+      "lastName": "Kumar",
       "gender": "Male",
       "dateOfBirth": "1999-09-05",
       "mobileNo": "9876543444",
@@ -60,7 +60,7 @@
       "catheterInsertionDate": "2025-07-04",
       "fistulaCreationDate": "2025-07-04",
       "isDeleted": 10,
-      "name": "Shiva Kumaran"
+      "name": "Shiva Kumar"
     },
     {
       "id": "20250704/006",
@@ -186,11 +186,11 @@
       "date": "2025-07-13",
       "time": "16:40",
       "remarks": "",
-      "patientName": "Shiva Kumaran",
+      "patientName": "Shiva Kumar",
       "status": "Scheduled",
       "id": "1751627380034",
       "isDeleted": 10,
-      "name": "Shiva Kumaran"
+      "name": "Shiva Kumar"
     },
     {
       "patientId": "20250704/007",
@@ -265,12 +265,12 @@
       "sessionDate": "2025-07-04",
       "sessionDuration": 2,
       "amount": 1000,
-      "patientName": "Shiva Kumaran",
+      "patientName": "Shiva Kumar",
       "totalAmount": 1000,
       "status": "PAID",
       "date": "2025-07-04",
       "isDeleted": 10,
-      "name": "Shiva Kumaran"
+      "name": "Shiva Kumar"
     },
     {
       "id": "1751631317259",
@@ -366,11 +366,16 @@
         "dialysateFlow": 12,
         "ultrafiltration": 54
       },
-      "nursingNotes": "test",
-      "patientName": "Shiva Kumaran",
+      "nursingNotes": "Normal",
+      "patientName": "Shiva Kumar",
       "date": "2025-07-04",
       "isDeleted": 10,
-      "name": "Shiva Kumaran"
+      "name": "Shiva Kumar",
+      "parameters": "44",
+      "amount": "",
+      "age": "",
+      "gender": "",
+      "notes": ""
     },
     {
       "id": "1751631301843",

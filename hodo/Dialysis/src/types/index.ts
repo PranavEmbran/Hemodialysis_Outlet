@@ -62,6 +62,22 @@ export interface History {
   gender?: string;
   treatmentParameters?: any;
   nursingNotes?: string;
+  startTime?: string;
+  endTime?: string;
+  vitalSigns?: {
+    preDialysis?: {
+      bloodPressure?: string;
+      heartRate?: number;
+      temperature?: number;
+      weight?: number;
+    };
+    postDialysis?: {
+      bloodPressure?: string;
+      heartRate?: number;
+      temperature?: number;
+      weight?: number;
+    };
+  };
   isDeleted?: number;
   deletedAt?: string;
 }

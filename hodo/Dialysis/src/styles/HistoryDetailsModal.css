@@ -1,0 +1,68 @@
+/* HistoryDetailsModal specific styles */
+.history-details-modal .summary-card {
+    background: #fff;
+    color: #222;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 8, 14, 0.12);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e3eafc;
+}
+
+.history-details-modal .summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 8, 14, 0.15);
+}
+
+.history-details-modal .summary-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a2a3a;
+    border-bottom: 2px solid #0d92ae;
+    padding-bottom: 0.5rem;
+}
+
+.history-details-modal .summary-value {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    line-height: 1.4;
+}
+
+.history-details-modal .summary-value strong {
+    color: #1a2a3a;
+    font-weight: 600;
+}
+
+/* Modal specific overrides */
+.history-details-modal.edit-modal .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.history-details-modal.edit-modal .modal-body {
+    padding: 2rem 2rem 1rem 2rem;
+}
+
+.history-details-modal.edit-modal .modal-footer {
+    padding: 1.25rem 2rem;
+    gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .history-details-modal .summary-card {
+        padding: 1rem 1.5rem;
+    }
+
+    .history-details-modal .summary-title {
+        font-size: 1rem;
+    }
+
+    .history-details-modal .summary-value {
+        font-size: 0.9rem;
+    }
+}

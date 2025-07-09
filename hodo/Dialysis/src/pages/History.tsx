@@ -15,6 +15,7 @@ import Searchbar from '../components/Searchbar';
 import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
 import EditModal from '../components/EditModal';
+import HistoryDetailsModal from '../components/HistoryDetailsModal';
 import { historyServiceFactory } from '../services/history/factory';
 import { patientServiceFactory } from '../services/patient/factory';
 import { historyFormConfig } from '../components/forms/formConfigs';
@@ -31,6 +32,10 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [editingData, setEditingData] = useState<History | null>(null);
   const [editLoading, setEditLoading] = useState<boolean>(false);
+
+  // History details modal state
+  const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+  const [selectedHistoryData, setSelectedHistoryData] = useState<History | null>(null);
 
   // Service instances
   const historyService = historyServiceFactory.getService();
@@ -131,6 +136,20 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     setEditLoading(false);
   };
 
+  // Handle view details
+  const handleViewDetails = (id: string | number) => {
+    const historyToView = history.find(h => h.id === id);
+    if (historyToView) {
+      setSelectedHistoryData(historyToView);
+      setShowDetailsModal(true);
+    }
+  };
+
+  const handleCloseDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedHistoryData(null);
+  };
+
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
@@ -180,7 +199,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                 columns={[
                   { key: 'date', header: 'Date' },
                   { key: 'patientName', header: 'Patient' },
-                  { key: 'parameters', header: 'Parameters' },
+                  // { key: 'parameters', header: 'Parameters' },
                   { key: 'notes', header: 'Notes' },
                   // { key: 'amount', header: 'Amount' },
                   { key: 'actions', header: 'Actions' },
@@ -190,10 +209,25 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   date: h.date,
                   patientName: h.patientName,
                   // parameters: h.parameters || h.treatmentParameters?.dialyzer || '-',
-                  parameters: <i className="fa fa-eye" aria-hidden="true"></i>, notes: h.notes || h.nursingNotes || '-',
+                  // parameters: (
+                  //   <i
+                  //     className="fa fa-eye history-eye-icon"
+                  //     aria-hidden="true"
+                  //     onClick={() => handleViewDetails(h.id!)}
+                  //     title="View Details"
+                  //   ></i>
+                  // ),
+                  notes: h.notes || h.nursingNotes || '-',
                   // amount: h.amount || '-',
                   actions: (
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'left' }}>
+                      <i
+                        className="fa fa-eye history-eye-icon"
+                        aria-hidden="true"
+                        onClick={() => handleViewDetails(h.id!)}
+                        title="View Details"
+                        style={{ cursor: 'pointer', fontSize: '1.5rem' }}
+                      ></i>
                       <EditButton onClick={() => handleEdit(h.id!)} />
                       <DeleteButton onClick={() => handleDelete(h.id!)} />
                     </div>
@@ -213,6 +247,13 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           onSubmit={handleEditSubmit}
           loading={editLoading}
           editingDataType="history"
+        />
+
+        {/* History Details Modal */}
+        <HistoryDetailsModal
+          show={showDetailsModal}
+          onHide={handleCloseDetailsModal}
+          historyData={selectedHistoryData}
         />
       </PageContainer>
       <Footer />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Formik, Form, FormikHelpers } from 'formik';
+import { Formik, Form } from 'formik';
+import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import Header from '../components/Header';
@@ -128,11 +129,39 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
     try {
       console.log('Form submitted with values:', values);
       const patient = patients.find(p => String(p.id) === String(values.patientId));
+
+      // Convert string values to numbers for vital signs
+      const convertToNumber = (value: string | number): number | undefined => {
+        if (value === '' || value === null || value === undefined) return undefined;
+        const num = Number(value);
+        return isNaN(num) ? undefined : num;
+      };
+
       const newHistory = {
         ...values,
         patientId: String(values.patientId),
         patientName: patient ? `${patient.firstName} ${patient.lastName}` : '',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        vitalSigns: {
+          preDialysis: {
+            bloodPressure: values.vitalSigns.preDialysis.bloodPressure,
+            heartRate: convertToNumber(values.vitalSigns.preDialysis.heartRate),
+            temperature: convertToNumber(values.vitalSigns.preDialysis.temperature),
+            weight: convertToNumber(values.vitalSigns.preDialysis.weight)
+          },
+          postDialysis: {
+            bloodPressure: values.vitalSigns.postDialysis.bloodPressure,
+            heartRate: convertToNumber(values.vitalSigns.postDialysis.heartRate),
+            temperature: convertToNumber(values.vitalSigns.postDialysis.temperature),
+            weight: convertToNumber(values.vitalSigns.postDialysis.weight)
+          }
+        },
+        treatmentParameters: {
+          dialyzer: values.treatmentParameters.dialyzer,
+          bloodFlow: convertToNumber(values.treatmentParameters.bloodFlow),
+          dialysateFlow: convertToNumber(values.treatmentParameters.dialysateFlow),
+          ultrafiltration: convertToNumber(values.treatmentParameters.ultrafiltration)
+        }
       };
       console.log('Sending to API:', newHistory);
       const response = await historyServiceFactory.getService().addHistory(newHistory);
