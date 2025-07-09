@@ -1,6 +1,8 @@
 // import React, { useState, useEffect, ChangeEvent } from 'react';
 import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -180,16 +182,16 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   { key: 'patientName', header: 'Patient' },
                   { key: 'parameters', header: 'Parameters' },
                   { key: 'notes', header: 'Notes' },
-                  { key: 'amount', header: 'Amount' },
+                  // { key: 'amount', header: 'Amount' },
                   { key: 'actions', header: 'Actions' },
                 ]}
                 data={getFilteredHistory().map((h, i) => ({
                   id: h.id || i,
                   date: h.date,
                   patientName: h.patientName,
-                  parameters: h.parameters || h.treatmentParameters?.dialyzer || '-',
-                  notes: h.notes || h.nursingNotes || '-',
-                  amount: h.amount || '-',
+                  // parameters: h.parameters || h.treatmentParameters?.dialyzer || '-',
+                  parameters: <i className="fa fa-eye" aria-hidden="true"></i>, notes: h.notes || h.nursingNotes || '-',
+                  // amount: h.amount || '-',
                   actions: (
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                       <EditButton onClick={() => handleEdit(h.id!)} />

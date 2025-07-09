@@ -56,7 +56,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
   const [autoRefresh, setAutoRefresh] = useState<number>(15);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
-  
+
   // Table-specific search states
   const [patientsSearch, setPatientsSearch] = useState<string>('');
   const [appointmentsSearch, setAppointmentsSearch] = useState<string>('');
@@ -115,9 +115,9 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
       setError('');
 
       const updatedPatient = await patientService.updatePatient(patientId, updatedData);
-      
+
       // Update local state
-      setPatients(prevPatients => 
+      setPatients(prevPatients =>
         prevPatients.map(p => p.id === patientId ? updatedPatient : p)
       );
 
@@ -136,7 +136,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
       setError('');
 
       const updatedAppointment = await scheduleService.updateSchedule(appointmentId, updatedData);
-      
+
       // Update local state
       setAppointments(prevAppointments =>
         prevAppointments.map(a => a.id === appointmentId ? updatedAppointment : a)
@@ -333,10 +333,10 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
       filteredPatients = filteredPatients.filter(p => {
         const fullName = `${p.firstName || p.name} ${p.lastName || ''}`.toLowerCase();
         return fullName.includes(searchLower) ||
-               p.mobileNo?.includes(patientsSearch) ||
-               p.bloodGroup?.toLowerCase().includes(searchLower) ||
-               p.gender?.toLowerCase().includes(searchLower) ||
-               p.dateOfBirth?.includes(patientsSearch);
+          p.mobileNo?.includes(patientsSearch) ||
+          p.bloodGroup?.toLowerCase().includes(searchLower) ||
+          p.gender?.toLowerCase().includes(searchLower) ||
+          p.dateOfBirth?.includes(patientsSearch);
       });
     }
 
@@ -350,7 +350,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     // Apply appointments table search
     if (appointmentsSearch.trim()) {
       const searchLower = appointmentsSearch.toLowerCase();
-      filteredAppointments = filteredAppointments.filter(apt => 
+      filteredAppointments = filteredAppointments.filter(apt =>
         apt.patientName?.toLowerCase().includes(searchLower) ||
         apt.admittingDoctor?.toLowerCase().includes(searchLower) ||
         apt.date?.includes(appointmentsSearch) ||
@@ -370,15 +370,15 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
       console.error('Invalid ID provided for editing:', id);
       return;
     }
-    
+
     let dataToEdit: Patient | ScheduleEntry | null = null;
-    
+
     if (dataType === 'patient') {
       dataToEdit = patients.find(p => p.id === id) || null;
     } else {
       dataToEdit = appointments.find(a => a.id === id) || null;
     }
-    
+
     if (dataToEdit) {
       console.log('Editing data:', dataToEdit);
       setEditingData(dataToEdit);
@@ -434,19 +434,19 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
 
   const handleEditSubmit = async (values: any) => {
     if (!editingData) return;
-    
+
     setEditLoading(true);
     try {
       if (editingDataType === 'patient') {
         const patientData = editingData as Patient;
-        
+
         // Validate patient ID
         if (!patientData.id) {
           throw new Error('Invalid patient ID');
         }
-        
+
         console.log('Updating patient with ID:', patientData.id);
-        
+
         // Use centralized update function
         await updatePatient(patientData.id as string, {
           firstName: values.firstName,
@@ -458,17 +458,17 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
           catheterInsertionDate: values.catheterInsertionDate,
           fistulaCreationDate: values.fistulaCreationDate,
         });
-        
+
       } else {
         const appointmentData = editingData as ScheduleEntry;
-        
+
         // Validate appointment ID
         if (!appointmentData.id) {
           throw new Error('Invalid appointment ID');
         }
-        
+
         console.log('Updating appointment with ID:', appointmentData.id);
-        
+
         // Create a schedule update object that matches the Schedule interface
         const scheduleUpdateData = {
           patientName: values.patientName,
@@ -478,7 +478,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
           status: values.status,
           notes: values.remarks, // Map to notes field
         };
-        
+
         // Use centralized update function
         await updateAppointment(appointmentData.id as string, scheduleUpdateData);
       }
@@ -530,121 +530,124 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
     <>
       {/* <Container fluid className={`home-container py-2 ${sidebarCollapsed ? 'collapsed' : ''}`}> */}
 
-        <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-        <PageContainer>
-          {/* <div className="main-container"> */}
+      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <PageContainer>
+        {/* <div className="main-container"> */}
 
-          <SectionHeading title="Dashboard" subtitle="Overview and quick stats for dialysis management" />
-          <Row className="mb-4">
-            {stats.map((stat) => (
-              <Col key={stat.label} md={4} className="mb-3 d-grid">
-                <Cards title={stat.label} subtitle={stat.value.toString()} />
-              </Col>
-            ))}
-          </Row>
+        <SectionHeading title="Dashboard" subtitle="Overview and quick stats for dialysis management" />
+        <Row className="mb-4">
+          {stats.map((stat) => (
+            <Col key={stat.label} md={4} className="mb-3 d-grid">
+              <Cards title={stat.label} subtitle={stat.value.toString()} />
+            </Col>
+          ))}
+        </Row>
 
-            <div className='dashboard-table-heading'>
-              Registered Patients: {getFilteredPatientsData().length}
-              <div className="dashboard-table-search">
-                <Searchbar 
-                  value={patientsSearch}
-                  onChange={handlePatientsSearch}
-                />
-              </div>
-            </div>
-            <Table
-              columns={[
-                { key: 'name', header: 'Name' },
-                { key: 'gender', header: 'Gender' },
-                { key: 'mobileNo', header: 'Mobile' },
-                { key: 'bloodGroup', header: 'Blood Group' },
-                { key: 'dateOfBirth', header: 'DOB' },
-                { key: 'lastVisit', header: 'Last Visit' },
-                { key: 'action', header: 'Action' },
-              ]}
-              data={getFilteredPatientsData().map((p) => {
-                const lastVisit = history
-                  .filter(h => h.patientId === p.id)
-                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-                return {
-                  id: p.id,
-                  name: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
-                  gender: p.gender,
-                  mobileNo: p.mobileNo,
-                  bloodGroup: p.bloodGroup,
-                  dateOfBirth: p.dateOfBirth,
-                  lastVisit: lastVisit ? lastVisit.date : 'No visits',
-                  action: (
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      <EditButton onClick={() => handleEdit(p.id ?? '', 'patient')} />
-                      <DeleteButton onClick={() => handleDelete(p.id ?? '', 'patient')} />
-                    </div>
-                  ),
-                };
-              })}
+        <div className='dashboard-table-heading'>
+          Registered Patients: {getFilteredPatientsData().length}
+          <div className="dashboard-table-search">
+            <Searchbar
+              value={patientsSearch}
+              onChange={handlePatientsSearch}
             />
-
-            <div className='dashboard-table-heading'>
-              Scheduled Appointments: {getFilteredAppointmentsData().length}
-              <div className="dashboard-table-search">
-                <Searchbar 
-                  value={appointmentsSearch}
-                  onChange={handleAppointmentsSearch}
-                />
-              </div>
-            </div>
-            <Table
-              columns={[
-                // { key: 'expand', header: '' },
-                { key: 'patientName', header: 'Patient Name' },
-                { key: 'admittingDoctor', header: 'Doctor' },
-                { key: 'date', header: 'Date' },
-                { key: 'time', header: 'Time' },
-                { key: 'dialysisUnit', header: 'Unit' },
-                { key: 'status', header: 'Status' },
-                { key: 'action', header: 'Action' },
-              ]}
-              data={getFilteredAppointmentsData().map((apt) => ({
-                id: apt.id,
-                expand: <Button size="sm" variant="outline-primary">+</Button>,
-                patientName: apt.patientName,
-                admittingDoctor: apt.admittingDoctor || 'Dr. Smith',
-                date: apt.date,
-                time: apt.time,
-                dialysisUnit: apt.dialysisUnit,
-                status: (
-                  <span className={`status-badge ${
-                    apt.status === 'Completed' ? 'active' :
-                    apt.status === 'Scheduled' || !apt.status ? 'scheduled' :
-                    'inactive'
-                  }`}>
-                  
-                    {apt.status || 'Scheduled'}
-                  </span>
-                ),
-                action: (
-                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <EditButton onClick={() => handleEdit(apt.id ?? '', 'appointment')} />
-                    <DeleteButton onClick={() => handleDelete(apt.id ?? '', 'appointment')} />
-                  </div>
-                ),
-              }))}
-            />
-
-        </PageContainer>
-        
-        {/* Edit Modal */}
-        <EditModal
-          show={showEditModal}
-          onHide={handleCloseEditModal}
-          data={editingData}
-          formConfig={editingDataType === 'patient' ? patientFormConfig : appointmentFormConfig}
-          onSubmit={handleEditSubmit}
-          loading={editLoading}
-          editingDataType={editingDataType}
+          </div>
+        </div>
+        <Table
+          columns={[
+            { key: 'name', header: 'Name' },
+            { key: 'gender', header: 'Gender' },
+            { key: 'mobileNo', header: 'Mobile' },
+            { key: 'bloodGroup', header: 'Blood Group' },
+            { key: 'dateOfBirth', header: 'DOB' },
+            { key: 'lastVisit', header: 'Last Visit' },
+            { key: 'catheterInsertionDate', header: 'Catheter Insertion Date' },
+            { key: 'fistulaCreationDate', header: 'Fistula Creation Date' },
+            { key: 'action', header: 'Action' },
+          ]}
+          data={getFilteredPatientsData().map((p) => {
+            const lastVisit = history
+              .filter(h => h.patientId === p.id)
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+            return {
+              id: p.id,
+              name: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
+              gender: p.gender,
+              mobileNo: p.mobileNo,
+              bloodGroup: p.bloodGroup,
+              dateOfBirth: p.dateOfBirth,
+              lastVisit: lastVisit ? lastVisit.date : 'No visits',
+              catheterInsertionDate: p.catheterInsertionDate,
+              fistulaCreationDate: p.fistulaCreationDate,
+              action: (
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <EditButton onClick={() => handleEdit(p.id ?? '', 'patient')} />
+                  <DeleteButton onClick={() => handleDelete(p.id ?? '', 'patient')} />
+                </div>
+              ),
+            };
+          })}
         />
-        
-        <Footer />
+
+        <div className='dashboard-table-heading'>
+          Scheduled Appointments: {getFilteredAppointmentsData().length}
+          <div className="dashboard-table-search">
+            <Searchbar
+              value={appointmentsSearch}
+              onChange={handleAppointmentsSearch}
+            />
+          </div>
+        </div>
+        <Table
+          columns={[
+            // { key: 'expand', header: '' },
+            { key: 'patientName', header: 'Patient Name' },
+            { key: 'admittingDoctor', header: 'Doctor' },
+            { key: 'scheduledDate', header: 'Scheduled Date' },
+            { key: 'time', header: 'Time' },
+            { key: 'dialysisUnit', header: 'Unit' },
+            { key: 'status', header: 'Status' },
+            { key: 'action', header: 'Action' },
+          ]}
+          data={getFilteredAppointmentsData().map((apt) => ({
+            id: apt.id,
+            expand: <Button size="sm" variant="outline-primary">+</Button>,
+            patientName: apt.patientName,
+            admittingDoctor: apt.admittingDoctor || 'Dr. Smith',
+            scheduledDate: apt.date,
+            time: apt.time,
+            dialysisUnit: apt.dialysisUnit,
+            status: (
+              <span className={`status-badge ${apt.status === 'Completed' ? 'active' :
+                apt.status === 'Scheduled' || !apt.status ? 'scheduled' :
+                  'inactive'
+                }`}>
+
+                {apt.status || 'Scheduled'}
+              </span>
+            ),
+            action: (
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                <EditButton onClick={() => handleEdit(apt.id ?? '', 'appointment')} />
+                <DeleteButton onClick={() => handleDelete(apt.id ?? '', 'appointment')} />
+              </div>
+            ),
+          }))}
+        />
+
+      </PageContainer>
+
+      {/* Edit Modal */}
+      <EditModal
+        show={showEditModal}
+        onHide={handleCloseEditModal}
+        data={editingData}
+        formConfig={editingDataType === 'patient' ? patientFormConfig : appointmentFormConfig}
+        onSubmit={handleEditSubmit}
+        loading={editLoading}
+        editingDataType={editingDataType}
+      />
+
+      <Footer />
     </>
   );
 };
