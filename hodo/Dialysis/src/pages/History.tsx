@@ -43,6 +43,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   // Filter history based on search term and selected patient
   const getFilteredHistory = () => {
     let filteredHistory = history;
+    
     if (selectedPatient) {
       filteredHistory = filteredHistory.filter(h => h.patientId === selectedPatient);
     }
@@ -57,6 +58,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         h.amount?.toString().includes(searchLower)
       );
     }
+    
     return filteredHistory;
   };
 
@@ -160,6 +162,18 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           {error && (
             <div className="alert alert-danger">{error}</div>
           )}
+          {/* <div style={{ marginBottom: '10px' }}>
+            <button 
+              onClick={async () => {
+                console.log('HistoryPage: Manual refresh triggered');
+                await refreshHistory();
+                console.log('HistoryPage: Manual refresh completed');
+              }}
+              className="btn btn-primary btn-sm"
+            >
+              Refresh Data
+            </button>
+          </div> */}
           <div className="history-filters" >
             <div className="history-filter-group">
               <div className="form-group">
@@ -180,12 +194,36 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                 </select>
               </div>
             </div>
+
+            <div style={{ display: 'flex'}}>
+
             <div className="history-search-group">
               <Searchbar
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
             </div>
+
+            <button 
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.5rem',
+              marginTop: '-15px',
+            }}
+              onClick={async () => {
+                console.log('HistoryPage: Manual refresh triggered');
+                await refreshHistory();
+                console.log('HistoryPage: Manual refresh completed');
+              }}
+              // className="btn btn-primary btn-sm"
+            >
+              {/* Refresh Data */}
+              🔃
+            </button>
+          </div>
+
           </div>
         </div>
         <div className='history-table-container' style={{ width: '100%', marginLeft: 0, marginRight: 0, paddingBottom: 0 }}>

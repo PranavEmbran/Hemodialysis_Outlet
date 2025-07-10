@@ -64,15 +64,16 @@
     },
     {
       "id": "20250704/006",
-      "firstName": "Vikasan",
-      "lastName": "CK",
+      "firstName": "Vikram",
+      "lastName": "Adithyan",
       "gender": "Male",
       "dateOfBirth": "1990-05-05",
       "mobileNo": "9876543212",
       "bloodGroup": "A+",
       "catheterInsertionDate": "2025-07-04",
       "fistulaCreationDate": "2025-07-04",
-      "isDeleted": 10
+      "isDeleted": 10,
+      "name": "Vikram Adithyan"
     },
     {
       "id": "20250704/007",
@@ -133,6 +134,18 @@
       "bloodGroup": "A+",
       "catheterInsertionDate": "2025-07-09",
       "fistulaCreationDate": "2025-07-09",
+      "isDeleted": 10
+    },
+    {
+      "id": "20250710/001",
+      "firstName": "Aadhil",
+      "lastName": "M",
+      "gender": "Male",
+      "dateOfBirth": "2002-06-06",
+      "mobileNo": "6549873216",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-10",
+      "fistulaCreationDate": "2025-07-10",
       "isDeleted": 10
     }
   ],
@@ -214,7 +227,7 @@
       "time": "19:37",
       "remarks": "TEST 2 @ 06",
       "patientName": "Govind Das",
-      "status": "Scheduled",
+      "status": "Completed",
       "id": "1751810871406",
       "isDeleted": 10
     },
@@ -227,7 +240,7 @@
       "time": "20:25",
       "remarks": "Testing @06",
       "patientName": "Vigneshan Sharma",
-      "status": "Scheduled",
+      "status": "Completed",
       "id": "1751813598925",
       "isDeleted": 10
     },
@@ -244,6 +257,32 @@
       "id": "1751873401870",
       "isDeleted": 0,
       "name": "Alex Raj K"
+    },
+    {
+      "patientId": "20250709/001",
+      "dialysisUnit": "Unit B",
+      "technician": "Dr. Smith",
+      "admittingDoctor": "Dr. Williams",
+      "date": "2025-07-10",
+      "time": "09:36",
+      "remarks": "10/07 case",
+      "patientName": "Jayaram SK",
+      "status": "Completed",
+      "id": "1752120418396",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250710/001",
+      "dialysisUnit": "Unit B",
+      "technician": "Dr. Smith",
+      "admittingDoctor": "Dr. Johnson",
+      "date": "2025-07-10",
+      "time": "10:32",
+      "remarks": "",
+      "patientName": "Aadhil M",
+      "status": "Completed",
+      "id": "1752123743536",
+      "isDeleted": 10
     }
   ],
   "billing": [
@@ -618,9 +657,10 @@
         "ultrafiltration": ""
       },
       "nursingNotes": "",
-      "patientName": "Vikasan CK",
+      "patientName": "Vikram Adithyan",
       "date": "2025-07-06",
-      "isDeleted": 10
+      "isDeleted": 10,
+      "name": "Vikram Adithyan"
     },
     {
       "id": "1751873409757",
@@ -652,6 +692,148 @@
       "date": "2025-07-07",
       "isDeleted": 0,
       "name": "Alex Raj K"
+    },
+    {
+      "id": "1752120339640",
+      "patientId": "20250704/005",
+      "startTime": "09:35",
+      "endTime": "11:35",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "Critical case",
+      "patientName": "Shiva Kumar",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752120446122",
+      "patientId": "20250709/001",
+      "startTime": "09:37",
+      "endTime": "11:37",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "Emergency",
+      "patientName": "Jayaram SK",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752123577363",
+      "patientId": "20250706/001",
+      "appointmentId": "1751810871406",
+      "startTime": "10:29",
+      "endTime": "10:29",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "Normal case",
+      "patientName": "Govind Das",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752123619795",
+      "patientId": "20250704/004",
+      "appointmentId": "1751813598925",
+      "startTime": "10:30",
+      "endTime": "12:30",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Vigneshan Sharma",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752123755919",
+      "patientId": "20250710/001",
+      "appointmentId": "1752123743536",
+      "startTime": "10:32",
+      "endTime": "10:32",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "",
+      "patientName": "Aadhil M",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752123799665",
+      "patientId": "20250710/001",
+      "startTime": "10:33",
+      "endTime": "10:33",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "Test2",
+      "patientName": "Aadhil M",
+      "date": "2025-07-10",
+      "isDeleted": 10
+    },
+    {
+      "id": "1752128390603",
+      "patientId": "P001",
+      "patientName": "Test Patient",
+      "date": "2025-07-10",
+      "parameters": "BP: 120/80, Weight: 70kg",
+      "amount": "2000",
+      "age": "44",
+      "gender": "Male",
+      "notes": "Test session",
+      "nursingNotes": "Test nursing notes",
+      "isDeleted": 10
     }
   ],
   "dialysisFlowCharts": [],

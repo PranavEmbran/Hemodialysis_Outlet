@@ -55,6 +55,7 @@ export interface History {
   date: string;
   patientId: string | number;
   patientName: string;
+  appointmentId?: string | number; // Add appointment ID to link with appointment
   parameters?: string;
   notes?: string;
   amount?: string;

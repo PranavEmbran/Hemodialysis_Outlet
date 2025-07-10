@@ -601,6 +601,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
           columns={[
             // { key: 'expand', header: '' },
             { key: 'patientName', header: 'Patient Name' },
+            { key: 'scheduleId', header: 'Appointment ID' },
             { key: 'admittingDoctor', header: 'Doctor' },
             { key: 'scheduledDate', header: 'Scheduled Date' },
             { key: 'time', header: 'Time' },
@@ -612,6 +613,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
             id: apt.id,
             expand: <Button size="sm" variant="outline-primary">+</Button>,
             patientName: apt.patientName,
+            scheduleId: apt.id,
             admittingDoctor: apt.admittingDoctor || 'Dr. Smith',
             scheduledDate: apt.date,
             time: apt.time,

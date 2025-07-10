@@ -205,11 +205,8 @@ export function DialysisProvider({ children }: DialysisProviderProps) {
     try {
       setLoading(true);
       const historyService = historyServiceFactory.getService();
-      console.log('DialysisContext: Refreshing history data...');
       const historyData = await historyService.getAllHistory();
-      console.log('DialysisContext: Received history data:', historyData);
       setHistory(historyData);
-      console.log('DialysisContext: History state updated with', historyData.length, 'records');
     } catch (err) {
       console.error('Error refreshing history:', err);
       setError('Failed to refresh history data.');

@@ -15,6 +15,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import type { Patient } from '../types';
 import { patientServiceFactory } from '../services/patient/factory';
 import { historyServiceFactory } from '../services/history/factory';
+import { scheduleServiceFactory } from '../services/schedule/factory';
 import { useDialysis } from '../context/DialysisContext';
 
 interface VitalSigns {
@@ -40,6 +41,7 @@ interface TreatmentParameters {
 
 interface DialysisProcessFormValues {
   patientId: string;
+  appointmentId: string; // Add appointment ID field
   startTime: string;
   endTime: string;
   vitalSigns: {
@@ -52,6 +54,7 @@ interface DialysisProcessFormValues {
 
 const validationSchema = Yup.object({
   patientId: Yup.string().required('Patient selection is required'),
+  appointmentId: Yup.string().optional(), // Appointment ID is optional
   startTime: Yup.string().required('Start time is required'),
   endTime: Yup.string().required('End time is required'),
   vitalSigns: Yup.object({
@@ -81,10 +84,31 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   const [patients, setPatients] = useState<Patient[]>([]);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const { refreshHistory } = useDialysis();
+  const [appointmentUpdated, setAppointmentUpdated] = useState<boolean>(false);
+  const { refreshHistory, appointments, updateAppointment } = useDialysis();
 
   // Get patient service from factory
   const patientService = patientServiceFactory.getService();
+  const scheduleService = scheduleServiceFactory.getService();
+
+  // Get available appointments (not completed, not soft-deleted)
+  const getAvailableAppointments = () => {
+    return appointments.filter(apt => 
+      apt.status !== 'Completed' && 
+      apt.isDeleted !== 0
+    );
+  };
+
+  // Handle appointment selection to auto-fill patient
+  const handleAppointmentChange = (appointmentId: string, setFieldValue: (field: string, value: any) => void) => {
+    if (appointmentId) {
+      const selectedAppointment = appointments.find(apt => apt.id?.toString() === appointmentId);
+      if (selectedAppointment) {
+        // Auto-fill the patient ID
+        setFieldValue('patientId', selectedAppointment.patientId?.toString() || '');
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -100,6 +124,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
 
   const initialValues: DialysisProcessFormValues = {
     patientId: '',
+    appointmentId: '',
     startTime: '',
     endTime: '',
     vitalSigns: {
@@ -127,7 +152,6 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
 
   const handleSubmit = async (values: DialysisProcessFormValues, { resetForm }: FormikHelpers<DialysisProcessFormValues>) => {
     try {
-      console.log('Form submitted with values:', values);
       const patient = patients.find(p => String(p.id) === String(values.patientId));
 
       // Convert string values to numbers for vital signs
@@ -141,6 +165,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
         ...values,
         patientId: String(values.patientId),
         patientName: patient ? `${patient.firstName} ${patient.lastName}` : '',
+        appointmentId: values.appointmentId || undefined, // Include appointment ID if selected
         date: new Date().toISOString().split('T')[0],
         vitalSigns: {
           preDialysis: {
@@ -163,14 +188,56 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
           ultrafiltration: convertToNumber(values.treatmentParameters.ultrafiltration)
         }
       };
-      console.log('Sending to API:', newHistory);
       const response = await historyServiceFactory.getService().addHistory(newHistory);
-      console.log('API response:', response);
+
+      // Update appointment status to "Completed" if appointment was selected
+      if (values.appointmentId) {
+        try {
+          await updateAppointment(values.appointmentId, {
+            status: 'Completed'
+          });
+          setAppointmentUpdated(true);
+        } catch (updateError) {
+          console.error('Failed to update appointment status:', updateError);
+          setAppointmentUpdated(false);
+          // Don't fail the entire process if appointment update fails
+        }
+      } else {
+        // Fallback to finding appointment by patient and date (existing logic)
+        const currentDate = new Date().toISOString().split('T')[0];
+        const correspondingAppointment = appointments.find(apt => 
+          apt.patientId === values.patientId && 
+          apt.date === currentDate &&
+          apt.status !== 'Completed' &&
+          apt.isDeleted !== 0
+        );
+
+        if (correspondingAppointment && correspondingAppointment.id) {
+          try {
+            await updateAppointment(correspondingAppointment.id.toString(), {
+              status: 'Completed'
+            });
+            setAppointmentUpdated(true);
+          } catch (updateError) {
+            console.error('Failed to update appointment status:', updateError);
+            setAppointmentUpdated(false);
+            // Don't fail the entire process if appointment update fails
+          }
+        } else {
+          console.log('No corresponding appointment found for patient:', values.patientId, 'on date:', currentDate);
+          setAppointmentUpdated(false);
+        }
+      }
+
       await refreshHistory();
+      
       setSuccess(true);
       setError('');
       resetForm();
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => {
+        setSuccess(false);
+        setAppointmentUpdated(false);
+      }, 3000);
     } catch (err) {
       console.error('Failed to record dialysis session:', err);
       setError('Failed to record dialysis session. Please try again.');
@@ -189,7 +256,8 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                 <h4 className="home-title">Start Dialysis Process</h4>
                 {success && (
                   <div className="alert alert-success">
-                    Dialysis session recorded successfully!
+                    Dialysis session recorded successfully! 
+                    {appointmentUpdated ? ' Appointment status updated to Completed.' : ' No corresponding appointment found for today.'}
                   </div>
                 )}
                 {error && (
@@ -202,76 +270,98 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                   validationSchema={validationSchema}
                   onSubmit={handleSubmit}
                 >
-                  {({ isSubmitting }) => (
-                    <Form>
-                      <Row className="mb-2">
-                        <Col md={6}>
-                          <SelectField
-                            label="Patient"
-                            name="patientId"
-                            options={patients.map(patient => ({
-                              label: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
-                              value: patient.id?.toString() || ''
-                            }))}
-                            placeholder="Select Patient"
-                            required
-                          />
-                        </Col>
-                        <Col md={3}>
-                          <TimeField
-                            label="Start Time"
-                            name="startTime"
-                            required
-                          />
-                        </Col>
-                        <Col md={3}>
-                          <TimeField
-                            label="End Time"
-                            name="endTime"
-                            required
-                          />
-                        </Col>
-                      </Row>
-                      <Row className="mb-2">
-                        <Col md={6}>
-                          <h5>Pre-Dialysis Vital Signs</h5>
-                          <InputField label="Blood Pressure" name="vitalSigns.preDialysis.bloodPressure" type="text" />
-                          <InputField label="Heart Rate" name="vitalSigns.preDialysis.heartRate" type="number" />
-                          <InputField label="Temperature" name="vitalSigns.preDialysis.temperature" type="number" />
-                          <InputField label="Weight" name="vitalSigns.preDialysis.weight" type="number" />
-                        </Col>
-                        <Col md={6}>
-                          <h5>Post-Dialysis Vital Signs</h5>
-                          <InputField label="Blood Pressure" name="vitalSigns.postDialysis.bloodPressure" type="text" />
-                          <InputField label="Heart Rate" name="vitalSigns.postDialysis.heartRate" type="number" />
-                          <InputField label="Temperature" name="vitalSigns.postDialysis.temperature" type="number" />
-                          <InputField label="Weight" name="vitalSigns.postDialysis.weight" type="number" />
-                        </Col>
-                      </Row>
-                      <Row className="mb-2">
-                        <Col md={6}>
-                          <h5>Treatment Parameters</h5>
-                          <InputField label="Dialyzer" name="treatmentParameters.dialyzer" type="text" />
-                          <InputField label="Blood Flow" name="treatmentParameters.bloodFlow" type="number" />
-                          <InputField label="Dialysate Flow" name="treatmentParameters.dialysateFlow" type="number" />
-                          <InputField label="Ultrafiltration" name="treatmentParameters.ultrafiltration" type="number" />
-                        </Col>
-                        <Col md={6}>
-                          <h5>Nursing Notes</h5>
-                          <TextareaField label="Nursing Notes" name="nursingNotes" placeholder="Enter notes..." rows={6} />
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={12} className="text-end">
-                          <ButtonWithGradient
-                            type="submit"
-                            disabled={isSubmitting}
-                            text={isSubmitting ? 'Recording...' : 'Record Session'}
-                          />
-                        </Col>
-                      </Row>
-                    </Form>
-                  )}
+                  {({ isSubmitting, setFieldValue, values }) => {
+                    // Auto-fill patient when appointment is selected
+                    React.useEffect(() => {
+                      if (values.appointmentId) {
+                        handleAppointmentChange(values.appointmentId, setFieldValue);
+                      }
+                    }, [values.appointmentId, setFieldValue]);
+
+                    return (
+                      <Form>
+                        <Row className="mb-2">
+                          <Col md={6}>
+                            <SelectField
+                              label="Appointment"
+                              name="appointmentId"
+                              options={getAvailableAppointments().map(appointment => ({
+                                label: `${appointment.id} - ${appointment.patientName}`,
+                                value: appointment.id?.toString() || ''
+                              }))}
+                              placeholder="Select Appointment (Optional)"
+                            />
+                          </Col>
+                          <Col md={6}>
+                            <SelectField
+                              label="Patient"
+                              name="patientId"
+                              options={patients.map(patient => ({
+                                label: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
+                                value: patient.id?.toString() || ''
+                              }))}
+                              placeholder="Select Patient"
+                              required
+                            />
+                          </Col>
+                        </Row>
+                        <Row className="mb-2">
+                          <Col md={3}>
+                            <TimeField
+                              label="Start Time"
+                              name="startTime"
+                              required
+                            />
+                          </Col>
+                          <Col md={3}>
+                            <TimeField
+                              label="End Time"
+                              name="endTime"
+                              required
+                            />
+                          </Col>
+                        </Row>
+                        <Row className="mb-2">
+                          <Col md={6}>
+                            <h5>Pre-Dialysis Vital Signs</h5>
+                            <InputField label="Blood Pressure" name="vitalSigns.preDialysis.bloodPressure" type="text" />
+                            <InputField label="Heart Rate" name="vitalSigns.preDialysis.heartRate" type="number" />
+                            <InputField label="Temperature" name="vitalSigns.preDialysis.temperature" type="number" />
+                            <InputField label="Weight" name="vitalSigns.preDialysis.weight" type="number" />
+                          </Col>
+                          <Col md={6}>
+                            <h5>Post-Dialysis Vital Signs</h5>
+                            <InputField label="Blood Pressure" name="vitalSigns.postDialysis.bloodPressure" type="text" />
+                            <InputField label="Heart Rate" name="vitalSigns.postDialysis.heartRate" type="number" />
+                            <InputField label="Temperature" name="vitalSigns.postDialysis.temperature" type="number" />
+                            <InputField label="Weight" name="vitalSigns.postDialysis.weight" type="number" />
+                          </Col>
+                        </Row>
+                        <Row className="mb-2">
+                          <Col md={6}>
+                            <h5>Treatment Parameters</h5>
+                            <InputField label="Dialyzer" name="treatmentParameters.dialyzer" type="text" />
+                            <InputField label="Blood Flow" name="treatmentParameters.bloodFlow" type="number" />
+                            <InputField label="Dialysate Flow" name="treatmentParameters.dialysateFlow" type="number" />
+                            <InputField label="Ultrafiltration" name="treatmentParameters.ultrafiltration" type="number" />
+                          </Col>
+                          <Col md={6}>
+                            <h5>Nursing Notes</h5>
+                            <TextareaField label="Nursing Notes" name="nursingNotes" placeholder="Enter notes..." rows={6} />
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col md={12} className="text-end">
+                            <ButtonWithGradient
+                              type="submit"
+                              disabled={isSubmitting}
+                              text={isSubmitting ? 'Recording...' : 'Record Session'}
+                            />
+                          </Col>
+                        </Row>
+                      </Form>
+                    );
+                  }}
                 </Formik>
               </Card.Body>
             </Card>

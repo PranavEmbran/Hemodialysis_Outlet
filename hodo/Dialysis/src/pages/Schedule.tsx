@@ -365,6 +365,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
           <Table
             columns={[
               { key: 'patientName', header: 'Patient' },
+              { key: 'scheduleId', header: 'Appointment ID' },
               { key: 'date', header: 'Date' },
               { key: 'time', header: 'Time' },
               { key: 'dialysisUnit', header: 'Unit' },
@@ -376,6 +377,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
             data={getFilteredSchedulesData().map(schedule => ({
               id: schedule.id,
               patientName: schedule.patientName,
+              scheduleId: schedule.id,
               date: schedule.date,
               time: schedule.time,
               dialysisUnit: schedule.dialysisUnit,
