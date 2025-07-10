@@ -280,8 +280,8 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
 
                     return (
                       <Form>
-                        <Row className="mb-2">
-                          <Col md={6}>
+                        <Row>
+                          <Col md={6} style={{ marginTop: '1.755rem'}}>
                             <SelectField
                               label="Appointment"
                               name="appointmentId"
@@ -289,7 +289,8 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                                 label: `${appointment.id} - ${appointment.patientName}`,
                                 value: appointment.id?.toString() || ''
                               }))}
-                              placeholder="Select Appointment (Optional)"
+                              placeholder="Select Appointment"
+                              // required
                             />
                           </Col>
                           <Col md={6}>
