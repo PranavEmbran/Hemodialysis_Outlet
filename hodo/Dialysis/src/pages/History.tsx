@@ -264,7 +264,7 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                         aria-hidden="true"
                         onClick={() => handleViewDetails(h.id!)}
                         title="View Details"
-                        style={{ cursor: 'pointer', fontSize: '1.5rem' }}
+                        style={{ cursor: 'pointer', fontSize: '16px', color: 'rgb(33, 150, 243)', marginTop: '4px' }}
                       ></i>
                       <EditButton onClick={() => handleEdit(h.id!)} />
                       <DeleteButton onClick={() => handleDelete(h.id!)} />

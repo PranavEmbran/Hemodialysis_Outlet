@@ -93,8 +93,8 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
 
   // Get available appointments (not completed, not soft-deleted)
   const getAvailableAppointments = () => {
-    return appointments.filter(apt => 
-      apt.status !== 'Completed' && 
+    return appointments.filter(apt =>
+      apt.status !== 'Completed' &&
       apt.isDeleted !== 0
     );
   };
@@ -205,8 +205,8 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
       } else {
         // Fallback to finding appointment by patient and date (existing logic)
         const currentDate = new Date().toISOString().split('T')[0];
-        const correspondingAppointment = appointments.find(apt => 
-          apt.patientId === values.patientId && 
+        const correspondingAppointment = appointments.find(apt =>
+          apt.patientId === values.patientId &&
           apt.date === currentDate &&
           apt.status !== 'Completed' &&
           apt.isDeleted !== 0
@@ -230,7 +230,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
       }
 
       await refreshHistory();
-      
+
       setSuccess(true);
       setError('');
       resetForm();
@@ -256,7 +256,7 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                 <h4 className="home-title">Start Dialysis Process</h4>
                 {success && (
                   <div className="alert alert-success">
-                    Dialysis session recorded successfully! 
+                    Dialysis session recorded successfully!
                     {appointmentUpdated ? ' Appointment status updated to Completed.' : ' No corresponding appointment found for today.'}
                   </div>
                 )}
@@ -281,46 +281,56 @@ const DialysisProcess: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                     return (
                       <Form>
                         <Row>
-                          <Col md={6} style={{ marginTop: '1.755rem'}}>
-                            <SelectField
-                              label="Appointment"
-                              name="appointmentId"
-                              options={getAvailableAppointments().map(appointment => ({
-                                label: `${appointment.id} - ${appointment.patientName}`,
-                                value: appointment.id?.toString() || ''
-                              }))}
-                              placeholder="Select Appointment"
-                              // required
-                            />
-                          </Col>
-                          <Col md={6}>
-                            <SelectField
-                              label="Patient"
-                              name="patientId"
-                              options={patients.map(patient => ({
-                                label: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
-                                value: patient.id?.toString() || ''
-                              }))}
-                              placeholder="Select Patient"
-                              required
-                            />
-                          </Col>
-                        </Row>
-                        <Row className="mb-2">
-                          <Col md={3}>
-                            <TimeField
-                              label="Start Time"
-                              name="startTime"
-                              required
-                            />
-                          </Col>
-                          <Col md={3}>
-                            <TimeField
-                              label="End Time"
-                              name="endTime"
-                              required
-                            />
-                          </Col>
+                          <Row className="mb-2" style={{ width: '50%'}}>
+                            <Row className="mb-2">
+                              <Col md={8} style={{ marginTop: '1.755rem' }}>
+                                <SelectField
+                                  label="Appointment"
+                                  name="appointmentId"
+                                  options={getAvailableAppointments().map(appointment => ({
+                                    label: `${appointment.id} - ${appointment.patientName}`,
+                                    value: appointment.id?.toString() || ''
+                                  }))}
+                                  placeholder="Select Appointment"
+                                // required
+                                />
+                              </Col>
+                            </Row>
+                            <Row className="mb-2">
+                              <Col md={8}>
+                                <SelectField
+                                  label="Patient"
+                                  name="patientId"
+                                  options={patients.map(patient => ({
+                                    label: patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
+                                    value: patient.id?.toString() || ''
+                                  }))}
+                                  placeholder="Select Patient"
+                                  required
+                                />
+                              </Col>
+                            </Row>
+                          </Row>
+                          <Row className="mb-2" style={{ width: '50%', marginTop: '1.755rem' }}>
+                            <Row className="mb-2">
+                              <Col md={8}>
+                                <TimeField
+                                  label="Start Time"
+                                  name="startTime"
+                                  required
+                                />
+                              </Col>
+                            </Row>
+                            <Row className="mb-2">
+                              <Col md={8}>
+                                <TimeField
+                                  label="End Time"
+                                  name="endTime"
+                                // required
+                                />
+                              </Col>
+                            </Row>
+                          </Row>
                         </Row>
                         <Row className="mb-2">
                           <Col md={6}>
