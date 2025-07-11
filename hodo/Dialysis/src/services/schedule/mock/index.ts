@@ -160,13 +160,13 @@ export class MockScheduleService implements ScheduleService {
         console.warn('MockScheduleService: Staff data is missing or incomplete, using fallback data');
         // Return fallback data if staff data is missing or incomplete
         return {
-          technicians: [
-            "Dr. Sarah Johnson",
-            "Dr. Michael Chen",
-            "Dr. Emily Rodriguez",
-            "Dr. David Thompson",
-            "Dr. Lisa Wang"
-          ],
+          // technicians: [
+          //   "Dr. Sarah Johnson",
+          //   "Dr. Michael Chen",
+          //   "Dr. Emily Rodriguez",
+          //   "Dr. David Thompson",
+          //   "Dr. Lisa Wang"
+          // ],
           doctors: [
             "Dr. Robert Smith",
             "Dr. Jennifer Brown",
@@ -187,20 +187,20 @@ export class MockScheduleService implements ScheduleService {
       console.error('MockScheduleService: Error loading staff data:', error);
       // Return fallback data if file persistence fails
       return {
-        technicians: [
-          "Dr. Sarah Johnson",
-          "Dr. Michael Chen",
-          "Dr. Emily Rodriguez",
-          "Dr. David Thompson",
-          "Dr. Lisa Wang"
-        ],
-        doctors: [
-          "Dr. Robert Smith",
-          "Dr. Jennifer Brown",
-          "Dr. William Davis",
-          "Dr. Maria Garcia",
-          "Dr. James Wilson"
-        ],
+        // technicians: [
+        //   "Dr. Sarah Johnson",
+        //   "Dr. Michael Chen",
+        //   "Dr. Emily Rodriguez",
+        //   "Dr. David Thompson",
+        //   "Dr. Lisa Wang"
+        // ],
+        // doctors: [
+        //   "Dr. Robert Smith",
+        //   "Dr. Jennifer Brown",
+        //   "Dr. William Davis",
+        //   "Dr. Maria Garcia",
+        //   "Dr. James Wilson"
+        // ],
         units: [
           "Unit A - Main Dialysis",
           "Unit B - Emergency",

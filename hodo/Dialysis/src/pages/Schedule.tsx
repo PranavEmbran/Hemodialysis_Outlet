@@ -23,7 +23,7 @@ import { useDialysis } from '../context/DialysisContext';
 interface ScheduleFormValues {
   patientId: string;
   dialysisUnit: string;
-  technician: string;
+  // technician: string;
   admittingDoctor: string;
   date: string;
   time: string;
@@ -33,7 +33,7 @@ interface ScheduleFormValues {
 const validationSchema = Yup.object({
   patientId: Yup.string().required('Patient selection is required'),
   dialysisUnit: Yup.string().required('Dialysis unit is required'),
-  technician: Yup.string().required('Technician is required'),
+  // technician: Yup.string().required('Technician is required'),
   admittingDoctor: Yup.string().required('Admitting doctor is required'),
   date: Yup.date().required('Date is required'),
   time: Yup.string().required('Time is required'),
@@ -42,7 +42,8 @@ const validationSchema = Yup.object({
 
 const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const { appointments: schedules, patients, refreshAppointments, refreshPatients } = useDialysis();
-  const [staff, setStaff] = useState<StaffData>({ technicians: [], doctors: [], units: [] });
+  // const [staff, setStaff] = useState<StaffData>({ technicians: [], doctors: [], units: [] });
+  const [staff, setStaff] = useState<StaffData>({ doctors: [],units: [] });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
   const [schedulesSearch, setSchedulesSearch] = useState<string>('');
@@ -69,7 +70,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
   const initialValues: ScheduleFormValues = {
     patientId: '',
     dialysisUnit: '',
-    technician: '',
+    // technician: '',
     admittingDoctor: '',
     date: '',
     time: '',
@@ -117,7 +118,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
         schedule.date?.includes(schedulesSearch) ||
         schedule.time?.includes(schedulesSearch) ||
         schedule.dialysisUnit?.toLowerCase().includes(searchLower) ||
-        schedule.technician?.toLowerCase().includes(searchLower) ||
+        // schedule.technician?.toLowerCase().includes(searchLower) ||
         schedule.admittingDoctor?.toLowerCase().includes(searchLower) ||
         schedule.status?.toLowerCase().includes(searchLower)
       );
@@ -290,7 +291,9 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
                             required
                           />
                         </Col>
-                        <Col md={6} className="mb-3">
+
+
+                        {/* <Col md={6} className="mb-3">
                           <SelectField
                             label="Technician"
                             name="technician"
@@ -301,7 +304,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
                             placeholder="Select Technician"
                             required
                           />
-                        </Col>
+                        </Col> */}
                         <Col md={6} className="mb-3">
                           <SelectField
                             label="Admitting Doctor"
@@ -314,6 +317,8 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
                             required
                           />
                         </Col>
+
+
                         <Col md={6} className="mb-3">
                           <DateField
                             label="Date"
@@ -369,7 +374,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
               { key: 'date', header: 'Date' },
               { key: 'time', header: 'Time' },
               { key: 'dialysisUnit', header: 'Unit' },
-              { key: 'technician', header: 'Technician' },
+              // { key: 'technician', header: 'Technician' },
               { key: 'admittingDoctor', header: 'Doctor' },
               { key: 'status', header: 'Status' },
               { key: 'actions', header: 'Actions' },
@@ -381,7 +386,7 @@ const Schedule: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void 
               date: schedule.date,
               time: schedule.time,
               dialysisUnit: schedule.dialysisUnit,
-              technician: schedule.technician,
+              // technician: schedule.technician,
               admittingDoctor: schedule.admittingDoctor,
               status: (
                 <span className={`status-badge ${

@@ -80,7 +80,7 @@ interface DialysisFlowChart {
 }
 
 interface StaffData {
-  technicians: string[];
+  // technicians: string[];
   doctors: string[];
   units: string[];
 }
@@ -638,8 +638,8 @@ export const getStaff = (req: Request, res: Response): any => {
   try {
     console.log('Fetching staff data...');
     const staffData: StaffData = {
-      technicians: ['John Doe', 'Jane Smith', 'Mike Johnson'],
-      doctors: ['Dr. Brown', 'Dr. Wilson', 'Dr. Davis'],
+      // technicians: ['John Doe', 'Jane Smith', 'Mike Johnson'],
+      // doctors: ['Dr. Brown', 'Dr. Wilson', 'Dr. Davis'],
       units: ['Unit A', 'Unit B', 'Unit C']
     };
     return res.json(staffData);

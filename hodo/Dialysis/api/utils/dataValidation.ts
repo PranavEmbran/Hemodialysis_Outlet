@@ -298,7 +298,7 @@ export class DataValidator {
       id: appointment.id?.toString(),
       patientId: appointment.patientId?.toString(),
       dialysisUnit: appointment.dialysisUnit,
-      technician: appointment.technician?.trim(),
+      // technician: appointment.technician?.trim(),
       admittingDoctor: appointment.admittingDoctor?.trim(),
       date: appointment.date,
       time: appointment.time,

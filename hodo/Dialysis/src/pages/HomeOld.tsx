@@ -408,7 +408,7 @@ const Dashboard: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void
                     <tr key={apt.id}>
                       <td><Button size="sm" variant="outline-primary">+</Button></td>
                       <td>{apt.patientName}</td>
-                      <td>{apt.admittingDoctor || 'Dr. Smith'}</td>
+                      {/* <td>{apt.admittingDoctor || 'Dr. Smith'}</td> */}
                       <td>{apt.date}</td>
                       <td>{apt.time}</td>
                       <td>{apt.dialysisUnit}</td>

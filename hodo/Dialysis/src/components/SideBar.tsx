@@ -125,7 +125,9 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Start Dialysis"}
               </NavLink>
             </li>
-            <li>
+
+
+            {/* <li>
               <NavLink
                 to="/dialysis-flow-chart" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
@@ -138,21 +140,23 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Dialysis Flow Chart"}
               </NavLink>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <NavLink
                 to="/haemodialysis-record-details" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }
-                title={collapsed ? "HD Record" : ""}
+                title={collapsed ? "HD Live Record" : ""}
               >
                 <span>
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
-                {!collapsed && "HD Record"}
+                {!collapsed && "HD Live Record"}
               </NavLink>
-            </li>
+            </li> */}
+
+            
             <li>
               <NavLink
                 to="/billing" style={{ fontWeight: 400, color: "#cccccc" }}

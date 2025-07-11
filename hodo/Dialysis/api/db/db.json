@@ -147,6 +147,18 @@
       "catheterInsertionDate": "2025-07-10",
       "fistulaCreationDate": "2025-07-10",
       "isDeleted": 10
+    },
+    {
+      "id": "20250711/001",
+      "firstName": "Navaneeth",
+      "lastName": "Krishna",
+      "gender": "Male",
+      "dateOfBirth": "2003-05-05",
+      "mobileNo": "6549873216",
+      "bloodGroup": "A+",
+      "catheterInsertionDate": "2025-07-11",
+      "fistulaCreationDate": "2025-07-11",
+      "isDeleted": 10
     }
   ],
   "appointments": [
@@ -297,6 +309,67 @@
       "patientName": "Hema Latha",
       "status": "Scheduled",
       "id": "1752141742980",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250704/006",
+      "dialysisUnit": "Unit B",
+      "technician": "",
+      "admittingDoctor": "",
+      "date": "2025-07-11",
+      "time": "10:35",
+      "remarks": "",
+      "patientName": "Vikram Adithyan",
+      "status": "Scheduled",
+      "id": "1752210372650",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250706/002",
+      "dialysisUnit": "Unit C",
+      "technician": "",
+      "admittingDoctor": "",
+      "date": "2025-07-11",
+      "time": "10:40",
+      "remarks": "",
+      "patientName": "Hema Latha",
+      "status": "Scheduled",
+      "id": "1752210390493",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250711/001",
+      "dialysisUnit": "Unit A",
+      "date": "2025-07-12",
+      "time": "10:55",
+      "remarks": "NavTest",
+      "patientName": "Navaneeth Krishna",
+      "status": "Completed",
+      "id": "1752211546926",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250709/001",
+      "dialysisUnit": "Unit A",
+      "admittingDoctor": "Dr. Williams",
+      "date": "2025-07-11",
+      "time": "12:02",
+      "remarks": "",
+      "patientName": "Jayaram SK",
+      "status": "Scheduled",
+      "id": "1752215550568",
+      "isDeleted": 10
+    },
+    {
+      "patientId": "20250706/002",
+      "dialysisUnit": "Unit C",
+      "admittingDoctor": "Dr. Davis",
+      "date": "2025-07-11",
+      "time": "15:13",
+      "remarks": "",
+      "patientName": "Hema Latha",
+      "status": "Scheduled",
+      "id": "1752227015704",
       "isDeleted": 10
     }
   ],
@@ -584,7 +657,12 @@
       "nursingNotes": "",
       "patientName": "Sivadassan N",
       "date": "2025-07-06",
-      "isDeleted": 10
+      "isDeleted": 10,
+      "parameters": "a",
+      "amount": "a",
+      "age": "a",
+      "gender": "Male",
+      "notes": ""
     },
     {
       "id": "1751823894561",
@@ -748,7 +826,8 @@
       "nursingNotes": "Emergency",
       "patientName": "Jayaram SK",
       "date": "2025-07-10",
-      "isDeleted": 10
+      "isDeleted": 10,
+      "notes": ""
     },
     {
       "id": "1752123577363",
@@ -894,6 +973,33 @@
       "patientName": "Vigneshan Sharma",
       "date": "2025-07-10",
       "isDeleted": 10
+    },
+    {
+      "id": "1752211566441",
+      "patientId": "20250711/001",
+      "appointmentId": "1752211546926",
+      "startTime": "10:56",
+      "endTime": "12:56",
+      "vitalSigns": {
+        "preDialysis": {
+          "bloodPressure": ""
+        },
+        "postDialysis": {
+          "bloodPressure": ""
+        }
+      },
+      "treatmentParameters": {
+        "dialyzer": ""
+      },
+      "nursingNotes": "Test first#####",
+      "patientName": "Navaneeth Krishna",
+      "date": "2025-07-11",
+      "isDeleted": 10,
+      "parameters": "44",
+      "amount": "",
+      "age": "30",
+      "gender": "Male",
+      "notes": "Nav Session"
     }
   ],
   "dialysisFlowCharts": [],

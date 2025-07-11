@@ -103,7 +103,7 @@ export interface HistoryRecord {
 }
 
 export interface StaffData {
-  technicians: string[];
+  // technicians: string[];
   doctors: string[];
   units: string[];
 }
@@ -115,7 +115,7 @@ export interface ScheduleEntry {
   date: string;
   time: string;
   dialysisUnit: string;
-  technician: string;
+  // technician: string;
   admittingDoctor: string;
   status?: string;
   remarks?: string;

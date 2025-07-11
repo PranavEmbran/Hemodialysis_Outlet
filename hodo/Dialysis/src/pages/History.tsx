@@ -52,10 +52,11 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
       filteredHistory = filteredHistory.filter(h =>
         h.patientName?.toLowerCase().includes(searchLower) ||
         h.date?.toLowerCase().includes(searchLower) ||
-        h.parameters?.toLowerCase().includes(searchLower) ||
+        // h.parameters?.toLowerCase().includes(searchLower) ||
         h.notes?.toLowerCase().includes(searchLower) ||
-        h.nursingNotes?.toLowerCase().includes(searchLower) ||
-        h.amount?.toString().includes(searchLower)
+        h.nursingNotes?.toLowerCase().includes(searchLower)
+        // h.nursingNotes?.toLowerCase().includes(searchLower) ||
+        // h.amount?.toString().includes(searchLower)
       );
     }
     
@@ -111,10 +112,10 @@ const HistoryPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
       const updatedHistory = await historyService.updateHistory(editingData.id!, {
         patientName: values.patientName,
         date: values.date,
-        parameters: values.parameters,
-        amount: values.amount,
-        age: values.age,
-        gender: values.gender,
+        // parameters: values.parameters,
+        // amount: values.amount,
+        // age: values.age,
+        // gender: values.gender,
         notes: values.notes,
         nursingNotes: values.nursingNotes,
       });
