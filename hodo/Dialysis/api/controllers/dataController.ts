@@ -639,7 +639,7 @@ export const getStaff = (req: Request, res: Response): any => {
     console.log('Fetching staff data...');
     const staffData: StaffData = {
       // technicians: ['John Doe', 'Jane Smith', 'Mike Johnson'],
-      // doctors: ['Dr. Brown', 'Dr. Wilson', 'Dr. Davis'],
+      doctors: ['Dr. Brown', 'Dr. Wilson', 'Dr. Davis'],
       units: ['Unit A', 'Unit B', 'Unit C']
     };
     return res.json(staffData);

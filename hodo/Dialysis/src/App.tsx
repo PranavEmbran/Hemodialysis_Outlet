@@ -8,19 +8,24 @@ import './App.css';
 // import './pages/Home.css';
 
 // Import pages
-import PatientRegistration from './pages/PatientRegistration';
-import Schedule from './pages/Schedule';
-import DialysisProcess from './pages/DialysisProcess';
-import Billing from './pages/Billing';
-import History from './pages/History';
-import Dashboard from './pages/Home';
+import PatientRegistration from './initPages/PatientRegistration';
+import Schedule from './initPages/Schedule';
+import DialysisProcess from './initPages/DialysisProcess';
+import Billing from './initPages/Billing';
+import History from './initPages/History';
+import Dashboard from './initPages/Home';
+
 import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
 // import StartDialysis from './components/StartDialysis';
-import DialysisFlowChartPage from "./pages/DialysisFlowChartPage";
-import HaemodialysisRecordDetailsPage from "./pages/HaemodialysisRecordDetailsPage";
+import DialysisFlowChartPage from "./initPages/DialysisFlowChartPage";
+import HaemodialysisRecordDetailsPage from "./initPages/HaemodialysisRecordDetailsPage";
 import DataLoaderTest from "./components/DataLoaderTest";
 import { DialysisProvider } from './context/DialysisContext';
+
+import CaseOpening from './pages/CaseOpening';
+import Blank from './pages/Blank';
+
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -52,6 +57,8 @@ const App: React.FC = () => {
                 <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/test" element={<DataLoaderTest />} />
+                <Route path="/case-opening" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/blank" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               </Routes>
             </div>
           </div>

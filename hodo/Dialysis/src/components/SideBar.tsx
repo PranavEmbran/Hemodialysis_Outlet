@@ -141,20 +141,20 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Dialysis Flow Chart"}
               </NavLink>
             </li> */}
-            {/* <li>
+            <li>
               <NavLink
                 to="/haemodialysis-record-details" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }
-                title={collapsed ? "HD Live Record" : ""}
+                title={collapsed ? "In Process Vitals" : ""}
               >
                 <span>
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
-                {!collapsed && "HD Live Record"}
+                {!collapsed && "In Process Vitals"}
               </NavLink>
-            </li> */}
+            </li>
 
             
             <li>
@@ -185,6 +185,40 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "History"}
               </NavLink>
             </li>
+
+
+
+            <li>
+              <NavLink
+                to="/blank" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Blank" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Blank"}
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/case-opening" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Case Opening" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Case Opening"}
+              </NavLink>
+            </li>
+
+            
           </ul>
         </ul>
       </nav>
