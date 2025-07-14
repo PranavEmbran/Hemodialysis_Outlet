@@ -24,6 +24,7 @@ import DataLoaderTest from "./components/DataLoaderTest";
 import { DialysisProvider } from './context/DialysisContext';
 
 import CaseOpening from './pages/CaseOpening';
+import Scheduling from './pages/Scheduling';
 import Blank from './pages/Blank';
 
 
@@ -57,8 +58,9 @@ const App: React.FC = () => {
                 <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/test" element={<DataLoaderTest />} />
-                <Route path="/case-opening" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/blank" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/case-opening" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                <Route path="/scheduling" element={<Scheduling sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               </Routes>
             </div>
           </div>

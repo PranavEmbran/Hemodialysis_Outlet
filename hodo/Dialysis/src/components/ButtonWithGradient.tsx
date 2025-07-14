@@ -5,6 +5,8 @@ export interface ButtonWithGradientProps {
   text?: string;
   children?: React.ReactNode;
   onClick?: () => void;
+  // onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   processing?: boolean;
