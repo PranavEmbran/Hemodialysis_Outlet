@@ -236,6 +236,35 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
               </NavLink>
             </li>
 
+            <li>
+              <NavLink
+                to="/predialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Predialysis Record" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Predialysis Record"}
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/start-dialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Start Dialysis Record" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Start Dialysis Record"}
+              </NavLink>
+            </li>
 
             <li>
               <NavLink
@@ -249,6 +278,21 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
                 {!collapsed && "In Process Vitals"}
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/post-dialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Post Dialysis Record" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Post Dialysis Record"}
               </NavLink>
             </li>
 

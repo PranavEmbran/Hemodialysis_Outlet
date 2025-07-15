@@ -17,9 +17,10 @@ const initialSchedulingLookup = [
   {
     id: 1,
     SL_No_of_units: 5,
-    SL_Working_hrs: 8.5,
-    SL_Working_days: 6,
-    SL_Pre_dialysis_time: 0.5,
+    SL_Working_hrs: 15.0,
+    SL_Working_days: 7,
+    SL_Pre_dialysis_time: 1.0 ,
+    SL_Dialysis_Session_Time: 5.0,
   },
   // {
   //   id: 2,
@@ -36,6 +37,7 @@ const rowLabels = [
   { key: 'SL_Working_hrs', label: 'Working Hours' },
   { key: 'SL_Working_days', label: 'Working Days' },
   { key: 'SL_Pre_dialysis_time', label: 'Pre-Dialysis Time' },
+  { key: 'SL_Dialysis_Session_Time', label: 'Dialysis Session Time' },
   // { key: 'TEST', label: 'TEST' },
 ];
 

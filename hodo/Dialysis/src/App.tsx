@@ -30,7 +30,9 @@ import HD_Master from './pages/Hemodialysis_Master';
 import UnitsManagement, { UnitsProvider } from './pages/UnitsManagement';
 import VascularAccessLookup, { AccessTypesProvider } from './pages/VascularAccessLookup';
 import DialyzerTypeLookup, { DialyzerTypeProvider } from './pages/DialyzerTypeLookup';
-
+import Predialysis_Record from './pages/Predialysis_Record';
+import Start_Dialysis_Record from './pages/Start_Dialysis_Record';
+import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -72,6 +74,9 @@ const App: React.FC = () => {
                       <Route path="/units-management" element={<UnitsManagement sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/vascular-access-lookup" element={<VascularAccessLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/dialyzer-type-lookup" element={<DialyzerTypeLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                     </Routes>
                   </div>
                 </div>
