@@ -170,4 +170,30 @@ export const historyFormConfig: FormConfig = {
     notes: data.notes || '',
     nursingNotes: data.nursingNotes || '',
   })
+};
+
+export const unitFormConfig: FormConfig = {
+  title: 'Edit Unit',
+  fields: [
+    { name: 'Unit_Name', label: 'Unit Name', type: 'text', required: true, colSize: 12 },
+    { name: 'Unit_Status', label: 'Unit Status', type: 'select', required: true, colSize: 12, options: [
+      { value: 'Free', label: 'Free' },
+      { value: 'Engaged', label: 'Engaged' },
+      { value: 'Out_of_service', label: 'Out of Service' },
+    ] },
+    { name: 'Unit_Planned_Maintainance_DT', label: 'Planned Maintainance', type: 'text', required: true, colSize: 12, placeholder: 'YYYY-MM-DDTHH:mm' },
+    { name: 'Unit_Technitian_Assigned', label: 'Technitian Assigned', type: 'text', required: true, colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    Unit_Name: Yup.string().required('Unit Name is required'),
+    Unit_Status: Yup.string().required('Unit Status is required'),
+    Unit_Planned_Maintainance_DT: Yup.string().required('Planned Maintainance is required'),
+    Unit_Technitian_Assigned: Yup.string().required('Technitian Assigned is required'),
+  }),
+  initialValues: (data: any) => ({
+    Unit_Name: data?.Unit_Name || '',
+    Unit_Status: data?.Unit_Status || '',
+    Unit_Planned_Maintainance_DT: data?.Unit_Planned_Maintainance_DT || '',
+    Unit_Technitian_Assigned: data?.Unit_Technitian_Assigned || '',
+  }),
 }; 

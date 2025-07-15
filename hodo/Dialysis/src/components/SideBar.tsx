@@ -141,20 +141,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Dialysis Flow Chart"}
               </NavLink>
             </li> */}
-            <li>
-              <NavLink
-                to="/haemodialysis-record-details" style={{ fontWeight: 400, color: "#cccccc" }}
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                title={collapsed ? "In Process Vitals" : ""}
-              >
-                <span>
-                  <FontAwesomeIcon icon={faCaretRight} />
-                </span>
-                {!collapsed && "In Process Vitals"}
-              </NavLink>
-            </li>
+
 
             
             <li>
@@ -217,6 +204,23 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Case Opening"}
               </NavLink>
             </li>
+
+            
+            <li>
+              <NavLink
+                to="/hd-master" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Hemodialysis Master" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Hemodialysis Master"}
+              </NavLink>
+            </li>
+
             <li>
               <NavLink
                 to="/scheduling" style={{ fontWeight: 400, color: "#cccccc" }}
@@ -231,7 +235,23 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Scheduling"}
               </NavLink>
             </li>
-            
+
+
+            <li>
+              <NavLink
+                to="/haemodialysis-record-details" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "In Process Vitals" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "In Process Vitals"}
+              </NavLink>
+            </li>
+
           </ul>
         </ul>
       </nav>
