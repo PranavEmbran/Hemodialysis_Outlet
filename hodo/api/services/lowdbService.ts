@@ -36,4 +36,49 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   await db.read();
   // @ts-ignore
   return db.data?.patients_derived || [];
+};
+
+export interface ScheduleAssigned {
+  SA_ID_PK: string;
+  P_ID_FK: string;
+  SA_Date: string;
+  SA_Time: string;
+  isDeleted: number;
+  Added_by: string;
+  Added_on: string;
+  Modified_by: string;
+  Modified_on: string;
+  Provider_FK: string;
+  Outlet_FK: string;
+}
+
+export const getSchedulesAssigned = async (): Promise<ScheduleAssigned[]> => {
+  await initDB();
+  await db.read();
+  // @ts-ignore
+  return db.data?.Schedules_Assigned || [];
+};
+
+export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promise<ScheduleAssigned[]> => {
+  await initDB();
+  await db.read();
+  // @ts-ignore
+  const existing = db.data!.Schedules_Assigned || [];
+  // Find the max numeric part of existing SA_ID_PK
+  let maxNum = 0;
+  for (const s of existing) {
+    const match = typeof s.SA_ID_PK === 'string' && s.SA_ID_PK.match(/^SA(\d{3,})$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxNum) maxNum = num;
+    }
+  }
+  // Assign new IDs
+  const newSessions = sessions.map((session, idx) => ({
+    ...session,
+    SA_ID_PK: `SA${String(maxNum + idx + 1).padStart(3, '0')}`
+  }));
+  db.data!.Schedules_Assigned = [...existing, ...newSessions];
+  await db.write();
+  return db.data!.Schedules_Assigned;
 }; 

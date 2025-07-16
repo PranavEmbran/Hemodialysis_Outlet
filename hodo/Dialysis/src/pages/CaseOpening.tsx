@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 // import { Row, Col, Container } from 'react-bootstrap';
+import { API_URL } from '../config';
 
 const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   // Blood group options
@@ -33,7 +34,9 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
 
   useEffect(() => {
     // fetch('/api/data/patients_derived')
-    fetch('http://localhost:3002/api/data/patients_derived')
+    // fetch('http://localhost:3002/api/data/patients_derived')
+    // fetch('http://192.168.50.50:3002/api/data/patients_derived')
+    fetch(`${API_URL}/data/patients_derived`)
     .then(res => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

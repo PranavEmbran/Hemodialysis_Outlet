@@ -9,3 +9,5 @@ export const getData = service.getData;
 export const addData = service.addData;
 export const deleteData = service.deleteData;
 export const getPatientsDerived = (service as any).getPatientsDerived;
+export const getSchedulesAssigned = (service as any).getSchedulesAssigned;
+export const addSchedulesAssigned = (service as any).addSchedulesAssigned;

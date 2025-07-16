@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getData, addData, deleteData, getPatientsDerived } from '../services/dataFactory.js';
+import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned } from '../services/dataFactory.js';
 
 export const getAll = async (req: Request, res: Response) => {
   try {
@@ -43,5 +43,27 @@ export const getPatientsDerivedHandler = async (req: Request, res: Response) => 
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch patients' });
+  }
+};
+
+export const getSchedulesAssignedHandler = async (req: Request, res: Response) => {
+  try {
+    const schedules = await getSchedulesAssigned();
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch schedules' });
+  }
+};
+
+export const addSchedulesAssignedHandler = async (req: Request, res: Response) => {
+  try {
+    const sessions = req.body;
+    if (!Array.isArray(sessions)) {
+      return res.status(400).json({ error: 'Request body must be an array of sessions' });
+    }
+    const updated = await addSchedulesAssigned(sessions);
+    res.status(201).json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add schedules' });
   }
 }; 
