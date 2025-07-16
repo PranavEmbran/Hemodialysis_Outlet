@@ -7,7 +7,6 @@ import SelectField from '../components/forms/SelectField';
 import InputField from '../components/forms/InputField';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
-import { useDialysis } from '../context/DialysisContext';
 
 const sessionOptions = [
   { label: '1st', value: '1st' },
@@ -29,7 +28,7 @@ function getMonthName(dateStr: string) {
 }
 
 const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const { patients } = useDialysis();
+  const [patients] = useState<any[]>([]); // Placeholder for new mock db integration
   const [form, setForm] = useState({
     patient: '',
     interval: '',
@@ -99,14 +98,16 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
         <form style={{ maxWidth: 600, margin: '0 auto', marginBottom: 32 }} onSubmit={e => { e.preventDefault(); generateSchedule(); }}>
           <div className="form-group">
-            <label htmlFor="patient" className="form-label">Patient <span className="text-danger">*</span></label>
+            <label htmlFor="patient" className="form-label">Patient 
+              {/* <span className="text-danger">*</span> */}
+              </label>
             <select
               id="patient"
               name="patient"
               className="form-select"
               value={form.patient}
               onChange={handleFormChange}
-              required
+              // required
             >
               <option value="">Select Patient</option>
               {patients.map(p => (

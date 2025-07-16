@@ -3,11 +3,11 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
-import { useDialysis } from '../context/DialysisContext';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 
 const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const { appointments, patients } = useDialysis();
+  const [appointments] = useState<any[]>([]); // Placeholder for new mock db integration
+  const [patients] = useState<any[]>([]); // Placeholder for new mock db integration
   const [form, setForm] = useState({
     SA_ID_FK_PK: '',
     P_ID_FK: '',

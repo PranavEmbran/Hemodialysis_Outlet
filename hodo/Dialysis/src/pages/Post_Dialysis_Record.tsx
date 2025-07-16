@@ -3,11 +3,11 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
-import { useDialysis } from '../context/DialysisContext';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 
 const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const { appointments, patients } = useDialysis();
+  // const { appointments, patients } = useDialysis();
+
   const [form, setForm] = useState({
     SA_ID_FK: '',
     P_ID_FK: '',
@@ -22,18 +22,18 @@ const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar:
   const [errorMsg, setErrorMsg] = useState('');
 
   // Get only active appointments
-  const availableSchedules = appointments.filter(a => a.isDeleted === 10);
+  // const availableSchedules = appointments.filter(a => a.isDeleted === 10);
 
   // When schedule is selected, auto-fill patient
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
     setForm(prev => ({ ...prev, SA_ID_FK: scheduleId }));
-    const selected = availableSchedules.find(a => a.id === scheduleId);
-    if (selected) {
-      setForm(prev => ({ ...prev, P_ID_FK: selected.patientName || '' }));
-    } else {
-      setForm(prev => ({ ...prev, P_ID_FK: '' }));
-    }
+    // const selected = availableSchedules.find(a => a.id === scheduleId);
+  //   if (selected) {
+  //     setForm(prev => ({ ...prev, P_ID_FK: selected.patientName || '' }));
+  //   } else {
+  //     setForm(prev => ({ ...prev, P_ID_FK: '' }));
+  //   }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -99,9 +99,9 @@ const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar:
             <label>Schedule (SA_ID_FK) *</label>
             <select name="SA_ID_FK" value={form.SA_ID_FK} onChange={handleScheduleChange} className="form-control">
               <option value="">Select Schedule</option>
-              {availableSchedules.map(sch => (
+              {/* {availableSchedules.map(sch => (
                 <option key={sch.id} value={sch.id}>{sch.id} - {sch.patientName}</option>
-              ))}
+              ))} */}
             </select>
             {errors.SA_ID_FK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK}</div>}
           </div>

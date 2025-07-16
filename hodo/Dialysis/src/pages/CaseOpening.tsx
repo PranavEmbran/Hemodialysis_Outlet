@@ -29,6 +29,24 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     { value: 'Chronic', label: 'Chronic' },
   ];
 
+  const [patientOptions, setPatientOptions] = useState<{ label: string; value: string }[]>([]);
+
+  useEffect(() => {
+    // fetch('/api/data/patients_derived')
+    fetch('http://localhost:3002/api/data/patients_derived')
+    .then(res => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setPatientOptions(
+            data.map((p: any) => ({
+              label: `${p.id} - ${p.Name}`,
+              value: p.id
+            }))
+          );
+        }
+      });
+  }, []);
+
   // Validation schema
   const validationSchema = Yup.object({
     P_ID_FK: Yup.string().required('Patient ID is required.'),
@@ -60,11 +78,12 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         >
           {({ isSubmitting, resetForm, values }) => (
             <Form style={{ maxWidth: 500, margin: '2rem auto', padding: 24, background: '#f9f9f9', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
-              <InputField
-                label="Patient ID"
+              <SelectField
+                label="Select Patient"
                 name="P_ID_FK"
+                options={patientOptions}
                 required
-                placeholder="Enter Patient ID"
+                placeholder="Select Patient"
               />
               {/* Hidden UUID field */}
               <InputField
@@ -90,7 +109,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
               <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}>
                 <ButtonWithGradient
                   type="button"
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); resetForm({ values: getInitialValues() }); }}
+                  onClick={() => resetForm({ values: getInitialValues() })}
                   className="btn-outline"
                 >
                   Reset

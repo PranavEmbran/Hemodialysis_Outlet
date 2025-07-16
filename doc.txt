@@ -26,4 +26,29 @@ npm install vite-plugin-mock --save-dev
 
 
 
+
+in api/
+
+npm install express lowdb dotenv nanoid
+npm install -D typescript ts-node-dev @types/express @types/node
+
+npm uninstall ts-node-dev
+
+npm install --save-dev ts-node typescript
+
+npm pkg set scripts.dev="ts-node --loader ts-node/esm server.ts"
+
+npx tsconfig.json --update '{ "compilerOptions": { "module": "ESNext", "moduleResolution": "Node", "target": "ES2022", "esModuleInterop": true } }'
+
+npm pkg set scripts.dev="nodemon --watch './**/*.ts' --exec 'node --loader ts-node/esm server.ts'"
+
+npm install cors
+
+npm install --save-dev @types/cors
+
+
+
+
+
+
 npm audit fix --force

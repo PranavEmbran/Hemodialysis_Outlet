@@ -5,23 +5,10 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './App.css';
-// import './pages/Home.css';
-
-// Import pages
-import PatientRegistration from './initPages/PatientRegistration';
-import Schedule from './initPages/Schedule';
-import DialysisProcess from './initPages/DialysisProcess';
-import Billing from './initPages/Billing';
-import History from './initPages/History';
-import Dashboard from './initPages/Home';
 
 import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
-// import StartDialysis from './components/StartDialysis';
-import DialysisFlowChartPage from "./initPages/DialysisFlowChartPage";
-import HaemodialysisRecordDetailsPage from "./initPages/HaemodialysisRecordDetailsPage";
-import DataLoaderTest from "./components/DataLoaderTest";
-import { DialysisProvider } from './context/DialysisContext';
+import HaemodialysisRecordDetailsPage from "./pages/HaemodialysisRecordDetailsPage";
 
 import CaseOpening from './pages/CaseOpening';
 import Scheduling from './pages/Scheduling';
@@ -41,7 +28,6 @@ const App: React.FC = () => {
   const toggleSidebar = () => setSidebarCollapsed(prev => !prev);
 
   return (
-    <DialysisProvider>
       <UnitsProvider>
         <AccessTypesProvider>
           <DialyzerTypeProvider>
@@ -57,17 +43,8 @@ const App: React.FC = () => {
 
 
                     <Routes>
-                      <Route path="/dashboard" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/registration" element={<PatientRegistration sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/schedule" element={<Schedule sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/process" element={<DialysisProcess sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/billing" element={<Billing sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/history" element={<History sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      {/* <Route path="/start" element={<StartDialysis />} /> */}
-                      <Route path="/dialysis-flow-chart" element={<DialysisFlowChartPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/test" element={<DataLoaderTest />} />
+                      <Route path="/" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      
                       <Route path="/blank" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/case-opening" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/scheduling" element={<Scheduling sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
@@ -77,6 +54,7 @@ const App: React.FC = () => {
                       <Route path="/dialyzer-type-lookup" element={<DialyzerTypeLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                     </Routes>
@@ -88,7 +66,6 @@ const App: React.FC = () => {
           </DialyzerTypeProvider>
         </AccessTypesProvider>
       </UnitsProvider>
-    </DialysisProvider>
   );
 };
 

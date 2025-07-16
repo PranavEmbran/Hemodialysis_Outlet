@@ -4,8 +4,6 @@ import * as Yup from 'yup';
 import type { Patient } from '../types';
 import ButtonWithGradient from './ButtonWithGradient';
 import { SelectField, InputField, TimeField, TextareaField } from './forms';
-import { patientServiceFactory } from '../services/patient/factory';
-import { haemodialysisRecordServiceFactory } from '../services/haemodialysisRecord/factory';
 import './HaemodialysisRecordDetails.css';
 
 interface Row {
@@ -59,21 +57,13 @@ const validationSchema = Yup.object({
 });
 
 const HaemodialysisRecordDetails: React.FC = () => {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients] = useState<Patient[]>([]); // Placeholder for new mock db integration
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
-  // Get services from factories
-  const patientService = patientServiceFactory.getService();
-  const haemodialysisRecordService = haemodialysisRecordServiceFactory.getService();
-
-  useEffect(() => {
-    patientService.getAllPatients()
-      .then(setPatients)
-      .catch(() => setError('Failed to fetch patients'))
-      .finally(() => setLoading(false));
-  }, [patientService]);
+  // No API/service logic, just use local state
+  useEffect(() => { setLoading(false); }, []);
 
   const initialValues: FormValues = {
     patientId: '',
@@ -98,14 +88,10 @@ const HaemodialysisRecordDetails: React.FC = () => {
       date: new Date().toISOString().split('T')[0],
       rows: values.rows,
     };
-    try {
-      await haemodialysisRecordService.addRecord(record);
-      setSuccess('Record saved successfully!');
-      resetForm();
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
-      setError('Failed to save record. Please try again.');
-    }
+    // Simulate save
+    setSuccess('Record saved successfully!');
+    resetForm();
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handlePrint = () => {
