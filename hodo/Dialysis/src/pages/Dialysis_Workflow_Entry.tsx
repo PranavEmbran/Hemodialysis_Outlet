@@ -1,0 +1,107 @@
+// import React from 'react';
+// import HaemodialysisRecordDetails from '../components/HaemodialysisRecordDetails';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import PageContainer from '../components/PageContainer';
+import SectionHeading from '../components/SectionHeading';
+// import { Row, Col, Container } from 'react-bootstrap';
+
+import React, { useEffect, useState } from 'react';
+import StepperNavigation from '../components/StepperNavigation';
+import Predialysis_Record from './Predialysis_Record';
+import Start_Dialysis_Record from './Start_Dialysis_Record';
+import HaemodialysisRecordDetailsPage from './HaemodialysisRecordDetailsPage';
+import Post_Dialysis_Record from './Post_Dialysis_Record';
+import { API_URL } from '../config';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+
+const stepComponents = [
+  Predialysis_Record,
+  Start_Dialysis_Record,
+  HaemodialysisRecordDetailsPage,
+  Post_Dialysis_Record,
+];
+
+const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
+  const [selectedSchedule, setSelectedSchedule] = useState('');
+  const [currentStep, setCurrentStep] = useState(0);
+  const [scheduleOptions, setScheduleOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [patients, setPatients] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    // Fetch schedules and patients to build dropdown options
+    Promise.all([
+      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
+    ]).then(([schedules, patientsData]) => {
+      setPatients(patientsData.map((p: any) => ({ id: p.id, name: (p['Name'] || p.name) })));
+      const options = schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+        const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
+        const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
+        return {
+          value: sch.SA_ID_PK,
+          label: `${sch.SA_ID_PK} - ${patientLabel}`,
+          patientId: sch.P_ID_FK,
+          date: sch.SA_Date
+        };
+      });
+      setScheduleOptions(options);
+    });
+  }, []);
+
+  const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSchedule(e.target.value);
+  };
+
+  const handleStepChange = (step: number) => {
+    setCurrentStep(step);
+  };
+
+  const handlePatientChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPatient(e.target.value);
+    setSelectedSchedule(''); // Reset schedule when patient changes
+  };
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(e.target.value);
+    setSelectedSchedule(''); // Reset schedule when date changes
+  };
+
+  const StepComponent = stepComponents[currentStep];
+  const stepProps = { sidebarCollapsed, toggleSidebar };
+  // Only pass selectedSchedule to steps that accept it
+  const stepWithSchedule = [0, 1, 2, 3]; // If all steps should receive it, keep as is
+  if (stepWithSchedule.includes(currentStep)) {
+    (stepProps as any).selectedSchedule = selectedSchedule;
+  }
+
+  return (
+    <>
+      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <PageContainer>
+        <SectionHeading title="Dialysis Workflow Entry" subtitle="Dialysis Workflow Entry" />
+        <div>
+          <StepperNavigation
+            selectedSchedule={selectedSchedule}
+            onScheduleChange={handleScheduleChange}
+            scheduleOptions={scheduleOptions}
+            currentStep={currentStep}
+            onStepChange={handleStepChange}
+            patients={patients}
+            selectedPatient={selectedPatient}
+            onPatientChange={handlePatientChange}
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+          />
+          <div style={{ maxWidth: 2000, margin: '0 auto' }}>
+            <StepComponent {...stepProps} />
+          </div>
+        </div>
+      </PageContainer>
+      <Footer />
+    </>
+  );
+};
+
+export default Dialysis_Workflow_Entry; 

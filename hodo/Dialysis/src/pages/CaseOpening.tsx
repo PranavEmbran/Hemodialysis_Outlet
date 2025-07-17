@@ -75,8 +75,22 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         <Formik
           initialValues={getInitialValues()}
           validationSchema={validationSchema}
-          onSubmit={(values, { resetForm }) => {
-            console.log('HCO Form Submitted:', values);
+          onSubmit={async (values, { resetForm }) => {
+            try {
+              const response = await fetch(`${API_URL}/data/case_openings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values),
+              });
+              if (!response.ok) {
+                throw new Error('Failed to save case opening');
+              }
+              resetForm({ values: getInitialValues() });
+              alert('Case opening saved successfully!');
+            } catch (error) {
+              alert('Error saving case opening');
+              console.error(error);
+            }
           }}
         >
           {({ isSubmitting, resetForm, values }) => (

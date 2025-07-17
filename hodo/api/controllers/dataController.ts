@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned } from '../services/dataFactory.js';
+import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening } from '../services/dataFactory.js';
 
 export const getAll = async (req: Request, res: Response) => {
   try {
@@ -65,5 +65,27 @@ export const addSchedulesAssignedHandler = async (req: Request, res: Response) =
     res.status(201).json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to add schedules' });
+  }
+};
+
+export const getCaseOpeningsHandler = async (req: Request, res: Response) => {
+  try {
+    const caseOpenings = await getCaseOpenings();
+    res.json(caseOpenings);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch case openings' });
+  }
+};
+
+export const addCaseOpeningHandler = async (req: Request, res: Response) => {
+  try {
+    const { HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature } = req.body;
+    if (!HCO_ID_PK || !P_ID_FK || !HCO_Blood_Group || !HCO_Case_nature) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const newCaseOpening = await addCaseOpening({ HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature });
+    res.status(201).json(newCaseOpening);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add case opening' });
   }
 }; 

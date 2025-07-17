@@ -81,4 +81,26 @@ export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promis
   db.data!.Schedules_Assigned = [...existing, ...newSessions];
   await db.write();
   return db.data!.Schedules_Assigned;
+};
+
+export interface CaseOpening {
+  HCO_ID_PK: string;
+  P_ID_FK: string;
+  HCO_Blood_Group: string;
+  HCO_Case_nature: string;
+}
+
+export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
+  await initDB();
+  await db.read();
+  // @ts-ignore
+  return db.data?.case_openings || [];
+};
+
+export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpening> => {
+  await initDB();
+  await db.read();
+  db.data!.case_openings.push(caseOpening);
+  await db.write();
+  return caseOpening;
 }; 

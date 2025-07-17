@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import { API_URL } from '../config';
 
-const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-  const [appointments] = useState<any[]>([]); // Placeholder for new mock db integration
-  const [patients] = useState<any[]>([]); // Placeholder for new mock db integration
+// const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
+const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ }) => {
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
   const [form, setForm] = useState({
     SA_ID_FK_PK: '',
     P_ID_FK: '',
@@ -21,6 +23,16 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
+    ]).then(([schedules, patientsData]) => {
+      setAppointments(schedules.filter((a: any) => a.isDeleted === 10));
+      setPatients(patientsData);
+    });
+  }, []);
+
   // Get only active appointments
   const availableSchedules = appointments.filter(a => a.isDeleted === 10);
 
@@ -28,9 +40,10 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
     setForm(prev => ({ ...prev, SA_ID_FK_PK: scheduleId }));
-    const selected = availableSchedules.find(a => a.id === scheduleId);
+    const selected = appointments.find(a => a.SA_ID_PK === scheduleId);
     if (selected) {
-      setForm(prev => ({ ...prev, P_ID_FK: selected.patientName || '' }));
+      const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+      setForm(prev => ({ ...prev, P_ID_FK: patient ? patient.Name : '' }));
     } else {
       setForm(prev => ({ ...prev, P_ID_FK: '' }));
     }
@@ -91,17 +104,20 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
 
   return (
     <>
-      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-      <PageContainer>
-        <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" />
+      {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} /> */}
+      {/* <PageContainer> */}
+        {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
         <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
           <div className="form-group mb-3">
             <label>Schedule (SA_ID_FK_PK) *</label>
             <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control">
               <option value="">Select Schedule</option>
-              {availableSchedules.map(sch => (
-                <option key={sch.id} value={sch.id}>{sch.id} - {sch.patientName}</option>
-              ))}
+              {appointments.map(sch => {
+                const patient = patients.find((p: any) => p.id === sch.P_ID_FK);
+                return (
+                  <option key={sch.SA_ID_PK} value={sch.SA_ID_PK}>{sch.SA_ID_PK} - {patient ? patient.Name : sch.P_ID_FK}</option>
+                );
+              })}
             </select>
             {errors.SA_ID_FK_PK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK_PK}</div>}
           </div>
@@ -141,8 +157,8 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
           {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
           {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
         </form>
-      </PageContainer>
-      <Footer />
+      {/* </PageContainer> */}
+      {/* <Footer /> */}
     </>
   );
 };

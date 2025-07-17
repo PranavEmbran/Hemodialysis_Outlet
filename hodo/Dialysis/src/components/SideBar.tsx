@@ -70,7 +70,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
           <ul className="sidebar-sublist">
 
 
-            <li>
+            {/* <li>
               <NavLink
                 to="/blank" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
@@ -83,7 +83,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Blank"}
               </NavLink>
-            </li>
+            </li> */}
 
             <li>
               <NavLink
@@ -100,21 +100,6 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
               </NavLink>
             </li>
 
-            
-            <li>
-              <NavLink
-                to="/hd-master" style={{ fontWeight: 400, color: "#cccccc" }}
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-                title={collapsed ? "Hemodialysis Master" : ""}
-              >
-                <span>
-                  <FontAwesomeIcon icon={faCaretRight} />
-                </span>
-                {!collapsed && "Hemodialysis Master"}
-              </NavLink>
-            </li>
 
             <li>
               <NavLink
@@ -133,6 +118,23 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
 
             <li>
               <NavLink
+                to="/dialysis-workflow-entry" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Dialysis Workflow Entry" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Dialysis Workflow Entry"}
+              </NavLink>
+            </li>
+
+
+{/* The following was commentend because they were added to StepperNavigation. */}
+            {/* <li>
+              <NavLink
                 to="/predialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
@@ -144,9 +146,9 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Predialysis Record"}
               </NavLink>
-            </li>
+            </li> */}
 
-            <li>
+            {/* <li>
               <NavLink
                 to="/start-dialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
@@ -159,9 +161,9 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Start Dialysis Record"}
               </NavLink>
-            </li>
+            </li> */}
 
-            <li>
+            {/* <li>
               <NavLink
                 to="/haemodialysis-record-details" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
@@ -174,9 +176,9 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "In Process Vitals"}
               </NavLink>
-            </li>
+            </li> */}
 
-            <li>
+            {/* <li>
               <NavLink
                 to="/post-dialysis-record" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
@@ -189,7 +191,8 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Post Dialysis Record"}
               </NavLink>
-            </li>
+            </li> */}
+{/* The above was commentend because they were added to StepperNavigation. */}
 
 
             <li>
@@ -204,6 +207,23 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
                 {!collapsed && "Records"}
+              </NavLink>
+            </li>
+
+            
+            
+            <li>
+              <NavLink
+                to="/hd-master" style={{ fontWeight: 400, color: "#cccccc" }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Hemodialysis Master" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Hemodialysis Master"}
               </NavLink>
             </li>
 

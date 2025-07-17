@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -13,13 +13,33 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import { useUnits } from './UnitsManagement';
 import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
+import { API_URL } from '../config';
 
-const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
+// const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
+const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({  }) => {
   const { units } = useUnits();
   const { accesses } = useAccessTypes();
   const { dialyzerTypes } = useDialyzerTypes();
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [scheduleOptions, setScheduleOptions] = useState<any[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
+    ]).then(([schedules, patientsData]) => {
+      setPatients(patientsData);
+      setScheduleOptions(schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+        const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
+        return {
+          value: sch.SA_ID_PK,
+          label: `${sch.SA_ID_PK} - ${patient ? patient.Name : sch.P_ID_FK}`
+        };
+      }));
+    });
+  }, []);
 
   const initialValues = {
     SA_ID_FK_PK: '',
@@ -41,21 +61,15 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
     Status: Yup.string(),
   });
 
-  // For demo, use a static list for SA_ID_FK_PK (should be from appointments in real app)
-  const scheduleOptions = [
-    { value: 'SCH001', label: 'SCH001' },
-    { value: 'SCH002', label: 'SCH002' },
-  ];
-
   const unitOptions = units.map(u => ({ value: u.Unit_Name, label: u.Unit_Name }));
   const accessOptions = accesses.map(a => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type }));
   const dialyzerOptions = dialyzerTypes.map(d => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name }));
 
   return (
     <>
-      <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-      <PageContainer>
-        <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" />
+      {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <PageContainer> */}
+        {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -124,8 +138,8 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
             </Form>
           )}
         </Formik>
-      </PageContainer>
-      <Footer />
+      {/* </PageContainer>
+      <Footer /> */}
     </>
   );
 };

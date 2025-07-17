@@ -11,6 +11,7 @@ export interface DBData {
   items: Item[];
   patients_derived: Patient[];
   Schedules_Assigned: ScheduleAssigned[];
+  case_openings: CaseOpening[];
 }
 
 export interface Patient {
@@ -32,8 +33,15 @@ export interface ScheduleAssigned {
   Outlet_FK: string;
 }
 
+export interface CaseOpening {
+  HCO_ID_PK: string;
+  P_ID_FK: string;
+  HCO_Blood_Group: string;
+  HCO_Case_nature: string;
+}
+
 // ✅ Default data structure
-const defaultData: DBData = { items: [], patients_derived: [], Schedules_Assigned: [] };
+const defaultData: DBData = { items: [], patients_derived: [], Schedules_Assigned: [], case_openings: [] };
 
 // ✅ Pass both adapter and defaultData
 const adapter = new JSONFile<DBData>(new URL('./db.json', import.meta.url));

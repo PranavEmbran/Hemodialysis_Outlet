@@ -21,6 +21,7 @@ import Predialysis_Record from './pages/Predialysis_Record';
 import Start_Dialysis_Record from './pages/Start_Dialysis_Record';
 import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
 import Records from './pages/Records';
+import Dialysis_Workflow_Entry from './pages/Dialysis_Workflow_Entry';
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -57,6 +58,7 @@ const App: React.FC = () => {
                       <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/dialysis-workflow-entry" element={<Dialysis_Workflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                     </Routes>
                   </div>
                 </div>

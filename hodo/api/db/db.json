@@ -93,6 +93,85 @@
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA004"
+    },
+    {
+      "P_ID_FK": "20250715/006",
+      "SA_Date": "2025-08-01",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-17",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-17",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA005"
+    },
+    {
+      "P_ID_FK": "20250715/006",
+      "SA_Date": "2025-08-03",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-17",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-17",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA006"
+    },
+    {
+      "P_ID_FK": "20250715/006",
+      "SA_Date": "2025-08-05",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-17",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-17",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA007"
+    },
+    {
+      "P_ID_FK": "20250715/006",
+      "SA_Date": "2025-08-07",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-17",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-17",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA008"
+    },
+    {
+      "P_ID_FK": "20250715/006",
+      "SA_Date": "2025-08-09",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-17",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-17",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA009"
+    }
+  ],
+  "case_openings": [
+    {
+      "HCO_ID_PK": "2469ba88-aa35-4296-937b-6d5422195ee6",
+      "P_ID_FK": "20250715/006",
+      "HCO_Blood_Group": "AB+",
+      "HCO_Case_nature": "Chronic"
+    },
+    {
+      "HCO_ID_PK": "16ce2b9d-a13f-4131-86be-922021153505",
+      "P_ID_FK": "20250715/001",
+      "HCO_Blood_Group": "A+",
+      "HCO_Case_nature": "Chronic"
     }
   ]
 }

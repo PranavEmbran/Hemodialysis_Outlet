@@ -44,13 +44,16 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   const [saveStatus, setSaveStatus] = useState<string>('');
 
   useEffect(() => {
-    fetch(`${API_URL}/data/patients_derived`)
-      .then(res => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setPatients(data);
-        }
-      });
+    // Fetch both patients and case_openings, then filter
+    Promise.all([
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+      fetch(`${API_URL}/data/case_openings`).then(res => res.json())
+    ]).then(([patientsData, caseOpenings]) => {
+      if (Array.isArray(patientsData) && Array.isArray(caseOpenings)) {
+        const allowedIds = new Set(caseOpenings.map((c: any) => c.P_ID_FK));
+        setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
+      }
+    });
   }, []);
 
   // Generate mock schedule table based on form

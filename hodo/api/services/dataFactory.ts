@@ -11,3 +11,5 @@ export const deleteData = service.deleteData;
 export const getPatientsDerived = (service as any).getPatientsDerived;
 export const getSchedulesAssigned = (service as any).getSchedulesAssigned;
 export const addSchedulesAssigned = (service as any).addSchedulesAssigned;
+export const getCaseOpenings = (service as any).getCaseOpenings;
+export const addCaseOpening = (service as any).addCaseOpening;

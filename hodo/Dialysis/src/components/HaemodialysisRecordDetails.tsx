@@ -5,6 +5,7 @@ import type { Patient } from '../types';
 import ButtonWithGradient from './ButtonWithGradient';
 import { SelectField, InputField, TimeField, TextareaField } from './forms';
 import './HaemodialysisRecordDetails.css';
+import { API_URL } from '../config';
 
 interface Row {
   time: string;
@@ -57,13 +58,36 @@ const validationSchema = Yup.object({
 });
 
 const HaemodialysisRecordDetails: React.FC = () => {
-  const [patients] = useState<Patient[]>([]); // Placeholder for new mock db integration
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [selectedSchedule, setSelectedSchedule] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
-  // No API/service logic, just use local state
-  useEffect(() => { setLoading(false); }, []);
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
+    ]).then(([schedulesData, patientsData]) => {
+      setPatients(patientsData);
+      setSchedules(schedulesData.filter((a: any) => a.isDeleted === 10));
+      setLoading(false);
+    });
+  }, []);
+
+  const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const scheduleId = e.target.value;
+    setSelectedSchedule(scheduleId);
+    const selected = schedules.find((s: any) => s.SA_ID_PK === scheduleId);
+    if (selected) {
+      const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+      setSelectedPatient(patient ? patient.name : selected.P_ID_FK);
+    } else {
+      setSelectedPatient('');
+    }
+  };
 
   const initialValues: FormValues = {
     patientId: '',
@@ -73,18 +97,13 @@ const HaemodialysisRecordDetails: React.FC = () => {
   const handleSubmit = async (values: FormValues, { resetForm }: any) => {
     setError('');
     setSuccess('');
-    if (!values.patientId) {
-      setError('Please select a patient.');
-      return;
-    }
-    const patient = patients.find(p => String(p.id) === String(values.patientId));
-    if (!patient) {
-      setError('Invalid patient selected.');
+    if (!selectedSchedule || !selectedPatient) {
+      setError('Please select a schedule.');
       return;
     }
     const record = {
       patientId: values.patientId,
-      patientName: (patient.firstName || patient.name) + (patient.lastName ? ' ' + patient.lastName : ''),
+      patientName: (selectedPatient),
       date: new Date().toISOString().split('T')[0],
       rows: values.rows,
     };
@@ -109,37 +128,22 @@ const HaemodialysisRecordDetails: React.FC = () => {
           {({ values, isSubmitting, setFieldValue }) => (
             <Form>
               <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <SelectField
-                  label="Select Patient"
-                  name="patientId"
-                  options={patients.map((p) => ({
-                    label: (p.firstName || p.name) + (p.lastName ? ' ' + p.lastName : ''),
-                    value: p.id || ''
-                  }))}
-                  placeholder="-- Select Patient --"
-                  disabled={loading}
-                  required
-                />
-              </div>
-              {/* Selected Patient Info */}
-              {values.patientId && (
-                <div className="selected-patient-info" style={{ marginBottom: '1.5rem', background: '#f8f9fa', padding: '1rem', borderRadius: '6px' }}>
-                  <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>Selected Patient Information</h4>
-                  {(() => {
-                    const selectedPatient = patients.find(p => String(p.id) === String(values.patientId));
-                    if (!selectedPatient) return null;
+                <label>Select Schedule</label>
+                <select value={selectedSchedule} onChange={handleScheduleChange} className="form-control">
+                  <option value="">Select Schedule</option>
+                  {schedules.map(sch => {
+                    const patient = patients.find((p: any) => p.id === sch.P_ID_FK);
+                    const patientLabel = patient ? ((patient as any)['Name'] || patient.name) : sch.P_ID_FK;
                     return (
-                      <div className="patient-details-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                        <div><strong>Name:</strong> {(selectedPatient.firstName || selectedPatient.name) + (selectedPatient.lastName ? ' ' + selectedPatient.lastName : '')}</div>
-                        <div><strong>Gender:</strong> {selectedPatient.gender || 'N/A'}</div>
-                        <div><strong>Blood Group:</strong> {selectedPatient.bloodGroup || 'N/A'}</div>
-                        <div><strong>Mobile:</strong> {selectedPatient.mobileNo || selectedPatient.phone || 'N/A'}</div>
-                        <div><strong>Date of Birth:</strong> {selectedPatient.dateOfBirth || 'N/A'}</div>
-                        <div><strong>Catheter Date:</strong> {selectedPatient.catheterDate || selectedPatient.catheterInsertionDate || 'N/A'}</div>
-                        <div><strong>Fistula Date:</strong> {selectedPatient.fistulaDate || selectedPatient.fistulaCreationDate || 'N/A'}</div>
-                      </div>
+                      <option key={sch.SA_ID_PK} value={sch.SA_ID_PK}>{sch.SA_ID_PK} - {patientLabel}</option>
                     );
-                  })()}
+                  })}
+                </select>
+              </div>
+              {selectedPatient && (
+                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                  <label>Patient</label>
+                  <input type="text" value={selectedPatient} readOnly className="form-control" />
                 </div>
               )}
               <FieldArray name="rows">
@@ -192,7 +196,7 @@ const HaemodialysisRecordDetails: React.FC = () => {
               </FieldArray>
               <div className="form-actions">
                 <div className="action-buttons">
-                  <ButtonWithGradient type="submit" className="btn-save" disabled={isSubmitting || !values.patientId} text={isSubmitting ? 'Saving...' : 'Save'} />
+                  <ButtonWithGradient type="submit" className="btn-save" disabled={isSubmitting || !selectedSchedule} text={isSubmitting ? 'Saving...' : 'Save'} />
                   <ButtonWithGradient onClick={handlePrint} className="btn-print-record" text="Print" />
                 </div>
               </div>
