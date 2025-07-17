@@ -8,7 +8,7 @@ import './App.css';
 
 import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
-import HaemodialysisRecordDetailsPage from "./pages/HaemodialysisRecordDetailsPage";
+import InProcess_records from "./pages/InProcess_records";
 
 import CaseOpening from './pages/CaseOpening';
 import Scheduling from './pages/Scheduling';
@@ -55,7 +55,7 @@ const App: React.FC = () => {
                       <Route path="/dialyzer-type-lookup" element={<DialyzerTypeLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/haemodialysis-record-details" element={<HaemodialysisRecordDetailsPage sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/haemodialysis-record-details" element={<InProcess_records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/dialysis-workflow-entry" element={<Dialysis_Workflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />

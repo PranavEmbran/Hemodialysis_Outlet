@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import type { Patient } from '../types';
-import ButtonWithGradient from './ButtonWithGradient';
-import { SelectField, InputField, TimeField, TextareaField } from './forms';
+import ButtonWithGradient from '../components/ButtonWithGradient';
+import { SelectField, InputField, TimeField, TextareaField } from '../components/forms';
 import './HaemodialysisRecordDetails.css';
 import { API_URL } from '../config';
 
@@ -57,7 +57,7 @@ const validationSchema = Yup.object({
   )
 });
 
-const HaemodialysisRecordDetails: React.FC = () => {
+const HaemodialysisRecordDetailsPage: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ }) => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [selectedSchedule, setSelectedSchedule] = useState('');
@@ -97,21 +97,29 @@ const HaemodialysisRecordDetails: React.FC = () => {
   const handleSubmit = async (values: FormValues, { resetForm }: any) => {
     setError('');
     setSuccess('');
-    if (!selectedSchedule || !selectedPatient) {
-      setError('Please select a schedule.');
-      return;
-    }
     const record = {
-      patientId: values.patientId,
-      patientName: (selectedPatient),
+      ...values,
+      id: Date.now().toString(),
       date: new Date().toISOString().split('T')[0],
-      rows: values.rows,
     };
-    // Simulate save
-    setSuccess('Record saved successfully!');
-    resetForm();
-    setTimeout(() => setSuccess(''), 3000);
+    try {
+      const res = await fetch(`${API_URL}/data/inprocess_record`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      setSuccess('Record saved successfully!');
+      resetForm();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError('Failed to save record.');
+    }
   };
+  
+  
+
+
 
   const handlePrint = () => {
     window.print();
@@ -125,7 +133,7 @@ const HaemodialysisRecordDetails: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, isSubmitting, setFieldValue }) => (
+          {({ values, isSubmitting }) => (
             <Form>
               <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                 <label>Select Schedule</label>
@@ -210,4 +218,4 @@ const HaemodialysisRecordDetails: React.FC = () => {
   );
 };
 
-export default HaemodialysisRecordDetails; 
+export default HaemodialysisRecordDetailsPage;

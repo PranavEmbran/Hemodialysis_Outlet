@@ -7,7 +7,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
 
 // const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({  }) => {
+const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
   // const { appointments, patients } = useDialysis();
 
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -35,6 +35,27 @@ const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar:
       setPatients(patientsData);
     });
   }, []);
+
+  // Sync dropdown with selectedSchedule from parent
+  useEffect(() => {
+    if (selectedSchedule && appointments.length > 0) {
+      setForm(prev => {
+        if (prev.SA_ID_FK !== selectedSchedule) {
+          const selected = appointments.find(a => a.SA_ID_PK === selectedSchedule);
+          let patientName = '';
+          if (selected) {
+            const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+            patientName = patient ? patient.Name : '';
+          }
+          return { ...prev, SA_ID_FK: selectedSchedule, P_ID_FK: patientName };
+        }
+        return prev;
+      });
+    }
+    if (!selectedSchedule) {
+      setForm(prev => ({ ...prev, SA_ID_FK: '', P_ID_FK: '' }));
+    }
+  }, [selectedSchedule, appointments, patients]);
 
   // When schedule is selected, auto-fill patient
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,15 +85,20 @@ const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar:
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMsg('');
     setErrorMsg('');
     const errs = validate();
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    // Simulate save
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_URL}/data/post_dialysis_record`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Failed to save');
       setSuccessMsg('Postdialysis record saved successfully!');
       setForm({
         SA_ID_FK: '',
@@ -84,7 +110,9 @@ const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar:
         PostDR_Notes: '',
       });
       setErrors({});
-    }, 800);
+    } catch (err) {
+      setErrorMsg('Error saving postdialysis record.');
+    }
   };
 
   const handleReset = () => {

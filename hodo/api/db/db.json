@@ -173,5 +173,99 @@
       "HCO_Blood_Group": "A+",
       "HCO_Case_nature": "Chronic"
     }
+  ],
+  "predialysis_records": [
+    {
+      "id": "VmdUDtJ3A-68lexO4Sx6d",
+      "SA_ID_FK_PK": "test",
+      "P_ID_FK": "test",
+      "PreDR_Vitals_BP": "120/80",
+      "PreDR_Vitals_HeartRate": "80",
+      "PreDR_Vitals_Temperature": "98.6",
+      "PreDR_Vitals_Weight": "70",
+      "PreDR_Notes": "test"
+    },
+    {
+      "id": "f4GmJczAVKvpUwFuZM9SS",
+      "SA_ID_FK_PK": "SA001",
+      "P_ID_FK": "Meera",
+      "PreDR_Vitals_BP": "54",
+      "PreDR_Vitals_HeartRate": "43",
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "35",
+      "PreDR_Notes": "sss"
+    },
+    {
+      "id": "AzLOaLeAuksPVsnpBYozF",
+      "SA_ID_FK_PK": "SA001",
+      "P_ID_FK": "Meera",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "72",
+      "PreDR_Vitals_Temperature": "23",
+      "PreDR_Vitals_Weight": "35",
+      "PreDR_Notes": "sre"
+    }
+  ],
+  "start_dialysis_records": [
+    {
+      "id": "ekCP1bPKwlt14Ao8jjBv9",
+      "SA_ID_FK_PK": "SA003",
+      "Dialysis_Unit": "Unit A",
+      "SDR_Start_time": "17:32",
+      "SDR_Vascular_access": "Fistula",
+      "Dialyzer_Type": "Type A",
+      "SDR_Notes": "wqw"
+    },
+    {
+      "id": "EiDLs4DayHIX-OcFjMOqj",
+      "SA_ID_FK_PK": "SA002",
+      "Dialysis_Unit": "Unit A",
+      "SDR_Start_time": "00:00",
+      "SDR_Vascular_access": "Fistula",
+      "Dialyzer_Type": "Type A",
+      "SDR_Notes": "aaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "aDx273OzZehTtu9FOAVR_",
+      "SA_ID_FK_PK": "SA002",
+      "Dialysis_Unit": "Unit A",
+      "SDR_Start_time": "18:37",
+      "SDR_Vascular_access": "Fistula",
+      "Dialyzer_Type": "Type A",
+      "SDR_Notes": "tutyu"
+    }
+  ],
+  "InProcess_records": [],
+  "post_dialysis_records": [
+    {
+      "id": "XzUk_zssvAwe-gOhl6iXk",
+      "SA_ID_FK": "SA003",
+      "P_ID_FK": "Meera",
+      "PreDR_Vitals_BP": "21",
+      "PreDR_Vitals_HeartRate": "32",
+      "PreDR_Vitals_Temperature": "34",
+      "PreDR_Vitals_Weight": "56",
+      "PostDR_Notes": "rt"
+    },
+    {
+      "id": "yJkNKwOjARZZaaVaX5166",
+      "SA_ID_FK": "SA002",
+      "P_ID_FK": "Vignesh",
+      "PreDR_Vitals_BP": "54",
+      "PreDR_Vitals_HeartRate": "456",
+      "PreDR_Vitals_Temperature": "43",
+      "PreDR_Vitals_Weight": "45",
+      "PostDR_Notes": "hfg"
+    },
+    {
+      "id": "41-oyKfI0m3IrFFxzESRS",
+      "SA_ID_FK": "SA002",
+      "P_ID_FK": "Vignesh",
+      "PreDR_Vitals_BP": "asd",
+      "PreDR_Vitals_HeartRate": "asd",
+      "PreDR_Vitals_Temperature": "asd",
+      "PreDR_Vitals_Weight": "asd",
+      "PostDR_Notes": "asdasdasd"
+    }
   ]
 }

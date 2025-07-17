@@ -1,5 +1,6 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
+import type { PredialysisRecord, StartDialysisRecord, InProcessRecord, PostDialysisRecord } from '../services/lowdbService.js';
 
 export interface Item {
   id: string;
@@ -12,6 +13,10 @@ export interface DBData {
   patients_derived: Patient[];
   Schedules_Assigned: ScheduleAssigned[];
   case_openings: CaseOpening[];
+  predialysis_records: PredialysisRecord[];
+  start_dialysis_records: StartDialysisRecord[];
+  InProcess_records: InProcessRecord[];
+  post_dialysis_records: PostDialysisRecord[];
 }
 
 export interface Patient {
@@ -41,7 +46,16 @@ export interface CaseOpening {
 }
 
 // ✅ Default data structure
-const defaultData: DBData = { items: [], patients_derived: [], Schedules_Assigned: [], case_openings: [] };
+const defaultData: DBData = {
+  items: [],
+  patients_derived: [],
+  Schedules_Assigned: [],
+  case_openings: [],
+  predialysis_records: [],
+  start_dialysis_records: [],
+  InProcess_records: [],
+  post_dialysis_records: []
+};
 
 // ✅ Pass both adapter and defaultData
 const adapter = new JSONFile<DBData>(new URL('./db.json', import.meta.url));

@@ -7,7 +7,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
 
 // const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ }) => {
+const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [form, setForm] = useState({
@@ -32,6 +32,29 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
       setPatients(patientsData);
     });
   }, []);
+
+  // Sync dropdown with selectedSchedule from parent
+  useEffect(() => {
+    if (selectedSchedule && appointments.length > 0) {
+      setForm(prev => {
+        if (prev.SA_ID_FK_PK !== selectedSchedule) {
+          // Find the appointment and patient
+          const selected = appointments.find(a => a.SA_ID_PK === selectedSchedule);
+          let patientName = '';
+          if (selected) {
+            const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+            patientName = patient ? patient.Name : '';
+          }
+          return { ...prev, SA_ID_FK_PK: selectedSchedule, P_ID_FK: patientName };
+        }
+        return prev;
+      });
+    }
+    // If no schedule selected, clear
+    if (!selectedSchedule) {
+      setForm(prev => ({ ...prev, SA_ID_FK_PK: '', P_ID_FK: '' }));
+    }
+  }, [selectedSchedule, appointments, patients]);
 
   // Get only active appointments
   const availableSchedules = appointments.filter(a => a.isDeleted === 10);
@@ -64,15 +87,25 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMsg('');
     setErrorMsg('');
     const errs = validate();
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    // Simulate save
-    setTimeout(() => {
+    if (!selectedSchedule) {
+      setErrorMsg('Please select a schedule before saving.');
+      return;
+    }
+    try {
+      const payload = { ...form, SA_ID_FK_PK: selectedSchedule };
+      const res = await fetch(`${API_URL}/data/predialysis_record`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to save');
       setSuccessMsg('Predialysis record saved successfully!');
       setForm({
         SA_ID_FK_PK: '',
@@ -84,7 +117,9 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
         PreDR_Notes: '',
       });
       setErrors({});
-    }, 800);
+    } catch (err) {
+      setErrorMsg('Error saving predialysis record.');
+    }
   };
 
   const handleReset = () => {
@@ -108,6 +143,11 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
       {/* <PageContainer> */}
         {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
         <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+          {!selectedSchedule && (
+            <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
+              Please select a schedule to enable this form.
+            </div>
+          )}
           <div className="form-group mb-3">
             <label>Schedule (SA_ID_FK_PK) *</label>
             <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control">
@@ -151,8 +191,8 @@ const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: (
             <textarea name="PreDR_Notes" value={form.PreDR_Notes} onChange={handleChange} className="form-control" rows={3} />
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 }}>
-            <ButtonWithGradient type="submit">Save</ButtonWithGradient>
-            <ButtonWithGradient type="button" className="btn-outline" onClick={handleReset}>Reset</ButtonWithGradient>
+            <ButtonWithGradient type="submit" disabled={!selectedSchedule}>Save</ButtonWithGradient>
+            <ButtonWithGradient type="button" className="btn-outline" onClick={handleReset} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
           </div>
           {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
           {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}

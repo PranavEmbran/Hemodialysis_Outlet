@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
 import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening } from '../services/dataFactory.js';
+import { addPredialysisRecord, addStartDialysisRecord, addInProcessRecord, addPostDialysisRecord } from '../services/lowdbService.js';
+import db from '../db/lowdb.js';
 
 export const getAll = async (req: Request, res: Response) => {
   try {
@@ -87,5 +89,66 @@ export const addCaseOpeningHandler = async (req: Request, res: Response) => {
     res.status(201).json(newCaseOpening);
   } catch (err) {
     res.status(500).json({ error: 'Failed to add case opening' });
+  }
+};
+
+export const savePredialysisRecord = async (req: Request, res: Response) => {
+  try {
+    const record = req.body;
+    // Basic validation
+    if (!record.SA_ID_FK_PK || !record.P_ID_FK) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const saved = await addPredialysisRecord(record);
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save predialysis record' });
+  }
+};
+
+export const saveStartDialysisRecord = async (req: Request, res: Response) => {
+  try {
+    const record = req.body;
+    if (!record.SA_ID_FK_PK) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const saved = await addStartDialysisRecord(record);
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save start dialysis record' });
+  }
+};
+
+export const saveInProcessRecord = async (req: Request, res: Response) => {
+  try {
+    await db.read();
+    const record = req.body;
+    if (!record) {
+      return res.status(400).json({ error: 'Missing record data' });
+    }
+    if (!record.id) {
+      record.id = Date.now().toString();
+    }
+    if (!db.data) db.data = { InProcess_records: [] } as any;
+    db.data.InProcess_records = db.data.InProcess_records || [];
+    db.data.InProcess_records.push(record);
+    await db.write();
+    res.status(201).json({ message: 'In-process record saved successfully', record });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save in-process record' });
+  }
+};
+
+export const savePostDialysisRecord = async (req: Request, res: Response) => {
+  try {
+    const record = req.body;
+    if (!record.SA_ID_FK) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const saved = await addPostDialysisRecord(record);
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save post dialysis record' });
   }
 }; 

@@ -1,7 +1,16 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 // ✅ Default data structure
-const defaultData = { items: [] };
+const defaultData = {
+    items: [],
+    patients_derived: [],
+    Schedules_Assigned: [],
+    case_openings: [],
+    predialysis_records: [],
+    start_dialysis_records: [],
+    InProcess_records: [],
+    post_dialysis_records: []
+};
 // ✅ Pass both adapter and defaultData
 const adapter = new JSONFile(new URL('./db.json', import.meta.url));
 const db = new Low(adapter, defaultData);

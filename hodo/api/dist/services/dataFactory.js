@@ -7,3 +7,7 @@ export const getData = service.getData;
 export const addData = service.addData;
 export const deleteData = service.deleteData;
 export const getPatientsDerived = service.getPatientsDerived;
+export const getSchedulesAssigned = service.getSchedulesAssigned;
+export const addSchedulesAssigned = service.addSchedulesAssigned;
+export const getCaseOpenings = service.getCaseOpenings;
+export const addCaseOpening = service.addCaseOpening;

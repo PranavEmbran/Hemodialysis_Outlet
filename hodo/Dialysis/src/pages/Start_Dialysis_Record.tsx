@@ -16,7 +16,7 @@ import { useDialyzerTypes } from './DialyzerTypeLookup';
 import { API_URL } from '../config';
 
 // const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({  }) => {
+const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
   const { units } = useUnits();
   const { accesses } = useAccessTypes();
   const { dialyzerTypes } = useDialyzerTypes();
@@ -41,6 +41,24 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
     });
   }, []);
 
+  // Sync dropdown with selectedSchedule from parent
+  useEffect(() => {
+    if (!selectedSchedule) return;
+    // Wait for scheduleOptions to be loaded
+    if (scheduleOptions.length > 0) {
+      // Set Formik field value if needed
+      const form = document.querySelector('form');
+      if (form) {
+        const select = form.querySelector('select[name="SA_ID_FK_PK"]') as HTMLSelectElement;
+        if (select && select.value !== selectedSchedule) {
+          select.value = selectedSchedule;
+          // Trigger change event
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    }
+  }, [selectedSchedule, scheduleOptions]);
+
   const initialValues = {
     SA_ID_FK_PK: '',
     Dialysis_Unit: '',
@@ -48,7 +66,7 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
     SDR_Vascular_access: '',
     Dialyzer_Type: '',
     SDR_Notes: '',
-    Status: 'Active',
+    // Status: 'Active',
   };
 
   const validationSchema = Yup.object({
@@ -58,7 +76,7 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
     SDR_Vascular_access: Yup.string().required('Vascular Access is required'),
     Dialyzer_Type: Yup.string().required('Dialyzer Type is required'),
     SDR_Notes: Yup.string(),
-    Status: Yup.string(),
+    // Status: Yup.string(),
   });
 
   const unitOptions = units.map(u => ({ value: u.Unit_Name, label: u.Unit_Name }));
@@ -73,14 +91,21 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values, { resetForm }) => {
+          onSubmit={async (values, { resetForm }) => {
             setSuccessMsg('');
             setErrorMsg('');
-            // Simulate save
-            setTimeout(() => {
+            try {
+              const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values),
+              });
+              if (!res.ok) throw new Error('Failed to save');
               setSuccessMsg('Start Dialysis record saved successfully!');
               resetForm();
-            }, 800);
+            } catch (err) {
+              setErrorMsg('Error saving start dialysis record.');
+            }
           }}
         >
           {({ isSubmitting, resetForm }) => (
@@ -124,11 +149,11 @@ const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar
                 rows={3}
                 placeholder="Enter any notes"
               />
-              <InputField
+              {/* <InputField
                 label="Status"
                 name="Status"
                 disabled
-              />
+              /> */}
               <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 }}>
                 <ButtonWithGradient type="submit" disabled={isSubmitting}>Save</ButtonWithGradient>
                 <ButtonWithGradient type="button" className="btn-outline" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }}>Reset</ButtonWithGradient>

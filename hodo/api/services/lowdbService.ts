@@ -103,4 +103,79 @@ export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpen
   db.data!.case_openings.push(caseOpening);
   await db.write();
   return caseOpening;
+};
+
+export interface PredialysisRecord {
+  SA_ID_FK_PK: string;
+  P_ID_FK: string;
+  PreDR_Vitals_BP: string;
+  PreDR_Vitals_HeartRate: string;
+  PreDR_Vitals_Temperature: string;
+  PreDR_Vitals_Weight: string;
+  PreDR_Notes: string;
+}
+
+export const addPredialysisRecord = async (record: PredialysisRecord): Promise<PredialysisRecord> => {
+  await initDB();
+  await db.read();
+  if (!db.data!.predialysis_records) db.data!.predialysis_records = [];
+  // Optionally add an id
+  const newRecord = { id: nanoid(), ...record };
+  db.data!.predialysis_records.push(newRecord);
+  await db.write();
+  return newRecord;
+};
+
+export interface StartDialysisRecord {
+  SA_ID_FK_PK: string;
+  Dialysis_Unit: string;
+  SDR_Start_time: string;
+  SDR_Vascular_access: string;
+  Dialyzer_Type: string;
+  SDR_Notes: string;
+}
+
+export const addStartDialysisRecord = async (record: StartDialysisRecord): Promise<StartDialysisRecord> => {
+  await initDB();
+  await db.read();
+  if (!db.data!.start_dialysis_records) db.data!.start_dialysis_records = [];
+  const newRecord = { id: nanoid(), ...record };
+  db.data!.start_dialysis_records.push(newRecord);
+  await db.write();
+  return newRecord;
+};
+
+export interface InProcessRecord {
+  SA_ID_FK_PK: string;
+  rows: any[];
+}
+
+export const addInProcessRecord = async (record: InProcessRecord): Promise<InProcessRecord> => {
+  await initDB();
+  await db.read();
+  if (!db.data!.InProcess_records) db.data!.InProcess_records = [];
+  const newRecord = { id: nanoid(), ...record };
+  db.data!.InProcess_records.push(newRecord);
+  await db.write();
+  return newRecord;
+};
+
+export interface PostDialysisRecord {
+  SA_ID_FK: string;
+  P_ID_FK: string;
+  PreDR_Vitals_BP: string;
+  PreDR_Vitals_HeartRate: string;
+  PreDR_Vitals_Temperature: string;
+  PreDR_Vitals_Weight: string;
+  PostDR_Notes: string;
+}
+
+export const addPostDialysisRecord = async (record: PostDialysisRecord): Promise<PostDialysisRecord> => {
+  await initDB();
+  await db.read();
+  if (!db.data!.post_dialysis_records) db.data!.post_dialysis_records = [];
+  const newRecord = { id: nanoid(), ...record };
+  db.data!.post_dialysis_records.push(newRecord);
+  await db.write();
+  return newRecord;
 }; 

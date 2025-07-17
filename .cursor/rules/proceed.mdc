@@ -1,0 +1,5 @@
+---
+description: Always proceed to implement the necessary changes to code, do not ask the user to make the changes.
+globs:
+alwaysApply: true
+---

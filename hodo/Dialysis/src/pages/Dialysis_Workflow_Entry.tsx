@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import StepperNavigation from '../components/StepperNavigation';
 import Predialysis_Record from './Predialysis_Record';
 import Start_Dialysis_Record from './Start_Dialysis_Record';
-import HaemodialysisRecordDetailsPage from './HaemodialysisRecordDetailsPage';
+import HaemodialysisRecordDetailsPage from './InProcess_records';
 import Post_Dialysis_Record from './Post_Dialysis_Record';
 import { API_URL } from '../config';
 import { width } from '@fortawesome/free-solid-svg-icons/fa0';
@@ -25,7 +25,7 @@ const stepComponents = [
 const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [selectedSchedule, setSelectedSchedule] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
-  const [scheduleOptions, setScheduleOptions] = useState<{ value: string; label: string }[]>([]);
+  const [scheduleOptions, setScheduleOptions] = useState<{ value: string; label: string; patientId: string; date: string }[]>([]);
   const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [patients, setPatients] = useState<{ id: string; name: string }[]>([]);
@@ -69,13 +69,20 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   };
 
   const StepComponent = stepComponents[currentStep];
-  const stepProps = { sidebarCollapsed, toggleSidebar };
-  // Only pass selectedSchedule to steps that accept it
-  const stepWithSchedule = [0, 1, 2, 3]; // If all steps should receive it, keep as is
-  if (stepWithSchedule.includes(currentStep)) {
-    (stepProps as any).selectedSchedule = selectedSchedule;
+  // Always pass selectedSchedule to all step components
+  let stepProps: any = { sidebarCollapsed, toggleSidebar };
+  if (
+    StepComponent === Predialysis_Record ||
+    StepComponent === Start_Dialysis_Record ||
+    StepComponent === HaemodialysisRecordDetailsPage ||
+    StepComponent === Post_Dialysis_Record
+  ) {
+    stepProps.selectedSchedule = selectedSchedule;
+    if (StepComponent === HaemodialysisRecordDetailsPage) {
+      stepProps.setSelectedSchedule = setSelectedSchedule;
+    }
   }
-
+  console.log('Current step:', currentStep, 'StepComponent:', StepComponent.name, 'selectedSchedule:', selectedSchedule);
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
