@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -7,6 +7,7 @@ import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import { API_URL } from '../config';
 
 export const AccessTypesContext = createContext<{
   accesses: any[];
@@ -20,9 +21,12 @@ export const useAccessTypes = () => {
 };
 
 export const AccessTypesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [accesses, setAccesses] = useState([
-    { VAL_Access_ID_PK: 1, VAL_Access_Type: 'Fistula' },
-  ]);
+  const [accesses, setAccesses] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setAccesses(data);
+    });
+  }, []);
   return (
     <AccessTypesContext.Provider value={{ accesses, setAccesses }}>
       {children}
@@ -36,6 +40,12 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
   const [editId, setEditId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setAccesses(data);
+    });
+  }, [setAccesses]);
+
   const validate = () => {
     const errs: { [key: string]: string } = {};
     if (!form.VAL_Access_Type) errs.VAL_Access_Type = 'Required';
@@ -48,17 +58,29 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
     if (editId !== null) {
-      setAccesses((prev) => prev.map((a) => (a.VAL_Access_ID_PK === editId ? { ...a, ...form } : a)));
-      setEditId(null);
+      // Update
+      const updated = { ...form, VAL_Access_ID_PK: editId };
+      await fetch(`${API_URL}/data/vascular_access`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
     } else {
-      setAccesses((prev) => [
-        ...prev,
-        { VAL_Access_ID_PK: Date.now(), ...form },
-      ]);
+      // Create
+      await fetch(`${API_URL}/data/vascular_access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
     }
+    // Refresh
+    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setAccesses(data);
+    });
+    setEditId(null);
     setForm({ VAL_Access_Type: '' });
     setErrors({});
   };
@@ -68,8 +90,11 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
     setForm({ VAL_Access_Type: access.VAL_Access_Type });
   };
 
-  const handleDelete = (id: number) => {
-    setAccesses((prev) => prev.filter((a) => a.VAL_Access_ID_PK !== id));
+  const handleDelete = async (id: number) => {
+    await fetch(`${API_URL}/data/vascular_access/${id}`, { method: 'DELETE' });
+    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setAccesses(data);
+    });
     if (editId === id) {
       setEditId(null);
       setForm({ VAL_Access_Type: '' });

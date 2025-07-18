@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -7,6 +7,7 @@ import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import { API_URL } from '../config';
 
 export const UnitsContext = createContext<{
   units: any[];
@@ -19,30 +20,25 @@ export const useUnits = () => {
   return ctx;
 };
 
-const initialUnits = [
-  {
-    Unit_ID_PK: 1,
-    Unit_Name: 'Unit A',
-    Unit_Status: 'Free',
-    Unit_Planned_Maintainance_DT: '',
-    Unit_Technitian_Assigned: 'John Doe',
-  },
-];
-
-const unitStatusOptions = [
-  { value: 'Free', label: 'Free' },
-  { value: 'Engaged', label: 'Engaged' },
-  { value: 'Out_of_service', label: 'Out of Service' },
-];
-
 export const UnitsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [units, setUnits] = useState(initialUnits);
+  const [units, setUnits] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setUnits(data);
+    });
+  }, []);
   return (
     <UnitsContext.Provider value={{ units, setUnits }}>
       {children}
     </UnitsContext.Provider>
   );
 };
+
+const unitStatusOptions = [
+  { value: 'Free', label: 'Free' },
+  { value: 'Engaged', label: 'Engaged' },
+  { value: 'Out_of_service', label: 'Out of Service' },
+];
 
 const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => {} }) => {
   const { units, setUnits } = useUnits();
@@ -54,6 +50,12 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
   });
   const [editId, setEditId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setUnits(data);
+    });
+  }, [setUnits]);
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
@@ -70,20 +72,29 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
     if (editId !== null) {
-      setUnits((prev) => prev.map((u) => (u.Unit_ID_PK === editId ? { ...u, ...form } : u)));
-      setEditId(null);
+      // Update
+      const updated = { ...form, Unit_ID_PK: editId };
+      await fetch(`${API_URL}/data/units`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
     } else {
-      setUnits((prev) => [
-        ...prev,
-        {
-          ...form,
-          Unit_ID_PK: Date.now(),
-        },
-      ]);
+      // Create
+      await fetch(`${API_URL}/data/units`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
     }
+    // Refresh
+    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setUnits(data);
+    });
+    setEditId(null);
     setForm({
       Unit_Name: '',
       Unit_Status: '',
@@ -103,8 +114,11 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     });
   };
 
-  const handleDelete = (id: number) => {
-    setUnits((prev) => prev.filter((u) => u.Unit_ID_PK !== id));
+  const handleDelete = async (id: number) => {
+    await fetch(`${API_URL}/data/units/${id}`, { method: 'DELETE' });
+    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setUnits(data);
+    });
     if (editId === id) {
       setEditId(null);
       setForm({

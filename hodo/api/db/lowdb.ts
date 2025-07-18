@@ -17,6 +17,10 @@ export interface DBData {
   start_dialysis_records: StartDialysisRecord[];
   InProcess_records: InProcessRecord[];
   post_dialysis_records: PostDialysisRecord[];
+  units: any[];
+  vascular_access: any[];
+  dialyzer_types: any[];
+  scheduling_lookup: any[];
 }
 
 export interface Patient {
@@ -54,7 +58,11 @@ const defaultData: DBData = {
   predialysis_records: [],
   start_dialysis_records: [],
   InProcess_records: [],
-  post_dialysis_records: []
+  post_dialysis_records: [],
+  units: [],
+  vascular_access: [],
+  dialyzer_types: [],
+  scheduling_lookup: []
 };
 
 // ✅ Pass both adapter and defaultData

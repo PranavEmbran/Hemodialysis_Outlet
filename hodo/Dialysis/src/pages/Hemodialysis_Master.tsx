@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUnits } from './UnitsManagement';
 import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
+import { API_URL } from '../config';
 
 // Mock data for Scheduling_Lookup
 const initialSchedulingLookup = [
@@ -333,6 +334,13 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Record<string, any>>({});
 
+  // Fetch scheduling_lookup from backend on mount
+  React.useEffect(() => {
+    fetch(`${API_URL}/data/scheduling_lookup`).then(res => res.json()).then(arr => {
+      if (Array.isArray(arr) && arr.length > 0) setData(arr);
+    });
+  }, []);
+
   // Handle edit button click
   const handleEdit = (row: any) => {
     setEditRowId(row.id);
@@ -346,8 +354,17 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   };
 
   // Handle save
-  const handleSave = (id: number) => {
-    setData((prev) => prev.map((row) => (row.id === id ? { ...row, ...editValues, id } : row)));
+  const handleSave = async (id: number) => {
+    const updated = { ...editValues, id };
+    await fetch(`${API_URL}/data/scheduling_lookup`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated),
+    });
+    // Refresh
+    fetch(`${API_URL}/data/scheduling_lookup`).then(res => res.json()).then(arr => {
+      if (Array.isArray(arr) && arr.length > 0) setData(arr);
+    });
     setEditRowId(null);
     setEditValues({});
   };

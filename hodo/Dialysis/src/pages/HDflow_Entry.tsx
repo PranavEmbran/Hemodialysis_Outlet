@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import StepperNavigation from '../components/StepperNavigation';
 import Predialysis_Record from './Predialysis_Record';
 import Start_Dialysis_Record from './Start_Dialysis_Record';
-import InProcess_records from './InProcess_records';
+// import HaemodialysisRecordDetailsPage from './InProcess_records';
 import Post_Dialysis_Record from './Post_Dialysis_Record';
 import { API_URL } from '../config';
 import { width } from '@fortawesome/free-solid-svg-icons/fa0';
@@ -18,7 +18,7 @@ import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 const stepComponents = [
   Predialysis_Record,
   Start_Dialysis_Record,
-  InProcess_records,
+  // HaemodialysisRecordDetailsPage,
   Post_Dialysis_Record,
 ];
 
@@ -74,14 +74,15 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   if (
     StepComponent === Predialysis_Record ||
     StepComponent === Start_Dialysis_Record ||
-    StepComponent === InProcess_records ||
+    // StepComponent === HaemodialysisRecordDetailsPage ||
     StepComponent === Post_Dialysis_Record
-  ) {
+  ) 
+  // {
     stepProps.selectedSchedule = selectedSchedule;
-    if (StepComponent === InProcess_records) {
-      stepProps.setSelectedSchedule = setSelectedSchedule;
-    }
-  }
+  //   if (StepComponent === HaemodialysisRecordDetailsPage) {
+  //     stepProps.setSelectedSchedule = setSelectedSchedule;
+  //   }
+  // }
   console.log('Current step:', currentStep, 'StepComponent:', StepComponent.name, 'selectedSchedule:', selectedSchedule);
   return (
     <>

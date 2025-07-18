@@ -11,9 +11,10 @@ interface Column {
 interface TableProps {
   columns: Column[];
   data: Record<string, any>[];
+  actions?: (row: Record<string, any>) => React.ReactNode;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data }) => {
+const Table: React.FC<TableProps> = ({ columns, data, actions }) => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const totalPages = Math.ceil(data.length / rowsPerPage);
@@ -30,12 +31,13 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
             {columns.map((col) => (
               <th key={col.key}>{col.header}</th>
             ))}
+            {actions && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
           {paginatedData.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + 1} style={{ textAlign: 'center' }}>No data found.</td>
+              <td colSpan={columns.length + (actions ? 2 : 1)} style={{ textAlign: 'center' }}>No data found.</td>
             </tr>
           ) : (
             paginatedData.map((row, idx) => (
@@ -47,6 +49,7 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
                       : row[col.key]}
                   </td>
                 ))}
+                {actions && <td>{actions(row)}</td>}
               </tr>
             ))
           )}

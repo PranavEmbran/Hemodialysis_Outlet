@@ -8,7 +8,6 @@ import './App.css';
 
 import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
-import InProcess_records from "./pages/InProcess_records";
 
 import CaseOpening from './pages/CaseOpening';
 import Scheduling from './pages/Scheduling';
@@ -20,8 +19,10 @@ import DialyzerTypeLookup, { DialyzerTypeProvider } from './pages/DialyzerTypeLo
 import Predialysis_Record from './pages/Predialysis_Record';
 import Start_Dialysis_Record from './pages/Start_Dialysis_Record';
 import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
-import Records from './pages/Records';
-import Dialysis_Workflow_Entry from './pages/Dialysis_Workflow_Entry';
+import Records from './pages/HDflow_Records';
+import Dialysis_Workflow_Entry from './pages/HDflow_Entry';
+import InProcess_records from "./pages/InProcess_records";
+
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -44,7 +45,7 @@ const App: React.FC = () => {
 
 
                     <Routes>
-                      <Route path="/" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       
                       <Route path="/blank" element={<Blank sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/case-opening" element={<CaseOpening sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
@@ -53,12 +54,16 @@ const App: React.FC = () => {
                       <Route path="/units-management" element={<UnitsManagement sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/vascular-access-lookup" element={<VascularAccessLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/dialyzer-type-lookup" element={<DialyzerTypeLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      {/* <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
+                      <Route path="/predialysis-record" element={<Predialysis_Record />} />
+                      {/* <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
+                      <Route path="/start-dialysis-record" element={<Start_Dialysis_Record />} />
                       <Route path="/haemodialysis-record-details" element={<InProcess_records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-                      <Route path="/dialysis-workflow-entry" element={<Dialysis_Workflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                     
+                      {/* <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
+                      <Route path="/post-dialysis-record" element={<Post_Dialysis_Record />} />
+                      <Route path="/hdflow-entry" element={<Dialysis_Workflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/hdflow-records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                     </Routes>
                   </div>
                 </div>

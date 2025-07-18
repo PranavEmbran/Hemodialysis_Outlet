@@ -10,6 +10,7 @@ export interface FormField {
   options?: Array<{ value: string; label: string }>;
   validation?: any;
   colSize?: number;
+  disabled?: boolean;
 }
 
 export interface FormConfig {
@@ -196,4 +197,115 @@ export const unitFormConfig: FormConfig = {
     Unit_Planned_Maintainance_DT: data?.Unit_Planned_Maintainance_DT || '',
     Unit_Technitian_Assigned: data?.Unit_Technitian_Assigned || '',
   }),
+};
+
+export const predialysisFormConfig: FormConfig = {
+  title: 'Edit Predialysis Record',
+  fields: [
+    { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
+    { name: 'time', label: 'Time', type: 'text', required: true, colSize: 6 },
+    { name: 'SA_ID_FK_PK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'patientName', label: 'Patient Name', type: 'text', required: false, colSize: 6, disabled: true },
+    { name: 'PreDR_Vitals_BP', label: 'BP', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_HeartRate', label: 'Heart Rate', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_Temperature', label: 'Temperature', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_Weight', label: 'Weight', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Notes', label: 'Notes', type: 'textarea', required: false, colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    date: Yup.string().required('Date is required'),
+    time: Yup.string().required('Time is required'),
+    SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+    patientName: Yup.string(),
+    PreDR_Vitals_BP: Yup.string(),
+    PreDR_Vitals_HeartRate: Yup.string(),
+    PreDR_Vitals_Temperature: Yup.string(),
+    PreDR_Vitals_Weight: Yup.string(),
+    PreDR_Notes: Yup.string(),
+  }),
+  initialValues: (data: any) => ({
+    date: data.date || '',
+    time: data.time || '',
+    SA_ID_FK_PK: data.SA_ID_FK_PK || '',
+    patientName: data.patientName || '',
+    PreDR_Vitals_BP: data.PreDR_Vitals_BP || '',
+    PreDR_Vitals_HeartRate: data.PreDR_Vitals_HeartRate || '',
+    PreDR_Vitals_Temperature: data.PreDR_Vitals_Temperature || '',
+    PreDR_Vitals_Weight: data.PreDR_Vitals_Weight || '',
+    PreDR_Notes: data.PreDR_Notes || '',
+  })
+};
+
+export const startDialysisFormConfig: FormConfig = {
+  title: 'Edit Start Dialysis Record',
+  fields: [
+    { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
+    { name: 'time', label: 'Time', type: 'text', required: true, colSize: 6 },
+    { name: 'SA_ID_FK_PK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'name', label: 'Name', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'Dialysis_Unit', label: 'Unit', type: 'text', required: false, colSize: 6 },
+    { name: 'SDR_Start_time', label: 'Start Time', type: 'text', required: false, colSize: 6 },
+    { name: 'SDR_Vascular_access', label: 'Vascular Access', type: 'text', required: false, colSize: 6 },
+    { name: 'Dialyzer_Type', label: 'Dialyzer Type', type: 'text', required: false, colSize: 6 },
+    { name: 'SDR_Notes', label: 'Notes', type: 'textarea', required: false, colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    date: Yup.string().required('Date is required'),
+    time: Yup.string().required('Time is required'),
+    SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+    name: Yup.string().required('Name is required'),
+    Dialysis_Unit: Yup.string(),
+    SDR_Start_time: Yup.string(),
+    SDR_Vascular_access: Yup.string(),
+    Dialyzer_Type: Yup.string(),
+    SDR_Notes: Yup.string(),
+  }),
+  initialValues: (data: any) => ({
+    date: data.date || '',
+    time: data.time || '',
+    SA_ID_FK_PK: data.SA_ID_FK_PK || '',
+    name: data.name || '',
+    Dialysis_Unit: data.Dialysis_Unit || '',
+    SDR_Start_time: data.SDR_Start_time || '',
+    SDR_Vascular_access: data.SDR_Vascular_access || '',
+    Dialyzer_Type: data.Dialyzer_Type || '',
+    SDR_Notes: data.SDR_Notes || '',
+  })
+};
+
+export const postDialysisFormConfig: FormConfig = {
+  title: 'Edit Post Dialysis Record',
+  fields: [
+    { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
+    { name: 'time', label: 'Time', type: 'text', required: true, colSize: 6 },
+    { name: 'SA_ID_FK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'patientName', label: 'Patient Name', type: 'text', required: false, colSize: 6, disabled: true },
+    { name: 'PreDR_Vitals_BP', label: 'BP', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_HeartRate', label: 'Heart Rate', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_Temperature', label: 'Temperature', type: 'text', required: false, colSize: 6 },
+    { name: 'PreDR_Vitals_Weight', label: 'Weight', type: 'text', required: false, colSize: 6 },
+    { name: 'PostDR_Notes', label: 'Notes', type: 'textarea', required: false, colSize: 12 },
+  ],
+  validationSchema: Yup.object({
+    date: Yup.string().required('Date is required'),
+    time: Yup.string().required('Time is required'),
+    SA_ID_FK: Yup.string().required('Schedule ID is required'),
+    patientName: Yup.string(),
+    PreDR_Vitals_BP: Yup.string(),
+    PreDR_Vitals_HeartRate: Yup.string(),
+    PreDR_Vitals_Temperature: Yup.string(),
+    PreDR_Vitals_Weight: Yup.string(),
+    PostDR_Notes: Yup.string(),
+  }),
+  initialValues: (data: any) => ({
+    date: data.date || '',
+    time: data.time || '',
+    SA_ID_FK: data.SA_ID_FK || '',
+    patientName: data.patientName || '',
+    PreDR_Vitals_BP: data.PreDR_Vitals_BP || '',
+    PreDR_Vitals_HeartRate: data.PreDR_Vitals_HeartRate || '',
+    PreDR_Vitals_Temperature: data.PreDR_Vitals_Temperature || '',
+    PreDR_Vitals_Weight: data.PreDR_Vitals_Weight || '',
+    PostDR_Notes: data.PostDR_Notes || '',
+  })
 }; 

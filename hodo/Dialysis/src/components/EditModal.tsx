@@ -65,6 +65,7 @@ const EditModal: React.FC<EditModalProps> = ({
     // Check if this is a patient name field and should be read-only
     const isPatientNameField = field.name === 'patientName';
     const shouldBeReadOnly = isPatientNameField && editingDataType !== 'patient';
+    const isDisabled = shouldBeReadOnly || field.disabled;
     
     switch (field.type) {
       case 'text':
@@ -78,7 +79,7 @@ const EditModal: React.FC<EditModalProps> = ({
               type={field.type === 'tel' ? 'text' : field.type}
               placeholder={field.placeholder}
               required={field.required}
-              disabled={shouldBeReadOnly}
+              disabled={isDisabled}
             />
           </Col>
         );
@@ -89,7 +90,7 @@ const EditModal: React.FC<EditModalProps> = ({
               label={field.label}
               name={field.name}
               required={field.required}
-              disabled={shouldBeReadOnly}
+              disabled={isDisabled}
             />
           </Col>
         );
@@ -101,7 +102,7 @@ const EditModal: React.FC<EditModalProps> = ({
               name={field.name}
               options={field.options ?? []}
               required={field.required}
-              disabled={shouldBeReadOnly}
+              disabled={isDisabled}
             />
           </Col>
         );
@@ -114,7 +115,7 @@ const EditModal: React.FC<EditModalProps> = ({
               type="text"
               placeholder={field.placeholder}
               required={field.required}
-              disabled={shouldBeReadOnly}
+              disabled={isDisabled}
             />
           </Col>
         );

@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -7,6 +7,7 @@ import EditButton from '../components/EditButton';
 import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
+import { API_URL } from '../config';
 
 export const DialyzerTypeContext = createContext<{
   dialyzerTypes: any[];
@@ -19,12 +20,13 @@ export const useDialyzerTypes = () => {
   return ctx;
 };
 
-const initialDialyzerTypes = [
-  { DTL_ID_PK: 1, DTL_Dialyzer_Name: 'Type A', DTL_Membrane_Type: 'High-Flux', DTL_Flux_Type: 'High', DTL_Surface_Area: 1.8 },
-];
-
 export const DialyzerTypeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [dialyzerTypes, setDialyzerTypes] = useState(initialDialyzerTypes);
+  const [dialyzerTypes, setDialyzerTypes] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setDialyzerTypes(data);
+    });
+  }, []);
   return (
     <DialyzerTypeContext.Provider value={{ dialyzerTypes, setDialyzerTypes }}>
       {children}
@@ -43,6 +45,12 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
   const [editId, setEditId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setDialyzerTypes(data);
+    });
+  }, [setDialyzerTypes]);
+
   const validate = () => {
     const errs: { [key: string]: string } = {};
     if (!form.DTL_Dialyzer_Name) errs.DTL_Dialyzer_Name = 'Required';
@@ -58,17 +66,29 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
     if (editId !== null) {
-      setDialyzerTypes((prev) => prev.map((d) => (d.DTL_ID_PK === editId ? { ...d, ...form, DTL_Surface_Area: Number(form.DTL_Surface_Area) } : d)));
-      setEditId(null);
+      // Update
+      const updated = { ...form, DTL_ID_PK: editId, DTL_Surface_Area: Number(form.DTL_Surface_Area) };
+      await fetch(`${API_URL}/data/dialyzer_types`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
     } else {
-      setDialyzerTypes((prev) => [
-        ...prev,
-        { DTL_ID_PK: Date.now(), ...form, DTL_Surface_Area: Number(form.DTL_Surface_Area) },
-      ]);
+      // Create
+      await fetch(`${API_URL}/data/dialyzer_types`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, DTL_Surface_Area: Number(form.DTL_Surface_Area) }),
+      });
     }
+    // Refresh
+    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setDialyzerTypes(data);
+    });
+    setEditId(null);
     setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
     setErrors({});
   };
@@ -83,8 +103,11 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
     });
   };
 
-  const handleDelete = (id: number) => {
-    setDialyzerTypes((prev) => prev.filter((d) => d.DTL_ID_PK !== id));
+  const handleDelete = async (id: number) => {
+    await fetch(`${API_URL}/data/dialyzer_types/${id}`, { method: 'DELETE' });
+    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setDialyzerTypes(data);
+    });
     if (editId === id) {
       setEditId(null);
       setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });

@@ -62,6 +62,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
               className={({ isActive }) =>
                 isActive ? "sidebar-heading2 active" : "sidebar-heading2"
               }
+              
               title="Dialysis Management"
             >
               Dialysis Management
@@ -118,7 +119,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
 
             <li>
               <NavLink
-                to="/dialysis-workflow-entry" style={{ fontWeight: 400, color: "#cccccc" }}
+                to="/hdflow-entry" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }
@@ -197,16 +198,16 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
 
             <li>
               <NavLink
-                to="/records" style={{ fontWeight: 400, color: "#cccccc" }}
+                to="/hdflow-records" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }
-                title={collapsed ? "Records" : ""}
+                title={collapsed ? "Dialysis Workflow Records" : ""}
               >
                 <span>
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
-                {!collapsed && "Records"}
+                {!collapsed && "Dialysis Workflow Records"}
               </NavLink>
             </li>
 

@@ -44,228 +44,383 @@
   "Schedules_Assigned": [
     {
       "P_ID_FK": "20250715/001",
-      "SA_Date": "2025-07-16",
+      "SA_Date": "2025-07-18",
       "SA_Time": "08:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-16",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-16",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA001"
     },
     {
       "P_ID_FK": "20250715/001",
-      "SA_Date": "2025-07-18",
+      "SA_Date": "2025-07-19",
       "SA_Time": "08:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-16",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-16",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA002"
     },
     {
-      "P_ID_FK": "20250715/005",
-      "SA_Date": "2025-08-01",
-      "SA_Time": "16:00",
+      "P_ID_FK": "20250715/003",
+      "SA_Date": "2025-07-18",
+      "SA_Time": "12:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-16",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-16",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA003"
     },
     {
-      "P_ID_FK": "20250715/005",
-      "SA_Date": "2025-08-02",
-      "SA_Time": "16:00",
+      "P_ID_FK": "20250715/003",
+      "SA_Date": "2025-07-19",
+      "SA_Time": "12:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-16",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-16",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA004"
     },
     {
-      "P_ID_FK": "20250715/006",
-      "SA_Date": "2025-08-01",
-      "SA_Time": "08:00",
+      "P_ID_FK": "20250715/003",
+      "SA_Date": "2025-07-20",
+      "SA_Time": "12:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-17",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-17",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA005"
     },
     {
-      "P_ID_FK": "20250715/006",
-      "SA_Date": "2025-08-03",
+      "P_ID_FK": "20250715/001",
+      "SA_Date": "2025-07-26",
       "SA_Time": "08:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-17",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-17",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA006"
     },
     {
-      "P_ID_FK": "20250715/006",
-      "SA_Date": "2025-08-05",
+      "P_ID_FK": "20250715/001",
+      "SA_Date": "2025-07-30",
       "SA_Time": "08:00",
       "isDeleted": 10,
       "Added_by": "admin",
-      "Added_on": "2025-07-17",
+      "Added_on": "2025-07-18",
       "Modified_by": "admin",
-      "Modified_on": "2025-07-17",
+      "Modified_on": "2025-07-18",
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA007"
-    },
-    {
-      "P_ID_FK": "20250715/006",
-      "SA_Date": "2025-08-07",
-      "SA_Time": "08:00",
-      "isDeleted": 10,
-      "Added_by": "admin",
-      "Added_on": "2025-07-17",
-      "Modified_by": "admin",
-      "Modified_on": "2025-07-17",
-      "Provider_FK": "PR001",
-      "Outlet_FK": "OUT001",
-      "SA_ID_PK": "SA008"
-    },
-    {
-      "P_ID_FK": "20250715/006",
-      "SA_Date": "2025-08-09",
-      "SA_Time": "08:00",
-      "isDeleted": 10,
-      "Added_by": "admin",
-      "Added_on": "2025-07-17",
-      "Modified_by": "admin",
-      "Modified_on": "2025-07-17",
-      "Provider_FK": "PR001",
-      "Outlet_FK": "OUT001",
-      "SA_ID_PK": "SA009"
     }
   ],
   "case_openings": [
     {
-      "HCO_ID_PK": "2469ba88-aa35-4296-937b-6d5422195ee6",
-      "P_ID_FK": "20250715/006",
-      "HCO_Blood_Group": "AB+",
-      "HCO_Case_nature": "Chronic"
-    },
-    {
-      "HCO_ID_PK": "16ce2b9d-a13f-4131-86be-922021153505",
+      "HCO_ID_PK": "65949b63-88c3-4e81-b53d-08561cbdadb6",
       "P_ID_FK": "20250715/001",
       "HCO_Blood_Group": "A+",
+      "HCO_Case_nature": "Acute"
+    },
+    {
+      "HCO_ID_PK": "b29da2ec-17cc-4b46-8b57-3d3863e8a99e",
+      "P_ID_FK": "20250715/002",
+      "HCO_Blood_Group": "A+",
+      "HCO_Case_nature": "Acute"
+    },
+    {
+      "HCO_ID_PK": "f4a58272-7834-4159-abda-48560f177532",
+      "P_ID_FK": "20250715/003",
+      "HCO_Blood_Group": "AB+",
+      "HCO_Case_nature": "Acute"
+    },
+    {
+      "HCO_ID_PK": "1ace0d45-85d3-4759-bcad-21b0fc6bd3d0",
+      "P_ID_FK": "20250715/002",
+      "HCO_Blood_Group": "B+",
+      "HCO_Case_nature": "Acute"
+    },
+    {
+      "HCO_ID_PK": "f87d348a-272c-48b5-9487-2a9a3ea75b30",
+      "P_ID_FK": "20250715/001",
+      "HCO_Blood_Group": "O+",
       "HCO_Case_nature": "Chronic"
     }
   ],
   "predialysis_records": [
     {
-      "id": "VmdUDtJ3A-68lexO4Sx6d",
-      "SA_ID_FK_PK": "test",
-      "P_ID_FK": "test",
-      "PreDR_Vitals_BP": "120/80",
-      "PreDR_Vitals_HeartRate": "80",
-      "PreDR_Vitals_Temperature": "98.6",
-      "PreDR_Vitals_Weight": "70",
-      "PreDR_Notes": "test"
-    },
-    {
-      "id": "f4GmJczAVKvpUwFuZM9SS",
+      "id": "nNyJJuV85-deFiKca7ywf",
       "SA_ID_FK_PK": "SA001",
-      "P_ID_FK": "Meera",
-      "PreDR_Vitals_BP": "54",
-      "PreDR_Vitals_HeartRate": "43",
-      "PreDR_Vitals_Temperature": "36",
-      "PreDR_Vitals_Weight": "35",
-      "PreDR_Notes": "sss"
-    },
-    {
-      "id": "AzLOaLeAuksPVsnpBYozF",
-      "SA_ID_FK_PK": "SA001",
-      "P_ID_FK": "Meera",
+      "P_ID_FK": "Vignesh",
       "PreDR_Vitals_BP": "120",
       "PreDR_Vitals_HeartRate": "72",
-      "PreDR_Vitals_Temperature": "23",
-      "PreDR_Vitals_Weight": "35",
-      "PreDR_Notes": "sre"
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "65",
+      "PreDR_Notes": "test01"
+    },
+    {
+      "id": "3-CxfYOP8PeWcJNxTWdib",
+      "SA_ID_FK_PK": "SA003",
+      "P_ID_FK": "Divya",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "72",
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "65",
+      "PreDR_Notes": "testing"
+    },
+    {
+      "id": "7v6uV-Mx3ZLlUyY--avss",
+      "SA_ID_FK_PK": "SA001",
+      "P_ID_FK": "Vignesh",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "80",
+      "PreDR_Vitals_Temperature": "98",
+      "PreDR_Vitals_Weight": "75",
+      "PreDR_Notes": ""
     }
   ],
   "start_dialysis_records": [
     {
-      "id": "ekCP1bPKwlt14Ao8jjBv9",
+      "id": "auYMuBh49NyqyBwFPsoe9",
+      "SA_ID_FK_PK": "SA001",
+      "Dialysis_Unit": "Unit A",
+      "SDR_Start_time": "10:20",
+      "SDR_Vascular_access": "Fistula",
+      "Dialyzer_Type": "Type A",
+      "SDR_Notes": "test"
+    },
+    {
+      "id": "TrZQMrqPNlCFvDqvWyL4G",
       "SA_ID_FK_PK": "SA003",
       "Dialysis_Unit": "Unit A",
-      "SDR_Start_time": "17:32",
+      "SDR_Start_time": "14:21",
       "SDR_Vascular_access": "Fistula",
       "Dialyzer_Type": "Type A",
-      "SDR_Notes": "wqw"
+      "SDR_Notes": "test"
     },
     {
-      "id": "EiDLs4DayHIX-OcFjMOqj",
-      "SA_ID_FK_PK": "SA002",
+      "id": "e82hisvB_iFx1RMr1zogt",
+      "SA_ID_FK_PK": "SA001",
       "Dialysis_Unit": "Unit A",
-      "SDR_Start_time": "00:00",
-      "SDR_Vascular_access": "Fistula",
-      "Dialyzer_Type": "Type A",
-      "SDR_Notes": "aaaaaaaaaaaaaaaaaa"
-    },
-    {
-      "id": "aDx273OzZehTtu9FOAVR_",
-      "SA_ID_FK_PK": "SA002",
-      "Dialysis_Unit": "Unit A",
-      "SDR_Start_time": "18:37",
-      "SDR_Vascular_access": "Fistula",
-      "Dialyzer_Type": "Type A",
-      "SDR_Notes": "tutyu"
+      "SDR_Start_time": "16:36",
+      "SDR_Vascular_access": "Femoral Vein Catheter",
+      "Dialyzer_Type": "Nipro Elisio HX",
+      "SDR_Notes": ""
     }
   ],
   "InProcess_records": [],
   "post_dialysis_records": [
     {
-      "id": "XzUk_zssvAwe-gOhl6iXk",
+      "id": "9nwnuEjIDM-jXE708517Q",
+      "SA_ID_FK": "SA001",
+      "P_ID_FK": "Vignesh",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "72",
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "65",
+      "PostDR_Notes": "test0002"
+    },
+    {
+      "id": "KrhD7SyR2Ds-mAMwmuovY",
       "SA_ID_FK": "SA003",
-      "P_ID_FK": "Meera",
-      "PreDR_Vitals_BP": "21",
-      "PreDR_Vitals_HeartRate": "32",
-      "PreDR_Vitals_Temperature": "34",
-      "PreDR_Vitals_Weight": "56",
-      "PostDR_Notes": "rt"
+      "P_ID_FK": "Divya",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "72",
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "65",
+      "PostDR_Notes": "testing2"
+    }
+  ],
+  "dialyzer_types": [
+    {
+      "DTL_Dialyzer_Name": "Fresenius FX CorDiax 60",
+      "DTL_Membrane_Type": "Helixone",
+      "DTL_Flux_Type": "Low Flux",
+      "DTL_Surface_Area": 1.3,
+      "DTL_ID_PK": 1752827489153
     },
     {
-      "id": "yJkNKwOjARZZaaVaX5166",
-      "SA_ID_FK": "SA002",
-      "P_ID_FK": "Vignesh",
-      "PreDR_Vitals_BP": "54",
-      "PreDR_Vitals_HeartRate": "456",
-      "PreDR_Vitals_Temperature": "43",
-      "PreDR_Vitals_Weight": "45",
-      "PostDR_Notes": "hfg"
+      "DTL_Dialyzer_Name": "B. Braun Diacap Pro",
+      "DTL_Membrane_Type": "Polyflux",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 1.8,
+      "DTL_ID_PK": 1752827489154
     },
     {
-      "id": "41-oyKfI0m3IrFFxzESRS",
-      "SA_ID_FK": "SA002",
-      "P_ID_FK": "Vignesh",
-      "PreDR_Vitals_BP": "asd",
-      "PreDR_Vitals_HeartRate": "asd",
-      "PreDR_Vitals_Temperature": "asd",
-      "PreDR_Vitals_Weight": "asd",
-      "PostDR_Notes": "asdasdasd"
+      "DTL_Dialyzer_Name": "Nipro Elisio HX",
+      "DTL_Membrane_Type": "Polyethersulfone",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 2.1,
+      "DTL_ID_PK": 1752827489155
+    },
+    {
+      "DTL_Dialyzer_Name": "Asahi Rexeed-15",
+      "DTL_Membrane_Type": "Polysulfone",
+      "DTL_Flux_Type": "Low Flux",
+      "DTL_Surface_Area": 1.5,
+      "DTL_ID_PK": 1752827489156
+    },
+    {
+      "DTL_Dialyzer_Name": "Toray Filtryzer BK",
+      "DTL_Membrane_Type": "Polysulfone",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 1.9,
+      "DTL_ID_PK": 1752827489157
+    },
+    {
+      "DTL_Dialyzer_Name": "Medivators D-190H",
+      "DTL_Membrane_Type": "Cellulose Triacetate",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 1.9,
+      "DTL_ID_PK": 1752827489158
+    },
+    {
+      "DTL_Dialyzer_Name": "Gambro Polyflux 14L",
+      "DTL_Membrane_Type": "Polyamide",
+      "DTL_Flux_Type": "Low Flux",
+      "DTL_Surface_Area": 1.4,
+      "DTL_ID_PK": 1752827489159
+    },
+    {
+      "DTL_Dialyzer_Name": "Nikkiso Hi-Flux 20",
+      "DTL_Membrane_Type": "Polysulfone",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 2,
+      "DTL_ID_PK": 1752827489160
+    },
+    {
+      "DTL_Dialyzer_Name": "Baxter SureFlux-150",
+      "DTL_Membrane_Type": "Polyethersulfone",
+      "DTL_Flux_Type": "Low Flux",
+      "DTL_Surface_Area": 1.5,
+      "DTL_ID_PK": 1752827489161
+    },
+    {
+      "DTL_Dialyzer_Name": "JMS Leoceed-21H",
+      "DTL_Membrane_Type": "Polysulfone",
+      "DTL_Flux_Type": "High Flux",
+      "DTL_Surface_Area": 2.1,
+      "DTL_ID_PK": 1752827489162
+    }
+  ],
+  "vascular_access": [
+    {
+      "VAL_Access_Type": "Graft",
+      "VAL_Access_ID_PK": 1752827543739
+    },
+    {
+      "VAL_Access_Type": "AV Fistula",
+      "VAL_Access_ID_PK": 1752827543740
+    },
+    {
+      "VAL_Access_Type": "Central Venous Catheter (CVC)",
+      "VAL_Access_ID_PK": 1752827543741
+    },
+    {
+      "VAL_Access_Type": "Tunneled Catheter",
+      "VAL_Access_ID_PK": 1752827543742
+    },
+    {
+      "VAL_Access_Type": "Temporary Catheter",
+      "VAL_Access_ID_PK": 1752827543743
+    },
+    {
+      "VAL_Access_Type": "Left Internal Jugular Catheter",
+      "VAL_Access_ID_PK": 1752827543744
+    },
+    {
+      "VAL_Access_Type": "Right Internal Jugular Catheter",
+      "VAL_Access_ID_PK": 1752827543745
+    },
+    {
+      "VAL_Access_Type": "Subclavian Vein Catheter",
+      "VAL_Access_ID_PK": 1752827543746
+    },
+    {
+      "VAL_Access_Type": "Femoral Vein Catheter",
+      "VAL_Access_ID_PK": 1752827543747
+    },
+    {
+      "VAL_Access_Type": "Synthetic Loop Graft",
+      "VAL_Access_ID_PK": 1752827543748
+    },
+    {
+      "VAL_Access_Type": "Brachiocephalic Fistula",
+      "VAL_Access_ID_PK": 1752827543749
+    },
+    {
+      "VAL_Access_Type": "Radiocephalic Fistula",
+      "VAL_Access_ID_PK": 1752827543750
+    },
+    {
+      "VAL_Access_Type": "Prosthetic Graft (PTFE)",
+      "VAL_Access_ID_PK": 1752827543751
+    }
+  ],
+  "units": [
+    {
+      "Unit_Name": "Unit A",
+      "Unit_Status": "Free",
+      "Unit_Planned_Maintainance_DT": "2025-08-01T14:03",
+      "Unit_Technitian_Assigned": "Rajagopal",
+      "Unit_ID_PK": 1752827603196
+    },
+    {
+      "Unit_Name": "Unit B",
+      "Unit_Status": "Out_of_service",
+      "Unit_Planned_Maintainance_DT": "2025-07-18T14:03",
+      "Unit_Technitian_Assigned": "Vinayakan",
+      "Unit_ID_PK": 1752827657252
+    },
+    {
+      "Unit_Name": "Unit C",
+      "Unit_Status": "Engaged",
+      "Unit_Planned_Maintainance_DT": "2025-07-20T10:00",
+      "Unit_Technitian_Assigned": "Meera",
+      "Unit_ID_PK": 1752827657253
+    },
+    {
+      "Unit_Name": "Unit D",
+      "Unit_Status": "Free",
+      "Unit_Planned_Maintainance_DT": "2025-08-10T09:30",
+      "Unit_Technitian_Assigned": "Suresh",
+      "Unit_ID_PK": 1752827657254
+    },
+    {
+      "Unit_Name": "Unit E",
+      "Unit_Status": "Engaged",
+      "Unit_Planned_Maintainance_DT": "2025-07-22T11:15",
+      "Unit_Technitian_Assigned": "Anjali",
+      "Unit_ID_PK": 1752827657255
+    }
+  ],
+  "scheduling_lookup": [
+    {
+      "id": 1,
+      "SL_No_of_units": 5,
+      "SL_Working_hrs": "16",
+      "SL_Working_days": 7,
+      "SL_Pre_dialysis_time": 1,
+      "SL_Dialysis_Session_Time": "4"
     }
   ]
 }

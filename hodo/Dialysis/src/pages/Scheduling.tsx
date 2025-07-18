@@ -144,7 +144,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="Scheduling" subtitle="Scheduling" />
+        <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
         {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
         <form style={{ maxWidth: 600, margin: '0 auto', marginBottom: 32 }} onSubmit={e => { e.preventDefault(); generateSchedule(); }}>
           <div className="form-group">

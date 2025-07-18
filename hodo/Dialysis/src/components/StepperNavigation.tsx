@@ -17,7 +17,7 @@ interface StepperNavigationProps {
 const steps = [
   'Predialysis',
   'Start Dialysis',
-  'Haemodialysis Details',
+  // 'Haemodialysis Details',
   'Post Dialysis',
 ];
 
