@@ -7,6 +7,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import { Formik, Form } from 'formik';
 import { InputField, TextareaField } from '../components/forms';
 import { API_URL } from '../config';
+import * as Yup from 'yup';
 
 // const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
 const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
@@ -140,15 +141,14 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
       <Formik
         initialValues={form}
         enableReinitialize
-        validate={values => {
-          const errs: { [key: string]: string } = {};
-          if (!values.SA_ID_FK) errs.SA_ID_FK = 'Required';
-          if (!values.PreDR_Vitals_BP) errs.PreDR_Vitals_BP = 'Required';
-          if (!values.PreDR_Vitals_HeartRate) errs.PreDR_Vitals_HeartRate = 'Required';
-          if (!values.PreDR_Vitals_Temperature) errs.PreDR_Vitals_Temperature = 'Required';
-          if (!values.PreDR_Vitals_Weight) errs.PreDR_Vitals_Weight = 'Required';
-          return errs;
-        }}
+        validationSchema={Yup.object({
+          SA_ID_FK: Yup.string().required('Schedule is required'),
+          PreDR_Vitals_BP: Yup.string().required('Blood Pressure is required'),
+          PreDR_Vitals_HeartRate: Yup.string().required('Heart Rate is required'),
+          PreDR_Vitals_Temperature: Yup.string().required('Temperature is required'),
+          PreDR_Vitals_Weight: Yup.string().required('Weight is required'),
+          PostDR_Notes: Yup.string(),
+        })}
         onSubmit={async (values, { setSubmitting, resetForm, setErrors }) => {
           setSuccessMsg('');
           setErrorMsg('');
@@ -169,6 +169,11 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
       >
         {({ values, isSubmitting, resetForm }) => (
           <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            {!selectedSchedule && (
+              <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
+                Please select a schedule to enable this form.
+              </div>
+            )}
             <div className="form-group mb-0">
               {(() => {
                 const selectedScheduleObj = appointments.find(sch => sch.SA_ID_PK === values.SA_ID_FK);
@@ -189,31 +194,36 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 label="Blood Pressure"
                 name="PreDR_Vitals_BP"
                 required
-                disabled={isSubmitting}
+                placeholder="Enter blood pressure (e.g. 120/80)"
+                disabled={!selectedSchedule}
               />
               <InputField
                 label="Heart Rate"
                 name="PreDR_Vitals_HeartRate"
                 required
-                disabled={isSubmitting}
+                placeholder="Enter heart rate (bpm)"
+                disabled={!selectedSchedule}
               />
               <InputField
                 label="Temperature"
                 name="PreDR_Vitals_Temperature"
                 required
-                disabled={isSubmitting}
+                placeholder="Enter temperature (°C)"
+                disabled={!selectedSchedule}
               />
               <InputField
                 label="Weight"
                 name="PreDR_Vitals_Weight"
                 required
-                disabled={isSubmitting}
+                placeholder="Enter weight (kg)"
+                disabled={!selectedSchedule}
               />
               <TextareaField
                 label="Notes"
                 name="PostDR_Notes"
                 rows={3}
-                disabled={isSubmitting}
+                placeholder="Enter any notes (optional)"
+                disabled={!selectedSchedule}
               />
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
@@ -221,11 +231,11 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 type="button"
                 className="btn-outline redButton"
                 onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }}
-                disabled={isSubmitting}
+                disabled={!selectedSchedule || isSubmitting}
               >
                 Reset
               </ButtonWithGradient>
-              <ButtonWithGradient type="submit" disabled={isSubmitting}>Save</ButtonWithGradient>
+              <ButtonWithGradient type="submit" disabled={!selectedSchedule || isSubmitting}>Save</ButtonWithGradient>
             </div>
             {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
             {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}

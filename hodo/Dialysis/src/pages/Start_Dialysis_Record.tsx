@@ -69,16 +69,6 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
     // Status: 'Active',
   };
 
-  const validationSchema = Yup.object({
-    SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
-    Dialysis_Unit: Yup.string().required('Dialysis Unit is required'),
-    SDR_Start_time: Yup.string().required('Start time is required'),
-    SDR_Vascular_access: Yup.string().required('Vascular Access is required'),
-    Dialyzer_Type: Yup.string().required('Dialyzer Type is required'),
-    SDR_Notes: Yup.string(),
-    // Status: Yup.string(),
-  });
-
   const unitOptions = units.map(u => ({ value: u.Unit_Name, label: u.Unit_Name }));
   const accessOptions = accesses.map(a => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type }));
   const dialyzerOptions = dialyzerTypes.map(d => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name }));
@@ -90,7 +80,14 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
       {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validationSchema={Yup.object({
+          SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+          Dialysis_Unit: Yup.string().required('Dialysis Unit is required'),
+          SDR_Start_time: Yup.string().required('Start time is required'),
+          SDR_Vascular_access: Yup.string().required('Vascular Access is required'),
+          Dialyzer_Type: Yup.string().required('Dialyzer Type is required'),
+          SDR_Notes: Yup.string(),
+        })}
         onSubmit={async (values, { resetForm }) => {
           setSuccessMsg('');
           setErrorMsg('');
@@ -110,8 +107,12 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
       >
         {({ isSubmitting, resetForm }) => (
           <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            {!selectedSchedule && (
+              <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
+                Please select a schedule to enable this form.
+              </div>
+            )}
             <div style={{ display: 'none' }}>
-
               <SelectField
                 label="Schedule ID (SA_ID_FK_PK)"
                 name="SA_ID_FK_PK"
@@ -121,11 +122,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 disabled
               />
             </div>
-
             <div>
-              {/* <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                  Schedule ID (SA_ID_FK_PK)
-                </label> */}
               <label style={{ fontSize: 18, fontWeight: 600, margin: '0px 0 18px' }}>
                 {(() => {
                   const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
@@ -133,22 +130,20 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 })()}
               </label>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-
-
-
               <SelectField
                 label="Dialysis Unit"
                 name="Dialysis_Unit"
                 options={unitOptions}
                 required
                 placeholder="Select Dialysis Unit"
+                disabled={!selectedSchedule}
               />
               <TimeField
                 label="Start Time (SDR_Start time)"
                 name="SDR_Start_time"
                 required
+                disabled={!selectedSchedule}
               />
               <SelectField
                 label="Vascular Access (SDR_Vascular_access)"
@@ -156,6 +151,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 options={accessOptions}
                 required
                 placeholder="Select Vascular Access"
+                disabled={!selectedSchedule}
               />
               <SelectField
                 label="Dialyzer Type"
@@ -163,22 +159,19 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 options={dialyzerOptions}
                 required
                 placeholder="Select Dialyzer Type"
+                disabled={!selectedSchedule}
               />
               <TextareaField
                 label="Notes (SDR_Notes)"
                 name="SDR_Notes"
                 rows={3}
-                placeholder="Enter any notes"
+                placeholder="Enter any notes (optional)"
+                disabled={!selectedSchedule}
               />
-              {/* <InputField
-                label="Status"
-                name="Status"
-                disabled
-              /> */}
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
-              <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }}>Reset</ButtonWithGradient>
-              <ButtonWithGradient type="submit" disabled={isSubmitting}>Save</ButtonWithGradient>
+              <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
+              <ButtonWithGradient type="submit" disabled={!selectedSchedule || isSubmitting}>Save</ButtonWithGradient>
             </div>
             {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
             {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}

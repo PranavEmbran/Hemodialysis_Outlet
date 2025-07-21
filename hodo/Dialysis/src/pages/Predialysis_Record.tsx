@@ -7,6 +7,7 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import { Formik, Form } from 'formik';
 import { InputField, TextareaField } from '../components/forms';
 import { API_URL } from '../config';
+import * as Yup from 'yup';
 
 // const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
 const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
@@ -147,15 +148,14 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
       <Formik
         initialValues={form}
         enableReinitialize
-        validate={values => {
-          const errs: { [key: string]: string } = {};
-          if (!values.SA_ID_FK_PK) errs.SA_ID_FK_PK = 'Required';
-          if (!values.PreDR_Vitals_BP) errs.PreDR_Vitals_BP = 'Required';
-          if (!values.PreDR_Vitals_HeartRate) errs.PreDR_Vitals_HeartRate = 'Required';
-          if (!values.PreDR_Vitals_Temperature) errs.PreDR_Vitals_Temperature = 'Required';
-          if (!values.PreDR_Vitals_Weight) errs.PreDR_Vitals_Weight = 'Required';
-          return errs;
-        }}
+        validationSchema={Yup.object({
+          SA_ID_FK_PK: Yup.string().required('Schedule is required'),
+          PreDR_Vitals_BP: Yup.string().required('Blood Pressure is required'),
+          PreDR_Vitals_HeartRate: Yup.string().required('Heart Rate is required'),
+          PreDR_Vitals_Temperature: Yup.string().required('Temperature is required'),
+          PreDR_Vitals_Weight: Yup.string().required('Weight is required'),
+          PreDR_Notes: Yup.string(),
+        })}
         onSubmit={async (values, { setSubmitting, resetForm, setErrors }) => {
           setSuccessMsg('');
           setErrorMsg('');
@@ -207,30 +207,35 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 label="Blood Pressure"
                 name="PreDR_Vitals_BP"
                 required
+                placeholder="Enter blood pressure (e.g. 120/80)"
                 disabled={!selectedSchedule}
               />
               <InputField
                 label="Heart Rate"
                 name="PreDR_Vitals_HeartRate"
                 required
+                placeholder="Enter heart rate (bpm)"
                 disabled={!selectedSchedule}
               />
               <InputField
                 label="Temperature"
                 name="PreDR_Vitals_Temperature"
                 required
+                placeholder="Enter temperature (°C)"
                 disabled={!selectedSchedule}
               />
               <InputField
                 label="Weight"
                 name="PreDR_Vitals_Weight"
                 required
+                placeholder="Enter weight (kg)"
                 disabled={!selectedSchedule}
               />
               <TextareaField
                 label="Notes"
                 name="PreDR_Notes"
                 rows={3}
+                placeholder="Enter any notes (optional)"
                 disabled={!selectedSchedule}
               />
             </div>

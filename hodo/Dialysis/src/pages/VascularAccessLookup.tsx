@@ -8,6 +8,9 @@ import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
+import { InputField } from '../components/forms';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 
 export const AccessTypesContext = createContext<{
   accesses: any[];
@@ -34,7 +37,7 @@ export const AccessTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   );
 };
 
-const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => {} }) => {
+const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => { } }) => {
   const { accesses, setAccesses } = useAccessTypes();
   const [form, setForm] = useState({ VAL_Access_Type: '' });
   const [editId, setEditId] = useState<number | null>(null);
@@ -127,28 +130,60 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
         <SectionHeading title="Vascular Access Lookup" subtitle="Vascular Access Lookup" />
-        <div style={{ minWidth: 350, maxWidth: 600, margin: '0 auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginTop: 32 }}>
-          <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div className="form-group">
-              <label>Access Type *</label>
-              <input
-                type="text"
-                name="VAL_Access_Type"
-                value={form.VAL_Access_Type}
-                onChange={handleChange}
-                className="form-control"
-              />
-              {errors.VAL_Access_Type && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.VAL_Access_Type}</div>}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
-              <ButtonWithGradient type="submit">
-                {editId !== null ? 'Update' : 'Save'}
-              </ButtonWithGradient>
-              <ButtonWithGradient type="button" className="btn-outline" onClick={handleReset}>
-                Reset
-              </ButtonWithGradient>
-            </div>
-          </form>
+        <div style={{ minWidth: 350, margin: '0 auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginTop: 32 }}>
+          <Formik
+            initialValues={form}
+            enableReinitialize
+            validationSchema={Yup.object({
+              VAL_Access_Type: Yup.string().required('Access Type is required'),
+            })}
+            onSubmit={async (values, { resetForm }) => {
+              if (editId !== null) {
+                // Update
+                const updated = { ...values, VAL_Access_ID_PK: editId };
+                await fetch(`${API_URL}/data/vascular_access`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(updated),
+                });
+              } else {
+                // Create
+                await fetch(`${API_URL}/data/vascular_access`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(values),
+                });
+              }
+              fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+                if (Array.isArray(data)) setAccesses(data);
+              });
+              setEditId(null);
+              resetForm();
+            }}
+          >
+            {({ resetForm }) => (
+              <Form>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <InputField
+                    label="Access Type"
+                    name="VAL_Access_Type"
+                    required
+                    placeholder="Enter access type"
+                    className=""
+                    id="access-type"
+                  />
+                </div>
+                <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
+                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setEditId(null); }}>
+                    Reset
+                  </ButtonWithGradient>
+                  <ButtonWithGradient type="submit">
+                    {editId !== null ? 'Update' : 'Save'}
+                  </ButtonWithGradient>
+                </div>
+              </Form>
+            )}
+          </Formik>
           <div style={{ marginTop: 32 }}>
             <Table columns={columns} data={tableData} />
           </div>

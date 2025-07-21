@@ -8,6 +8,9 @@ import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
+import { InputField, SelectField, DateField } from '../components/forms';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 
 export const UnitsContext = createContext<{
   units: any[];
@@ -40,7 +43,7 @@ const unitStatusOptions = [
   { value: 'Out_of_service', label: 'Out of Service' },
 ];
 
-const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => {} }) => {
+const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => { } }) => {
   const { units, setUnits } = useUnits();
   const [form, setForm] = useState({
     Unit_Name: '',
@@ -164,63 +167,91 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
         <SectionHeading title="Units Management" subtitle="Units Management" />
-        <div style={{ minWidth: 350, maxWidth: 600, margin: '0 auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginTop: 32 }}>
-          <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div className="form-group">
-              <label>Unit Name *</label>
-              <input
-                type="text"
-                name="Unit_Name"
-                value={form.Unit_Name}
-                onChange={handleChange}
-                className="form-control"
-              />
-              {errors.Unit_Name && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Name}</div>}
-            </div>
-            <div className="form-group">
-              <label>Unit Status *</label>
-              <select
-                name="Unit_Status"
-                value={form.Unit_Status}
-                onChange={handleChange}
-                className="form-select"
-              >
-                <option value="">Select status</option>
-                {unitStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-              {errors.Unit_Status && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Status}</div>}
-            </div>
-            <div className="form-group">
-              <label>Planned Maintainance *</label>
-              <input
-                type="datetime-local"
-                name="Unit_Planned_Maintainance_DT"
-                value={form.Unit_Planned_Maintainance_DT}
-                onChange={handleChange}
-                className="form-control"
-              />
-              {errors.Unit_Planned_Maintainance_DT && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Planned_Maintainance_DT}</div>}
-            </div>
-            <div className="form-group">
-              <label>Technitian Assigned *</label>
-              <input
-                type="text"
-                name="Unit_Technitian_Assigned"
-                value={form.Unit_Technitian_Assigned}
-                onChange={handleChange}
-                className="form-control"
-              />
-              {errors.Unit_Technitian_Assigned && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Technitian_Assigned}</div>}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
-              <ButtonWithGradient type="submit">
-                {editId !== null ? 'Update' : 'Save'}
-              </ButtonWithGradient>
-              <ButtonWithGradient type="button" className="btn-outline" onClick={handleReset}>
-                Reset
-              </ButtonWithGradient>
-            </div>
-          </form>
+        <div style={{ minWidth: 350, margin: '0 auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginTop: 32 }}>
+          <Formik
+            initialValues={form}
+            enableReinitialize
+            validationSchema={Yup.object({
+              Unit_Name: Yup.string().required('Unit Name is required'),
+              Unit_Status: Yup.string().required('Unit Status is required'),
+              Unit_Planned_Maintainance_DT: Yup.string().required('Planned Maintenance is required'),
+              Unit_Technitian_Assigned: Yup.string().required('Technitian Assigned is required'),
+            })}
+            onSubmit={async (values, { resetForm }) => {
+              if (editId !== null) {
+                // Update
+                const updated = { ...values, Unit_ID_PK: editId };
+                await fetch(`${API_URL}/data/units`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(updated),
+                });
+              } else {
+                // Create
+                await fetch(`${API_URL}/data/units`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(values),
+                });
+              }
+              fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+                if (Array.isArray(data)) setUnits(data);
+              });
+              setEditId(null);
+              resetForm();
+            }}
+          >
+            {({ resetForm, setValues, values }) => (
+              <Form>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <InputField
+                    label="Unit Name"
+                    name="Unit_Name"
+                    required
+                    placeholder="Enter unit name"
+                    // className="form-control"
+                    className=""
+                    id="unit-name"
+                  />
+                  <SelectField
+                    label="Unit Status"
+                    name="Unit_Status"
+                    options={unitStatusOptions}
+                    required
+                    placeholder="Select status"
+                    // className="form-select"
+                    className=""
+                    id="unit-status"
+                  />
+                  <DateField
+                    label="Planned Maintenance"
+                    name="Unit_Planned_Maintainance_DT"
+                    required
+                    // className="form-control"
+                    className=""
+                    id="unit-maintenance"
+                  />
+                  <InputField
+                    label="Technitian Assigned"
+                    name="Unit_Technitian_Assigned"
+                    required
+                    placeholder="Enter technitian name"
+                    // className="form-control"
+                    className=""
+                    id="unit-technitian"
+                  />
+                  <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
+                    <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setEditId(null); }}>
+                      Reset
+                    </ButtonWithGradient>
+                    <ButtonWithGradient type="submit">
+                      {editId !== null ? 'Update' : 'Save'}
+                    </ButtonWithGradient>
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik>
           <div style={{ marginTop: 32 }}>
             <Table columns={columns} data={tableData} />
           </div>
