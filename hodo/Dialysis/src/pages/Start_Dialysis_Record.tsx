@@ -110,29 +110,31 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
       >
         {({ isSubmitting, resetForm }) => (
           <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            <div style={{ display: 'none' }}>
 
-              {/* <SelectField
+              <SelectField
                 label="Schedule ID (SA_ID_FK_PK)"
                 name="SA_ID_FK_PK"
                 options={scheduleOptions}
                 required
                 placeholder="Select Schedule"
                 disabled
-              /> */}
+              />
+            </div>
 
-              <div>
-                {/* <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
+            <div>
+              {/* <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
                   Schedule ID (SA_ID_FK_PK)
                 </label> */}
-                <label style={{ fontSize: 18, fontWeight: 600, margin: '0px 0 18px' }}>
-                  {(() => {
-                    const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
-                    return selected?.label || 'No schedule selected';
-                  })()}
-                </label>
-              </div>
+              <label style={{ fontSize: 18, fontWeight: 600, margin: '0px 0 18px' }}>
+                {(() => {
+                  const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
+                  return selected?.label || 'No schedule selected';
+                })()}
+              </label>
+            </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
 
 
