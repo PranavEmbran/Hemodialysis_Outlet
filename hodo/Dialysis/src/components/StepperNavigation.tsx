@@ -41,7 +41,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   });
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', marginBottom: 32 }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 32, marginTop: 24 }}>
       {/* Filters Row */}
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
         {/* Patient Dropdown */}

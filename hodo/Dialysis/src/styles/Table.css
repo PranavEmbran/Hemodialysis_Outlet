@@ -30,7 +30,8 @@
   }
   
   .custom-table th {
-    color: #038ba4;
+    /* color: #038ba4; */
+    color: #5a5a5a;
     font-weight: 600;
     background: #f9f9f9;
     border-bottom: 2px solid #e3e3e3;

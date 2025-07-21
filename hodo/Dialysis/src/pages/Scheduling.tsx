@@ -30,12 +30,15 @@ function getMonthName(dateStr: string) {
 
 const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [patients, setPatients] = useState<any[]>([]);
+
+  const today = new Date().toISOString().split('T')[0]; 
+
   const [form, setForm] = useState({
     patient: '',
-    interval: '',
-    sessionPreferred: '',
-    numSessions: 1,
-    fromDate: '',
+    interval: 'daily',
+    sessionPreferred: '1st',
+    numSessions: 5,
+    fromDate: today,
     tillDate: '',
   });
   const [scheduleRows, setScheduleRows] = useState<any[]>([]);
@@ -146,95 +149,100 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       <PageContainer>
         <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
         {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
-        <form style={{ maxWidth: 600, margin: '0 auto', marginBottom: 32 }} onSubmit={e => { e.preventDefault(); generateSchedule(); }}>
-          <div className="form-group">
-            <label htmlFor="patient" className="form-label">Patient 
-              {/* <span className="text-danger">*</span> */}
-              </label>
-            <select
-              id="patient"
-              name="patient"
-              className="form-select"
-              value={form.patient}
-              onChange={handleFormChange}
+        {/* <form style={{ maxWidth: 1500, margin: '0 auto', marginBottom: 32, backgroundColor: '#f5f5f5', padding: '8px' }} onSubmit={e => { e.preventDefault(); generateSchedule(); }}> */}
+        <form style={{ height: 370, margin: '0 auto', marginBottom: 5, backgroundColor: 'none', padding: '8px',boxShadow: '0 2px 8px #eee' }} onSubmit={e => { e.preventDefault(); generateSchedule(); }}>
+
+          {/* <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}> */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-group">
+              <label htmlFor="patient" className="form-label">Patient <span className="text-danger">*</span></label>
+              <select
+                id="patient"
+                name="patient"
+                className="form-select"
+                value={form.patient}
+                onChange={handleFormChange}
               // required
-            >
-              <option value="">Select Patient</option>
-              {patients.map(p => (
-                <option key={p.id} value={p.id}>{`${p.id} - ${p.Name}`}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="interval" className="form-label">Interval <span className="text-danger">*</span></label>
-            <select
-              id="interval"
-              name="interval"
-              className="form-select"
-              value={form.interval}
-              onChange={handleFormChange}
-              required
-            >
-              <option value="">Select Interval</option>
-              {intervalOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="sessionPreferred" className="form-label">Session Preferred <span className="text-danger">*</span></label>
-            <select
-              id="sessionPreferred"
-              name="sessionPreferred"
-              className="form-select"
-              value={form.sessionPreferred}
-              onChange={handleFormChange}
-              required
-            >
-              <option value="">Select Session</option>
-              {sessionOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="numSessions" className="form-label">Number of Sessions <span className="text-danger">*</span></label>
-            <input
-              id="numSessions"
-              name="numSessions"
-              type="number"
-              className="form-control"
-              value={form.numSessions}
-              min={1}
-              onChange={handleFormChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="fromDate" className="form-label">From Date <span className="text-danger">*</span></label>
-            <input
-              id="fromDate"
-              name="fromDate"
-              type="date"
-              className="form-control"
-              value={form.fromDate}
-              onChange={handleFormChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="tillDate" className="form-label">Till Date</label>
-            <input
-              id="tillDate"
-              name="tillDate"
-              type="date"
-              className="form-control"
-              value={form.tillDate}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <ButtonWithGradient type="submit">Generate Schedule</ButtonWithGradient>
+              >
+                <option value="">Select Patient </option>
+                {patients.map(p => (
+                  <option key={p.id} value={p.id}>{`${p.id} - ${p.Name}`}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="interval" className="form-label">Interval <span className="text-danger">*</span></label>
+              <select
+                id="interval"
+                name="interval"
+                className="form-select"
+                value={form.interval}
+                onChange={handleFormChange}
+                required
+              >
+                <option value="">Select Interval</option>
+                {intervalOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" >
+              <label htmlFor="sessionPreferred" className="form-label">Session Preferred <span className="text-danger">*</span></label>
+              <select
+                id="sessionPreferred"
+                name="sessionPreferred"
+                className="form-select"
+                value={form.sessionPreferred}
+                onChange={handleFormChange}
+                required
+              >
+                <option value="">Select Session</option>
+                {sessionOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" >
+              <label htmlFor="numSessions" className="form-label">Number of Sessions <span className="text-danger">*</span></label>
+              <input
+                id="numSessions"
+                name="numSessions"
+                type="number"
+                className="form-control"
+                value={form.numSessions}
+                min={1}
+                onChange={handleFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="fromDate" className="form-label">From Date <span className="text-danger">*</span></label>
+              <input
+                id="fromDate"
+                name="fromDate"
+                type="date"
+                className="form-control"
+                value={form.fromDate}
+                min={today}
+                onChange={handleFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="tillDate" className="form-label">Till Date <span style={{ visibility: 'hidden' }} className="text-danger">*</span></label>
+              <input
+                id="tillDate"
+                name="tillDate"
+                type="date"
+                className="form-control"
+                value={form.tillDate}
+                min={form.fromDate}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div style={{ textAlign: 'left', marginTop: 16 }}>
+              <ButtonWithGradient type="submit">Generate Schedule</ButtonWithGradient>
+            </div>
           </div>
         </form>
         {scheduleRows.length > 0 && (

@@ -141,16 +141,19 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
     <>
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} /> */}
       {/* <PageContainer> */}
-        {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
-        <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
-          {!selectedSchedule && (
-            <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
-              Please select a schedule to enable this form.
-            </div>
-          )}
+      {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
+      <form onSubmit={handleSubmit} style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+
+        {!selectedSchedule && (
+          <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
+            Please select a schedule to enable this form.
+          </div>
+        )}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+
           <div className="form-group mb-3">
-            <label>Schedule (SA_ID_FK_PK) *</label>
-            <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control">
+            <label>Schedule (SA_ID_FK_PK) <span className="text-danger">*</span></label>
+            <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control" disabled>
               <option value="">Select Schedule</option>
               {appointments.map(sch => {
                 const patient = patients.find((p: any) => p.id === sch.P_ID_FK);
@@ -161,28 +164,31 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
             </select>
             {errors.SA_ID_FK_PK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK_PK}</div>}
           </div>
-          <div className="form-group mb-3">
-            <label>Patient (P_ID_FK)</label>
+          {/* <div className="form-group mb-3">
+            <label>Patient (P_ID_FK) <span className="text-danger" style={{ visibility: 'hidden' }}>*</span></label>
             <input type="text" name="P_ID_FK" value={form.P_ID_FK} readOnly className="form-control" />
-          </div>
-          <div style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 16 }}>Vitals</div>
+          </div> */}
+
+          <br />
+
+          <div style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 16 }}>Vitals</div><br />
           <div className="form-group mb-2">
-            <label>Blood Pressure *</label>
+            <label>Blood Pressure <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_BP" value={form.PreDR_Vitals_BP} onChange={handleChange} className="form-control" />
             {errors.PreDR_Vitals_BP && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.PreDR_Vitals_BP}</div>}
           </div>
           <div className="form-group mb-2">
-            <label>Heart Rate *</label>
+            <label>Heart Rate <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_HeartRate" value={form.PreDR_Vitals_HeartRate} onChange={handleChange} className="form-control" />
             {errors.PreDR_Vitals_HeartRate && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.PreDR_Vitals_HeartRate}</div>}
           </div>
           <div className="form-group mb-2">
-            <label>Temperature *</label>
+            <label>Temperature <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_Temperature" value={form.PreDR_Vitals_Temperature} onChange={handleChange} className="form-control" />
             {errors.PreDR_Vitals_Temperature && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.PreDR_Vitals_Temperature}</div>}
           </div>
           <div className="form-group mb-2">
-            <label>Weight *</label>
+            <label>Weight <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_Weight" value={form.PreDR_Vitals_Weight} onChange={handleChange} className="form-control" />
             {errors.PreDR_Vitals_Weight && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.PreDR_Vitals_Weight}</div>}
           </div>
@@ -190,13 +196,15 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
             <label>Notes</label>
             <textarea name="PreDR_Notes" value={form.PreDR_Notes} onChange={handleChange} className="form-control" rows={3} />
           </div>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 }}>
-            <ButtonWithGradient type="submit" disabled={!selectedSchedule}>Save</ButtonWithGradient>
-            <ButtonWithGradient type="button" className="btn-outline" onClick={handleReset} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
-          </div>
-          {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
-          {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
-        </form>
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
+          <ButtonWithGradient type="button" className="btn-outline redButton" onClick={handleReset} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
+          <ButtonWithGradient type="submit" disabled={!selectedSchedule}>Save</ButtonWithGradient>
+        </div>
+        {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
+        {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
+
+      </form>
       {/* </PageContainer> */}
       {/* <Footer /> */}
     </>

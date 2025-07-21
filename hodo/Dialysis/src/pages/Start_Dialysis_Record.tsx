@@ -87,35 +87,38 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
     <>
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer> */}
-        {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={async (values, { resetForm }) => {
-            setSuccessMsg('');
-            setErrorMsg('');
-            try {
-              const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
-              });
-              if (!res.ok) throw new Error('Failed to save');
-              setSuccessMsg('Start Dialysis record saved successfully!');
-              resetForm();
-            } catch (err) {
-              setErrorMsg('Error saving start dialysis record.');
-            }
-          }}
-        >
-          {({ isSubmitting, resetForm }) => (
-            <Form style={{ maxWidth: 500, margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+      {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={async (values, { resetForm }) => {
+          setSuccessMsg('');
+          setErrorMsg('');
+          try {
+            const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(values),
+            });
+            if (!res.ok) throw new Error('Failed to save');
+            setSuccessMsg('Start Dialysis record saved successfully!');
+            resetForm();
+          } catch (err) {
+            setErrorMsg('Error saving start dialysis record.');
+          }
+        }}
+      >
+        {({ isSubmitting, resetForm }) => (
+          <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+
               <SelectField
                 label="Schedule ID (SA_ID_FK_PK)"
                 name="SA_ID_FK_PK"
                 options={scheduleOptions}
                 required
                 placeholder="Select Schedule"
+                disabled
               />
               <SelectField
                 label="Dialysis Unit"
@@ -154,15 +157,16 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 name="Status"
                 disabled
               /> */}
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 }}>
-                <ButtonWithGradient type="submit" disabled={isSubmitting}>Save</ButtonWithGradient>
-                <ButtonWithGradient type="button" className="btn-outline" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }}>Reset</ButtonWithGradient>
-              </div>
-              {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
-              {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
-            </Form>
-          )}
-        </Formik>
+            </div>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
+              <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }}>Reset</ButtonWithGradient>
+              <ButtonWithGradient type="submit" disabled={isSubmitting}>Save</ButtonWithGradient>
+            </div>
+            {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
+            {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
+          </Form>
+        )}
+      </Formik>
       {/* </PageContainer>
       <Footer /> */}
     </>

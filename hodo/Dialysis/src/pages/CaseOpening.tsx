@@ -37,7 +37,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     // fetch('http://localhost:3002/api/data/patients_derived')
     // fetch('http://192.168.50.50:3002/api/data/patients_derived')
     fetch(`${API_URL}/data/patients_derived`)
-    .then(res => res.json())
+      .then(res => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
           setPatientOptions(
@@ -69,7 +69,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="Case Opening" subtitle="Case Opening" />
+        <SectionHeading title="Hemodialysis Case Opening" subtitle="Case Opening for Registered Patient" />
 
         {/* HCO Form Start */}
         <Formik
@@ -94,40 +94,43 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           }}
         >
           {({ isSubmitting, resetForm, values }) => (
-            <Form style={{ maxWidth: 500, margin: '2rem auto', padding: 24, background: '#f9f9f9', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
-              <SelectField
-                label="Select Patient"
-                name="P_ID_FK"
-                options={patientOptions}
-                required
-                placeholder="Select Patient"
-              />
-              {/* Hidden UUID field */}
-              <InputField
-                label="Case Opening ID (auto-generated)"
-                name="HCO_ID_PK"
-                type="text"
-                disabled
-                className="d-none"
-              />
-              <SelectField
-                label="Blood Group"
-                name="HCO_Blood_Group"
-                options={bloodGroupOptions}
-                required
-                placeholder="Select Blood Group"
-              />
-              <RadioGroupField
-                label="Case Nature"
-                name="HCO_Case_nature"
-                options={caseNatureOptions}
-                required
-              />
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}>
+            <Form style={{ height: 300, margin: '0rem auto', padding: '24px', background: 'none', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}>
+                <SelectField
+                  label="Select Patient"
+                  name="P_ID_FK"
+                  options={patientOptions}
+                  required
+                  placeholder="Select Patient"
+                />
+                {/* Hidden UUID field */}
+                <InputField
+                  label="Case Opening ID (auto-generated)"
+                  name="HCO_ID_PK"
+                  type="text"
+                  disabled
+                  className="d-none"
+                />
+                <SelectField
+                  label="Blood Group"
+                  name="HCO_Blood_Group"
+                  options={bloodGroupOptions}
+                  required
+                  placeholder="Select Blood Group"
+                />
+                <RadioGroupField
+                  label="Case Nature"
+                  name="HCO_Case_nature"
+                  options={caseNatureOptions}
+                  required
+                />
+              </div>
+              {/* <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}> */}
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
                 <ButtonWithGradient
                   type="button"
                   onClick={() => resetForm({ values: getInitialValues() })}
-                  className="btn-outline"
+                  className="btn-outline redButton"
                 >
                   Reset
                 </ButtonWithGradient>
@@ -139,6 +142,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   Submit
                 </ButtonWithGradient>
               </div>
+
             </Form>
           )}
         </Formik>

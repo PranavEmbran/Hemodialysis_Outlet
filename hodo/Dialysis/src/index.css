@@ -11,6 +11,16 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+
+}
+
+
+
+label {
+  font-size: 14px;
+  color: #5A5A5A;
+  font-weight: 600 !important;
 }
 
 a {

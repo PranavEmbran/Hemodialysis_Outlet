@@ -88,7 +88,8 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
 
             <li>
               <NavLink
-                to="/case-opening" style={{ fontWeight: 400, color: "#cccccc" }}
+                // to="/case-opening" style={{ fontWeight: 400, color: "#cccccc" }}
+                to="/" style={{ fontWeight: 400, color: "#cccccc" }}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }

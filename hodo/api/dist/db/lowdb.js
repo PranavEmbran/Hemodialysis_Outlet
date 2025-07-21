@@ -9,7 +9,11 @@ const defaultData = {
     predialysis_records: [],
     start_dialysis_records: [],
     InProcess_records: [],
-    post_dialysis_records: []
+    post_dialysis_records: [],
+    units: [],
+    vascular_access: [],
+    dialyzer_types: [],
+    scheduling_lookup: []
 };
 // ✅ Pass both adapter and defaultData
 const adapter = new JSONFile(new URL('./db.json', import.meta.url));
