@@ -149,11 +149,13 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
             Please select a schedule to enable this form.
           </div>
         )}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
-          <div className="form-group mb-3">
-            <label>Schedule (SA_ID_FK_PK) <span className="text-danger">*</span></label>
-            <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control" disabled>
+        {/* <div className="form-group mb-3"> */}
+        <div className="form-group mb-0">
+          {/* <label>Schedule (SA_ID_FK_PK) <span className="text-danger">*</span></label> */}
+
+
+          {/* <select name="SA_ID_FK_PK" value={form.SA_ID_FK_PK} onChange={handleScheduleChange} className="form-control" disabled>
               <option value="">Select Schedule</option>
               {appointments.map(sch => {
                 const patient = patients.find((p: any) => p.id === sch.P_ID_FK);
@@ -161,17 +163,34 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                   <option key={sch.SA_ID_PK} value={sch.SA_ID_PK}>{sch.SA_ID_PK} - {patient ? patient.Name : sch.P_ID_FK}</option>
                 );
               })}
-            </select>
-            {errors.SA_ID_FK_PK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK_PK}</div>}
-          </div>
-          {/* <div className="form-group mb-3">
+            </select> */}
+
+          {(() => {
+            const selectedSchedule = appointments.find(sch => sch.SA_ID_PK === form.SA_ID_FK_PK);
+            const patient = selectedSchedule ? patients.find((p: any) => p.id === selectedSchedule.P_ID_FK) : null;
+            const labelText = selectedSchedule
+              ? `${selectedSchedule.SA_ID_PK} - ${patient ? patient.Name : selectedSchedule.P_ID_FK}`
+              : 'No schedule selected';
+
+            return (
+              <label style={{ fontSize: 18, fontWeight: 600 }}>
+                {labelText}
+              </label>
+            );
+          })()}
+
+
+
+          {errors.SA_ID_FK_PK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK_PK}</div>}
+        </div>
+        {/* <div className="form-group mb-3">
             <label>Patient (P_ID_FK) <span className="text-danger" style={{ visibility: 'hidden' }}>*</span></label>
             <input type="text" name="P_ID_FK" value={form.P_ID_FK} readOnly className="form-control" />
           </div> */}
 
-          <br />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
-          <div style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 16 }}>Vitals</div><br />
+          <label style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 18 }}>Vitals</label><br />
           <div className="form-group mb-2">
             <label>Blood Pressure <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_BP" value={form.PreDR_Vitals_BP} onChange={handleChange} className="form-control" />

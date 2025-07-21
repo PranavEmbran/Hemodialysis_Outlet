@@ -42,6 +42,37 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 32, marginTop: 24 }}>
+
+      {/* Stepper */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        {steps.map((step, idx) => (
+          <React.Fragment key={step}>
+            <button
+              type="button"
+              onClick={() => onStepChange(idx)}
+              style={{
+                background: idx === currentStep ? 'linear-gradient(135deg, rgb(5, 130, 172), rgb(16, 85, 97))' : idx < currentStep ? '#90caf9' : '#e0e0e0',
+                color: idx === currentStep ? '#fff' : '#333',
+                border: 'none',
+                borderRadius: 20,
+                padding: '8px 20px',
+                fontWeight: idx === currentStep ? 700 : 500,
+                cursor: 'pointer',
+                minWidth: 120,
+                transition: 'background 0.2s',
+                boxShadow: idx === currentStep ? '0 2px 8px #b3c6e6' : 'none',
+              }}
+            >
+              {step}
+            </button>
+            {idx < steps.length - 1 && (
+              <div style={{ flex: 1, height: 2, background: idx < currentStep ? '#1976d2' : '#e0e0e0', margin: '0 8px' }} />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
+
       {/* Filters Row */}
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
         {/* Patient Dropdown */}
@@ -85,34 +116,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
           </select>
         </div>
       </div>
-      {/* Stepper */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        {steps.map((step, idx) => (
-          <React.Fragment key={step}>
-            <button
-              type="button"
-              onClick={() => onStepChange(idx)}
-              style={{
-                background: idx === currentStep ? 'linear-gradient(135deg, rgb(5, 130, 172), rgb(16, 85, 97))' : idx < currentStep ? '#90caf9' : '#e0e0e0',
-                color: idx === currentStep ? '#fff' : '#333',
-                border: 'none',
-                borderRadius: 20,
-                padding: '8px 20px',
-                fontWeight: idx === currentStep ? 700 : 500,
-                cursor: 'pointer',
-                minWidth: 120,
-                transition: 'background 0.2s',
-                boxShadow: idx === currentStep ? '0 2px 8px #b3c6e6' : 'none',
-              }}
-            >
-              {step}
-            </button>
-            {idx < steps.length - 1 && (
-              <div style={{ flex: 1, height: 2, background: idx < currentStep ? '#1976d2' : '#e0e0e0', margin: '0 8px' }} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+
     </div>
   );
 };

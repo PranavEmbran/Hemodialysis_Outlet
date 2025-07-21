@@ -134,12 +134,11 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
     <>
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer> */}
-        {/* <SectionHeading title="Postdialysis Record" subtitle="Postdialysis Record" /> */}
-        <form onSubmit={handleSubmit} style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      {/* <SectionHeading title="Postdialysis Record" subtitle="Postdialysis Record" /> */}
+      <form onSubmit={handleSubmit} style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
 
-          <div className="form-group mb-3">
-            <label>Schedule (SA_ID_FK) <span className="text-danger">*</span></label>
+        <div className="form-group mb-0">
+          {/* <label>Schedule (SA_ID_FK) <span className="text-danger">*</span></label>
             <select name="SA_ID_FK" value={form.SA_ID_FK} onChange={handleScheduleChange} className="form-control" disabled>
               <option value="">Select Schedule</option>
               {appointments.map(sch => {
@@ -148,18 +147,34 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                   <option key={sch.SA_ID_PK} value={sch.SA_ID_PK}>{sch.SA_ID_PK} - {patient ? patient.Name : sch.P_ID_FK}</option>
                 );
               })}
-            </select>
-            {errors.SA_ID_FK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK}</div>}
-          </div>
-          {/* <div className="form-group mb-3">
+            </select> */}
+
+          {(() => {
+            const selectedSchedule = appointments.find(sch => sch.SA_ID_PK === form.SA_ID_FK);
+            const patient = selectedSchedule ? patients.find((p: any) => p.id === selectedSchedule.P_ID_FK) : null;
+            const labelText = selectedSchedule
+              ? `${selectedSchedule.SA_ID_PK} - ${patient ? patient.Name : selectedSchedule.P_ID_FK}`
+              : 'No schedule selected';
+
+            return (
+              <label style={{ fontSize: 18, fontWeight: 600 }}>
+                {labelText}
+              </label>
+            );
+          })()}
+
+
+          {errors.SA_ID_FK && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.SA_ID_FK}</div>}
+        </div>
+        {/* <div className="form-group mb-3">
             <label>Patient (P_ID_FK) <span className="text-danger" style={{ visibility: 'hidden' }}>*</span></label>
             <input type="text" name="P_ID_FK" value={form.P_ID_FK} readOnly className="form-control" />
           </div> */}
 
-<br />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
-          <div style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 16 }}>Vitals</div><br />
-          <div className="form-group mb-2">
+        <label style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 18 }}>Vitals</label><br />
+        <div className="form-group mb-2">
             <label>Blood Pressure <span className="text-danger">*</span></label>
             <input type="text" name="PreDR_Vitals_BP" value={form.PreDR_Vitals_BP} onChange={handleChange} className="form-control" />
             {errors.PreDR_Vitals_BP && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.PreDR_Vitals_BP}</div>}
@@ -183,14 +198,14 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
             <label>Notes</label>
             <textarea name="PostDR_Notes" value={form.PostDR_Notes} onChange={handleChange} className="form-control" rows={3} />
           </div>
-          </div>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
-            <ButtonWithGradient type="button" className="btn-outline redButton" onClick={handleReset}>Reset</ButtonWithGradient>
-            <ButtonWithGradient type="submit">Save</ButtonWithGradient>
-          </div>
-          {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
-          {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
-        </form>
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
+          <ButtonWithGradient type="button" className="btn-outline redButton" onClick={handleReset}>Reset</ButtonWithGradient>
+          <ButtonWithGradient type="submit">Save</ButtonWithGradient>
+        </div>
+        {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
+        {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
+      </form>
       {/* </PageContainer>
       <Footer /> */}
     </>
