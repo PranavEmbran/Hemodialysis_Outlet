@@ -704,6 +704,32 @@
       "Provider_FK": "PR001",
       "Outlet_FK": "OUT001",
       "SA_ID_PK": "SA051"
+    },
+    {
+      "P_ID_FK": "20250715/009",
+      "SA_Date": "2025-07-22",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-22",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-22",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA052"
+    },
+    {
+      "P_ID_FK": "20250715/009",
+      "SA_Date": "2025-07-23",
+      "SA_Time": "08:00",
+      "isDeleted": 10,
+      "Added_by": "admin",
+      "Added_on": "2025-07-22",
+      "Modified_by": "admin",
+      "Modified_on": "2025-07-22",
+      "Provider_FK": "PR001",
+      "Outlet_FK": "OUT001",
+      "SA_ID_PK": "SA053"
     }
   ],
   "case_openings": [
@@ -741,6 +767,12 @@
       "HCO_ID_PK": "56f4791e-f4ab-4e19-a9d1-05af14ce4500",
       "P_ID_FK": "20250715/003",
       "HCO_Blood_Group": "B+",
+      "HCO_Case_nature": "Acute"
+    },
+    {
+      "HCO_ID_PK": "48e305dc-4d9b-4e0b-8836-747454e54a7b",
+      "P_ID_FK": "20250715/009",
+      "HCO_Blood_Group": "A+",
       "HCO_Case_nature": "Acute"
     }
   ],
@@ -794,6 +826,16 @@
       "PreDR_Vitals_Temperature": "36",
       "PreDR_Vitals_Weight": "65",
       "PreDR_Notes": "Testing_New"
+    },
+    {
+      "id": "_3hDIY6fPt4t0RXlmcH0M",
+      "SA_ID_FK_PK": "SA052",
+      "P_ID_FK": "Sneha",
+      "PreDR_Vitals_BP": "120",
+      "PreDR_Vitals_HeartRate": "43",
+      "PreDR_Vitals_Temperature": "36",
+      "PreDR_Vitals_Weight": "65",
+      "PreDR_Notes": ""
     }
   ],
   "start_dialysis_records": [

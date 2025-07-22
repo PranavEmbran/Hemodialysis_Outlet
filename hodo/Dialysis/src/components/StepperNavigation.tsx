@@ -1,5 +1,7 @@
 import React from 'react';
 import ButtonWithGradient from './ButtonWithGradient';
+import Breadcrumb from './Breadcrumb';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 interface StepperNavigationProps {
   selectedSchedule: string;
@@ -41,10 +43,10 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   });
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 32, marginTop: 24 }}>
+    <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 24 }}>
 
       {/* Stepper */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         {steps.map((step, idx) => (
           <React.Fragment key={step}>
             <button
@@ -70,8 +72,15 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             )}
           </React.Fragment>
         ))}
-      </div>
+      </div> */}
 
+      <div>
+        <Breadcrumb
+          steps={steps.map((label, idx) => ({ label }))}
+          activeStep={currentStep}
+          onStepClick={onStepChange}
+        />
+      </div>
 
       {/* Filters Row */}
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
@@ -82,7 +91,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             value={selectedPatient}
             onChange={onPatientChange}
             className="form-control"
-            style={{ minWidth: 180 }}
+            style={{ minWidth: 180, width: 200 }}
           >
             <option value="">All Patients</option>
             {patients.map(p => (
@@ -98,7 +107,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             value={selectedDate}
             onChange={onDateChange}
             className="form-control"
-            style={{ minWidth: 140 }}
+            style={{ minWidth: 140, width: 200}}
           />
         </div>
         {/* Schedule Dropdown */}
@@ -108,6 +117,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             value={selectedSchedule}
             onChange={onScheduleChange}
             className="form-control"
+            style={{ width: 200}}
           >
             <option value="">Select Schedule</option>
             {filteredSchedules.map(opt => (
