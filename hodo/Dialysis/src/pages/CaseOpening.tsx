@@ -94,7 +94,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           }}
         >
           {({ isSubmitting, resetForm, values }) => (
-            <Form style={{ height: 300, margin: '0rem auto', padding: '24px', background: 'none', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
+            <Form style={{ height: 320, margin: '0rem auto', padding: '24px', background: 'none', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}>
                 <SelectField
                   label="Select Patient"

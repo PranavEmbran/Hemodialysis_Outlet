@@ -1,5 +1,74 @@
 /* Form Controls - Shared Styles for Reusable Form Components */
 
+.required-indicator {
+  color: red;
+  margin-left: 2px;
+  display: inline-block;
+  width: 8px; /* or adjust as needed */
+}
+
+
+/* Match the height and padding of .form-select */
+.react-select__control {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 0;
+  border-radius: 0.375rem;
+  border: 1px solid #ced4da;
+  box-shadow: none;
+  align-items: center;
+}
+
+.react-select__indicator-separator {
+  display: none;
+}
+
+
+.react-select__control--is-focused {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.react-select__placeholder {
+  color: #6c757d;
+  margin-left: 2px;
+  line-height: 1.5;
+}
+
+.react-select__input {
+  margin: 0;
+  padding: 0;
+}
+
+.react-select__single-value {
+  color: #495057;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.react-select__menu {
+  z-index: 10;
+}
+
+.react-select__value-container {
+  height: 30px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+}
+
+.react-select__indicators {
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.react-select__control--is-disabled {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+
 .form-group {
   margin-bottom: 1rem;
 }

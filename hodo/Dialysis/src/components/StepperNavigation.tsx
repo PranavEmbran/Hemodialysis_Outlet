@@ -1,7 +1,12 @@
 import React from 'react';
 import ButtonWithGradient from './ButtonWithGradient';
+import { API_URL } from '../config';
 import Breadcrumb from './Breadcrumb';
 import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+import { SelectField, InputField } from './forms';
+import { Formik, Form } from 'formik';
+import { useEffect } from 'react';
+import './StepperNavigation.css';
 
 interface StepperNavigationProps {
   selectedSchedule: string;
@@ -35,6 +40,27 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   selectedDate,
   onDateChange,
 }) => {
+  // --- FILTER PATIENTS BASED ON CASE OPENINGS (DYNAMIC FETCH) ---
+  const [caseOpenings, setCaseOpenings] = React.useState<{ P_ID_FK: string }[]>([]);
+  React.useEffect(() => {
+    const fetchCaseOpenings = async () => {
+      try {
+        const res = await fetch(`${API_URL}/data/case_openings`);
+        if (res.ok) {
+          const data = await res.json();
+          setCaseOpenings(Array.isArray(data) ? data : []);
+        } else {
+          setCaseOpenings([]);
+        }
+      } catch {
+        setCaseOpenings([]);
+      }
+    };
+    fetchCaseOpenings();
+  }, []);
+  const allowedPatientIds = new Set(caseOpenings.map((c) => c.P_ID_FK));
+  const filteredPatients = patients.filter(p => allowedPatientIds.has(p.id));
+
   // Filter schedules by patient and date
   const filteredSchedules = scheduleOptions.filter(opt => {
     const patientMatch = !selectedPatient || opt.patientId === selectedPatient;
@@ -83,49 +109,69 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
       </div>
 
       {/* Filters Row */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
-        {/* Patient Dropdown */}
-        <div className="form-group">
-          <label style={{ fontWeight: 600 }}>Select Patient</label>
-          <select
-            value={selectedPatient}
-            onChange={onPatientChange}
-            className="form-control"
-            style={{ minWidth: 180, width: 200 }}
-          >
-            <option value="">All Patients</option>
-            {patients.map(p => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </div>
-        {/* Date Picker */}
-        <div className="form-group">
-          <label style={{ fontWeight: 600 }}>Select Date</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={onDateChange}
-            className="form-control"
-            style={{ minWidth: 140, width: 200}}
-          />
-        </div>
-        {/* Schedule Dropdown */}
-        <div className="form-group" style={{ flex: 1 }}>
-          <label style={{ fontWeight: 600 }}>Select Schedule</label>
-          <select
-            value={selectedSchedule}
-            onChange={onScheduleChange}
-            className="form-control"
-            style={{ width: 200}}
-          >
-            <option value="">Select Schedule</option>
-            {filteredSchedules.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <Formik
+        initialValues={{
+          selectedPatient: selectedPatient || '',
+          selectedDate: selectedDate || '',
+          selectedSchedule: selectedSchedule || '',
+        }}
+        onSubmit={() => {}}
+        enableReinitialize
+      >
+        {({ values, setFieldValue }) => {
+          useEffect(() => {
+            if (values.selectedPatient !== selectedPatient) {
+              onPatientChange({ target: { value: values.selectedPatient } } as React.ChangeEvent<HTMLSelectElement>);
+            }
+            // eslint-disable-next-line
+          }, [values.selectedPatient]);
+          useEffect(() => {
+            if (values.selectedDate !== selectedDate) {
+              onDateChange({ target: { value: values.selectedDate } } as React.ChangeEvent<HTMLInputElement>);
+            }
+            // eslint-disable-next-line
+          }, [values.selectedDate]);
+          useEffect(() => {
+            if (values.selectedSchedule !== selectedSchedule) {
+              onScheduleChange({ target: { value: values.selectedSchedule } } as React.ChangeEvent<HTMLSelectElement>);
+            }
+            // eslint-disable-next-line
+          }, [values.selectedSchedule]);
+          return (
+            <Form style={{width: '50%', display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
+              <div className="flex-grow">
+              <SelectField
+                label="Select Patient"
+                name="selectedPatient"
+                options={filteredPatients.map(p => ({ value: p.id, label: `${p.name} (${p.id})` }))}
+                placeholder="All Patients"
+                className="form-group"
+                required={false}                
+              />
+              </div>
+              <div className="flex-grow">
+              <InputField
+                label="Select Date"
+                name="selectedDate"
+                type="date"
+                className="form-group"
+                required={false}
+              />
+              </div>
+              <div className="flex-grow">
+              <SelectField
+                label="Select Schedule"
+                name="selectedSchedule"
+                options={filteredSchedules.map(opt => ({ value: opt.value, label: opt.label }))}
+                placeholder="Select Schedule"
+                className="form-group"
+                required={true}
+              />
+              </div>
+            </Form>
+          );
+        }}
+      </Formik>
 
     </div>
   );

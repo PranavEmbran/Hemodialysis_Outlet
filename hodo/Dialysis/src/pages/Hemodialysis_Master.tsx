@@ -12,6 +12,7 @@ import { useUnits } from './UnitsManagement';
 import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
 import { API_URL } from '../config';
+import { InputField, SelectField } from '../components/forms';
 
 // Mock data for Scheduling_Lookup
 const initialSchedulingLookup = [
@@ -165,11 +166,12 @@ const UnitsManager: React.FC = () => {
       <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
         <div className="form-group">
           <label>Unit Name *</label>
-          <input
-            type="text"
+          <InputField
+            label="Unit Name"
             name="Unit_Name"
             value={form.Unit_Name}
             onChange={handleChange}
+            required
             className="form-control"
           />
           {errors.Unit_Name && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Name}</div>}
@@ -181,30 +183,36 @@ const UnitsManager: React.FC = () => {
             value={form.Unit_Status}
             onChange={handleChange}
             className="form-select"
+            required
           >
             <option value="">Select status</option>
-            {unitStatusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+            {unitStatusOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </select>
           {errors.Unit_Status && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Status}</div>}
         </div>
         <div className="form-group">
           <label>Planned Maintainance *</label>
-          <input
-            type="datetime-local"
+          <InputField
+            label="Planned Maintenance"
             name="Unit_Planned_Maintainance_DT"
+            type="datetime-local"
             value={form.Unit_Planned_Maintainance_DT}
             onChange={handleChange}
+            required
             className="form-control"
           />
           {errors.Unit_Planned_Maintainance_DT && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Planned_Maintainance_DT}</div>}
         </div>
         <div className="form-group">
           <label>Technitian Assigned *</label>
-          <input
-            type="text"
+          <InputField
+            label="Technitian Assigned"
             name="Unit_Technitian_Assigned"
             value={form.Unit_Technitian_Assigned}
             onChange={handleChange}
+            required
             className="form-control"
           />
           {errors.Unit_Technitian_Assigned && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Technitian_Assigned}</div>}
@@ -300,11 +308,12 @@ const VascularAccessLookup: React.FC = () => {
       <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
         <div className="form-group">
           <label>Access Type *</label>
-          <input
-            type="text"
+          <InputField
+            label="Access Type"
             name="VAL_Access_Type"
             value={form.VAL_Access_Type}
             onChange={handleChange}
+            required
             className="form-control"
           />
           {errors.VAL_Access_Type && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.VAL_Access_Type}</div>}
@@ -396,10 +405,10 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                         <td style={{ padding: '10px 16px', borderBottom: '1px solid #f0f0f0' }}>
                           {editRowId === row.id ? (
                             <input
-                              type="number"
                               name={key}
                               value={editValues[key]}
                               onChange={handleInputChange}
+                              type="number"
                               style={{ width: 120 }}
                             />
                           ) : (

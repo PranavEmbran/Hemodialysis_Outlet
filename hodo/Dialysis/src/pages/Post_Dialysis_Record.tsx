@@ -5,7 +5,7 @@ import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { Formik, Form } from 'formik';
-import { InputField, TextareaField } from '../components/forms';
+import { InputField, SelectField, TextareaField } from '../components/forms';
 import { API_URL } from '../config';
 import * as Yup from 'yup';
 
@@ -182,7 +182,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                   ? `${selectedScheduleObj.SA_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
                   : 'No schedule selected';
                 return (
-                  <label style={{ fontSize: 18, fontWeight: 600 }}>
+                  <label style={{ width: '100%', fontSize: 18, fontWeight: 600, backgroundColor: '#37a9be', color: 'white', padding: '0.5rem 1rem', margin: '1rem 0 2rem 0', borderRadius: '4px 4px 0 0'}}>
                     {labelText}
                   </label>
                 );
@@ -196,6 +196,13 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 required
                 placeholder="Enter blood pressure (e.g. 120/80)"
                 disabled={!selectedSchedule}
+                maxLength={3}
+                inputMode="numeric"
+                pattern="\d{1,3}"
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.target as HTMLInputElement;
+                  input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+                }}
               />
               <InputField
                 label="Heart Rate"
@@ -203,21 +210,64 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 required
                 placeholder="Enter heart rate (bpm)"
                 disabled={!selectedSchedule}
+                maxLength={3}
+                inputMode="numeric"
+                pattern="\d{1,3}"
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.target as HTMLInputElement;
+                  input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+                }}
               />
               <InputField
                 label="Temperature"
                 name="PreDR_Vitals_Temperature"
                 required
-                placeholder="Enter temperature (°C)"
+                placeholder="Enter temperature (e.g. 100.333)"
                 disabled={!selectedSchedule}
+                inputMode="decimal"
+                pattern="\d{1,3}(\.\d{1,3})?"
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.currentTarget;
+                  let value = input.value;
+
+                  // Allow only digits and a single decimal point
+                  value = value.replace(/[^0-9.]/g, '');
+                  const parts = value.split('.');
+
+                  if (parts.length > 2) {
+                    // Remove extra decimals
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                  }
+
+                  if (parts.length === 1) {
+                    // Only integer part
+                    value = parts[0].slice(0, 3);
+                  } else if (parts.length === 2) {
+                    const intPart = parts[0].slice(0, 3);
+                    const decimalPart = parts[1].slice(0, 3);
+                    value = intPart + '.' + decimalPart;
+                  }
+
+                  input.value = value;
+                }}
               />
+
+
               <InputField
                 label="Weight"
                 name="PreDR_Vitals_Weight"
                 required
                 placeholder="Enter weight (kg)"
                 disabled={!selectedSchedule}
+                maxLength={3}
+                inputMode="numeric"
+                pattern="\d{1,3}"
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.target as HTMLInputElement;
+                  input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+                }}
               />
+
               <TextareaField
                 label="Notes"
                 name="PostDR_Notes"

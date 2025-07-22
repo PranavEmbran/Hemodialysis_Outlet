@@ -1,5 +1,6 @@
 import React from 'react';
-import { Field, ErrorMessage } from 'formik';
+import Select from 'react-select';
+import { useField, useFormikContext } from 'formik';
 import '../../styles/form-controls.css';
 
 interface Option {
@@ -26,9 +27,17 @@ const SelectField: React.FC<SelectFieldProps> = ({
   required = false,
   disabled = false,
   className = '',
-  id
+  id,
 }) => {
   const fieldId = id || name;
+  const [field, meta] = useField(name);
+  const { setFieldValue, setFieldTouched } = useFormikContext<any>();
+
+  const handleChange = (selectedOption: Option | null) => {
+    setFieldValue(name, selectedOption ? selectedOption.value : '');
+  };
+
+  const selectedOption = options.find(opt => opt.value === field.value) || null;
 
   return (
     <div className={`form-group ${className}`}>
@@ -36,30 +45,28 @@ const SelectField: React.FC<SelectFieldProps> = ({
         {label}
         {required && <span className="text-danger"> *</span>}
       </label>
-      <Field
-        as="select"
-        id={fieldId}
+
+      <Select
+        inputId={fieldId}
         name={name}
-        disabled={disabled}
-        className="form-select"
-        aria-describedby={`${fieldId}-error`}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Field>
-      <ErrorMessage name={name}>
-        {(msg) => (
-          <div id={`${fieldId}-error`} className="invalid-feedback">
-            {msg}
-          </div>
-        )}
-      </ErrorMessage>
+        options={options}
+        placeholder={placeholder}
+        isDisabled={disabled}
+        value={selectedOption}
+        onChange={handleChange}
+        onBlur={() => setFieldTouched(name, true)}
+        isClearable
+        classNamePrefix="react-select"
+        className={`react-select-container ${meta.touched && meta.error ? 'is-invalid' : ''}`}
+      />
+
+      {meta.touched && meta.error && (
+        <div id={`${fieldId}-error`} className="invalid-feedback">
+          {meta.error}
+        </div>
+      )}
     </div>
   );
 };
 
-export default SelectField; 
+export default SelectField;

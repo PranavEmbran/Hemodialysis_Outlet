@@ -309,6 +309,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
           selectedDate={selectedDate}
           onDateChange={handleDateChange}
         />
+        
         <div style={{ maxWidth: 2000, margin: '0 auto' }}>
           {loading ? (
             <div>Loading...</div>
