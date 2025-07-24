@@ -104,7 +104,7 @@ const TopNavBar: React.FC = () => {
   return (
     <nav className="top-navbar">
       <div className="navItem">
-        <a href=""><img src={logo} alt="Logo" /></a>
+        <a href="/"><img src={logo} alt="Logo" /></a>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           <span className="bar"></span>
           <span className="bar"></span>
@@ -114,7 +114,7 @@ const TopNavBar: React.FC = () => {
           <ul className="nav-list2">
             <li className='nav-link'>
               <NavLink
-                to="/dashboard"
+                to="/"
                 className={({ isActive }) => isActive ? 'active' : ''}
                 style={{ fontSize: '14px', fontWeight: 400,color:'#cccccc' }}
               >
