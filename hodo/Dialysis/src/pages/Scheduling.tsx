@@ -50,10 +50,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   const initialValues = {
     patient: '',
-    interval: '',
-    sessionPreferred: '',
-    numSessions: '',
-    fromDate: '',
+    interval: 'daily',
+    sessionPreferred: '1st',
+    numSessions: '5',
+    fromDate: today,
     tillDate: ''
   };
 
@@ -128,7 +128,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         if (conflicts.length > 0) {
           setConflictInfo({
             conflictingRows: conflicts,
-            message: `${conflicts.length} sessions conflict with existing schedules and cannot be selected or saved.`
+            // message: `The following ${conflicts.length} sessions conflict with existing schedules and cannot be selected or saved.`
+            message: `The sessions already booked cannot be selected or saved.`
           });
         } else {
           setConflictInfo({conflictingRows: [], message: ''});
@@ -209,6 +210,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                   options={intervalOptions}
                   required
                   placeholder="Select Interval"
+                  defaultValue={intervalOptions[0]}
                 />
                 <SelectField
                   label="Session Preferred"
@@ -216,6 +218,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                   options={sessionOptions}
                   required
                   placeholder="Select Session"
+                  defaultValue={sessionOptions[0]}
                 />
                 <InputField
                   label="Number of Sessions"
@@ -223,6 +226,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                   type="number"
                   required
                   min={1}
+                  defaultValue={5}
                 />
                 <InputField
                   label="From Date"
@@ -230,6 +234,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                   type="date"
                   required
                   min={today}
+                  defaultValue={today}
                 />
                 <InputField
                   label="Till Date"
@@ -246,7 +251,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 <>
                   <h4 style={{ backgroundColor: '#37a9be', color: 'white', padding: '0.5rem 1rem', margin: '1rem 0 2rem 0', borderRadius: '4px 4px 0 0', fontWeight: '600' }}>Schedule Table</h4>
                   {conflictInfo.message && (
-                      <div style={{ color: 'red', marginBottom: 8 }}>{conflictInfo.message}</div>
+                      // <div style={{ color: 'red', marginBottom: 8 }}>{conflictInfo.message}</div>
+                      <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
                     )}
                     <Table
                     columns={[

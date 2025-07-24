@@ -17,6 +17,7 @@ interface SelectFieldProps {
   disabled?: boolean;
   className?: string;
   id?: string;
+  defaultValue?: Option | null;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -28,6 +29,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   disabled = false,
   className = '',
   id,
+  defaultValue
 }) => {
   const fieldId = id || name;
   const [field, meta] = useField(name);
@@ -52,7 +54,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         options={options}
         placeholder={placeholder}
         isDisabled={disabled}
-        value={selectedOption}
+        value={selectedOption || defaultValue}
         onChange={handleChange}
         onBlur={() => setFieldTouched(name, true)}
         isClearable
