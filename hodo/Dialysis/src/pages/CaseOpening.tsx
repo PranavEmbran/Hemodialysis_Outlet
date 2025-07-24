@@ -8,9 +8,15 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
+import Table from '../components/Table';
+import Searchbar from '../components/Searchbar';
 import SectionHeading from '../components/SectionHeading';
 // import { Row, Col, Container } from 'react-bootstrap';
 import { API_URL } from '../config';
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   // Blood group options
@@ -31,11 +37,10 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   ];
 
   const [patientOptions, setPatientOptions] = useState<{ label: string; value: string }[]>([]);
+  const [caseOpenings, setCaseOpenings] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    // fetch('/api/data/patients_derived')
-    // fetch('http://localhost:3002/api/data/patients_derived')
-    // fetch('http://192.168.50.50:3002/api/data/patients_derived')
     fetch(`${API_URL}/data/patients_derived`)
       .then(res => res.json())
       .then((data) => {
@@ -50,12 +55,28 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
       });
   }, []);
 
+  // Fetch case openings
+  useEffect(() => {
+    fetch(`${API_URL}/data/case_openings`)
+      .then(res => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          // Sort so last added is first (assuming records have a created/added field or fallback to array order)
+          setCaseOpenings([...data].reverse());
+        }
+      });
+  }, []);
+
   // Validation schema
   const validationSchema = Yup.object({
     P_ID_FK: Yup.string().required('Patient ID is required.'),
     HCO_Blood_Group: Yup.string().required('Blood Group is required.'),
     HCO_Case_nature: Yup.string().required('Case Nature is required.'),
   });
+
+const [formKey, setFormKey] = useState(0);
+const regenerateForm = () => setFormKey(prev => prev + 1);
+
 
   // Initial values
   const getInitialValues = () => ({
@@ -69,10 +90,12 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="Hemodialysis Case Opening" subtitle="Case Opening for Registered Patient" />
+        <SectionHeading title="Dialysis Case Opening" subtitle="Case Opening for Registered Patient" />
 
         {/* HCO Form Start */}
         <Formik
+          key={formKey} // This forces Formik to re-render cleanly
+
           initialValues={getInitialValues()}
           validationSchema={validationSchema}
           onSubmit={async (values, { resetForm }) => {
@@ -85,10 +108,22 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
               if (!response.ok) {
                 throw new Error('Failed to save case opening');
               }
-              resetForm({ values: getInitialValues() });
-              alert('Case opening saved successfully!');
+              regenerateForm();
+              // resetForm({ values: getInitialValues() });
+
+
+
+              // Refresh case openings after successful submit
+              fetch(`${API_URL}/data/case_openings`)
+                .then(res => res.json())
+                .then((data) => {
+                  if (Array.isArray(data)) {
+                    setCaseOpenings([...data].reverse());
+                  }
+                });
+              toast.success('Case opening saved successfully!');
             } catch (error) {
-              alert('Error saving case opening');
+              toast.error('Error saving case opening');
               console.error(error);
             }
           }}
@@ -129,7 +164,8 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
               <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
                 <ButtonWithGradient
                   type="button"
-                  onClick={() => resetForm({ values: getInitialValues() })}
+                  // onClick={() => resetForm({ values: getInitialValues() })}
+                  onClick={regenerateForm}
                   className="btn-outline redButton"
                 >
                   Reset
@@ -148,11 +184,41 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         </Formik>
         {/* HCO Form End */}
 
-
+        {/* Case Openings Table */}
+        <div style={{ marginTop: 40 }}>
+          <h4 className="blueBar">Case Openings</h4>
+          <Searchbar
+            value={searchText}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value)}
+          />
+          <Table
+            columns={[
+              { key: 'P_ID_FK', header: 'Patient ID' },
+              { key: 'PatientName', header: 'Patient Name' },
+              { key: 'HCO_Blood_Group', header: 'Blood Group' },
+              { key: 'HCO_Case_nature', header: 'Case Nature' },
+            ]}
+            data={caseOpenings
+              .map(row => ({
+                ...row,
+                PatientName: (patientOptions.find(p => p.value === row.P_ID_FK)?.label?.split(' - ')[1]) || row.P_ID_FK
+              }))
+              .filter(row => {
+                const q = searchText.toLowerCase();
+                return (
+                  row.P_ID_FK?.toLowerCase().includes(q) ||
+                  row.PatientName?.toLowerCase().includes(q) ||
+                  row.HCO_Blood_Group?.toLowerCase().includes(q) ||
+                  row.HCO_Case_nature?.toLowerCase().includes(q)
+                );
+              })
+            }
+          />
+        </div>
       </PageContainer>
       <Footer />
     </>
   );
 };
 
-export default CaseOpening; 
+export default CaseOpening;

@@ -2,3 +2,22 @@
     background: #f44336 !important;
     color: white;
   }
+
+  .blueBar {
+    width: 100%;
+    background-color: #37a9be;
+    color: white !important;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0 2rem 0;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+  }
+
+  h5.blueBar {
+    background-color: #37a9be;
+    color: white !important;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0 2rem 0;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+  }

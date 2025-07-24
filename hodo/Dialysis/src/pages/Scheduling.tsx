@@ -109,7 +109,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     }
 
     if (rows.length === 0) {
-      setError('No sessions can be generated for the selected date range and interval.');
+      // setError('No sessions can be generated for the selected date range and interval.');
+      setError('Fill all required fields.');
     }
 
     // Fetch assigned sessions for the patient
@@ -249,7 +250,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
               {scheduleRows.length > 0 && (
                 <>
-                  <h4 style={{ backgroundColor: '#37a9be', color: 'white', padding: '0.5rem 1rem', margin: '1rem 0 2rem 0', borderRadius: '4px 4px 0 0', fontWeight: '600' }}>Schedule Table</h4>
+                  <h4 className="blueBar">Schedule Table</h4>
                   {conflictInfo.message && (
                       // <div style={{ color: 'red', marginBottom: 8 }}>{conflictInfo.message}</div>
                       <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
@@ -280,7 +281,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
                   {selectedRows.length > 0 && (
                     <>
-                      <h4 style={{ backgroundColor: '#37a9be', color: 'white', padding: '0.5rem 1rem', margin: '1rem 0 2rem 0', borderRadius: '4px 4px 0 0', fontWeight: '600' }}>Selected Sessions</h4>
+                      <h4 className="blueBar">Selected Sessions</h4>
                       <Table
                         columns={[
                           { key: 'date', header: 'Date' },

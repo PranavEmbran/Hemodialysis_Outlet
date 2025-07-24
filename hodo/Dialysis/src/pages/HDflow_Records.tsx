@@ -253,7 +253,8 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         const patient = patients.find(p => p.name === r.P_ID_FK);
         return (
           (selectedSchedule ? r.SA_ID_FK_PK === selectedSchedule : true) &&
-          (selectedPatient ? (patient && patient.id === selectedPatient) : true)
+           (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
+           (selectedDate ? (schedules.find(s => s.SA_ID_PK === r.SA_ID_FK_PK)?.SA_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK_PK
@@ -265,7 +266,8 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         const schedule = schedules.find((s: any) => s.SA_ID_PK === r.SA_ID_FK_PK);
         return (
           (selectedSchedule ? r.SA_ID_FK_PK === selectedSchedule : true) &&
-          (selectedPatient ? (schedule && schedule.P_ID_FK === selectedPatient) : true)
+           (selectedPatient ? (schedule && schedule.P_ID_FK === selectedPatient) : true) &&
+           (selectedDate ? ((schedule && schedule.SA_Date === selectedDate) || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK_PK
@@ -285,7 +287,8 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         const patient = patients.find(p => p.name === r.P_ID_FK);
         return (
           (selectedSchedule ? r.SA_ID_FK === selectedSchedule : true) &&
-          (selectedPatient ? (patient && patient.id === selectedPatient) : true)
+           (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
+           (selectedDate ? (schedules.find(s => s.SA_ID_PK === r.SA_ID_FK)?.SA_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK

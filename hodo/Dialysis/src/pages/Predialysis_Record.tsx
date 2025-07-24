@@ -201,7 +201,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                   ? `${selectedScheduleObj.SA_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
                   : 'No schedule selected';
                 return (
-                  <label style={{ width: '100%', fontSize: 18, fontWeight: 600, backgroundColor: '#37a9be', color: 'white', padding: '0.5rem 1rem', margin: '1rem 0 2rem 0', borderRadius: '4px 4px 0 0'}}>
+                  <label className="blueBar">
                     {labelText}
                   </label>
                 );

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+console.log("ToastContainer is", ToastContainer); // Should NOT be undefined
 import './App.css';
 
 import TopNavBar from './components/TopNavBar';
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const toggleSidebar = () => setSidebarCollapsed(prev => !prev);
 
+  
   return (
       <UnitsProvider>
         <AccessTypesProvider>
