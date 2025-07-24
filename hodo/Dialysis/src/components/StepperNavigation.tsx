@@ -69,7 +69,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   });
 
   return (
-    <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 24 }}>
+    <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>
 
       {/* Stepper */}
       {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>

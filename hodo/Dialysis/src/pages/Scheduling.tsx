@@ -3,6 +3,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
+import Breadcrumb from '../components/Breadcrumb';
+import { toast } from 'react-toastify';
 import { Formik, Form } from 'formik';
 import { InputField, SelectField } from '../components/forms';
 import ButtonWithGradient from '../components/ButtonWithGradient';
@@ -28,7 +30,44 @@ function getMonthName(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'long' });
 }
 
+const steps = [
+  { label: 'Assign Schedule' },
+  { label: 'View Assigned Schedules' }
+];
+
 const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Fetch all assigned schedules when switching to view step
+  useEffect(() => {
+    if (currentStep === 1) {
+      fetch(`${API_URL}/data/schedules_assigned`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            // Sort by Added_on descending, then SA_ID_PK descending (if present)
+            const sorted = [...data].sort((a, b) => {
+              // Compare dates (descending)
+              const dateA = new Date(a.Added_on || a.SA_Date || 0);
+              const dateB = new Date(b.Added_on || b.SA_Date || 0);
+              if (dateA > dateB) return -1;
+              if (dateA < dateB) return 1;
+              // If dates equal, compare SA_ID_PK if present
+              if (a.SA_ID_PK && b.SA_ID_PK) {
+                return String(b.SA_ID_PK).localeCompare(String(a.SA_ID_PK));
+              }
+              return 0;
+            });
+            setAssignedSessions(sorted);
+          } else {
+            setAssignedSessions([]);
+          }
+        })
+        .catch(() => setAssignedSessions([]));
+    }
+    // Optionally clear on leaving view step
+    // else setAssignedSessions([]);
+  }, [currentStep, API_URL]);
   const [patients, setPatients] = useState<any[]>([]);
   type ScheduleRow = {
     id: number;
@@ -152,7 +191,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     );
   };
 
-  const handleSave = async (patientId: string) => {
+  const handleSave = async (patientId: string, resetForm?: () => void) => {
     if (!patientId || selectedRows.length === 0) {
       setSaveStatus('Select a patient and at least one session.');
       return;
@@ -180,11 +219,19 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       });
       if (res.ok) {
         setSaveStatus('Sessions saved successfully!');
+        toast.success('Sessions saved successfully!');
+        // Reset form and clear schedule/selection
+        if (resetForm) resetForm();
+        setScheduleRows([]);
+        setSelectedRows([]);
+        setError('');
       } else {
         setSaveStatus('Failed to save sessions.');
+        toast.error('Failed to save sessions.');
       }
     } catch (err) {
       setSaveStatus('Error saving sessions.');
+      toast.error('Error saving sessions.');
     }
   };
 
@@ -192,11 +239,19 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
-        {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          {({ values }) => (
-            <Form>
+      <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
+
+        <Breadcrumb
+          steps={steps}
+          activeStep={currentStep}
+          onStepClick={setCurrentStep}
+        />
+        {currentStep === 0 && (
+          <>
+            {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
+            <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+           {({ values, resetForm }) => (
+             <Form>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <SelectField
                   label="Patient"
@@ -293,7 +348,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                         data={selectedRows}
                       />
                       <div style={{ textAlign: 'center', marginTop: 24 }}>
-                        <ButtonWithGradient type="button" onClick={() => handleSave(values.patient)}>
+                        <ButtonWithGradient type="button" onClick={() => handleSave(values.patient, resetForm)}>
                           Save Sessions
                         </ButtonWithGradient>
                       </div>
@@ -309,6 +364,27 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             </Form>
           )}
         </Formik>
+        </>)}
+        {currentStep === 1 && (
+          <div style={{ marginTop: 32 }}>
+            <h4 className="blueBar">Schedules Assigned to Patients</h4>
+            <Table
+              columns={[
+                { key: 'P_ID_FK', header: 'Patient ID' },
+                { key: 'PatientName', header: 'Patient Name' },
+                { key: 'SA_Date', header: 'Date' },
+                { key: 'SA_Time', header: 'Time' },
+                { key: 'Added_on', header: 'Added On' },
+                // { key: 'Provider_FK', header: 'Provider' },
+                // { key: 'Outlet_FK', header: 'Outlet' }
+              ]}
+              data={assignedSessions.map(row => ({
+                ...row,
+                PatientName: (patients.find(p => p.id === row.P_ID_FK)?.Name) || '',
+              }))}
+            />
+          </div>
+        )}
       </PageContainer>
       <Footer />
     </>
