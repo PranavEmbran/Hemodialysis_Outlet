@@ -1577,7 +1577,7 @@
   "scheduling_lookup": [
     {
       "id": 1,
-      "SL_No_of_units": "5",
+      "SL_No_of_units": 5,
       "SL_Working_hrs": "16",
       "SL_Working_days": 7,
       "SL_Pre_dialysis_time": 1,

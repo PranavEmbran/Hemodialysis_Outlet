@@ -240,6 +240,10 @@ export const addUnit = async (req: Request, res: Response) => {
     const unit = req.body;
     if (!unit.Unit_ID_PK) unit.Unit_ID_PK = Date.now();
     db.data.units.push(unit);
+    // Sync scheduling_lookup[0].SL_No_of_units
+    if (db.data.scheduling_lookup && db.data.scheduling_lookup.length > 0) {
+      db.data.scheduling_lookup[0].SL_No_of_units = db.data.units.length;
+    }
     await db.write();
     res.status(201).json(unit);
   } catch (err) {
@@ -255,6 +259,10 @@ export const updateUnit = async (req: Request, res: Response) => {
     const idx = db.data.units.findIndex(u => u.Unit_ID_PK == Unit_ID_PK);
     if (idx === -1) return res.status(404).json({ error: 'Unit not found' });
     db.data.units[idx] = { ...db.data.units[idx], ...rest, Unit_ID_PK };
+    // Sync scheduling_lookup[0].SL_No_of_units
+    if (db.data.scheduling_lookup && db.data.scheduling_lookup.length > 0) {
+      db.data.scheduling_lookup[0].SL_No_of_units = db.data.units.length;
+    }
     await db.write();
     res.json(db.data.units[idx]);
   } catch (err) {
@@ -270,6 +278,10 @@ export const deleteUnit = async (req: Request, res: Response) => {
     const idx = db.data.units.findIndex(u => u.Unit_ID_PK == id);
     if (idx === -1) return res.status(404).json({ error: 'Unit not found' });
     db.data.units.splice(idx, 1);
+    // Sync scheduling_lookup[0].SL_No_of_units
+    if (db.data.scheduling_lookup && db.data.scheduling_lookup.length > 0) {
+      db.data.scheduling_lookup[0].SL_No_of_units = db.data.units.length;
+    }
     await db.write();
     res.json({ success: true });
   } catch (err) {
