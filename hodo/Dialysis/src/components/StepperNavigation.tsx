@@ -62,11 +62,14 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   const filteredPatients = patients.filter(p => allowedPatientIds.has(p.id));
 
   // Filter schedules by patient and date
-  const filteredSchedules = scheduleOptions.filter(opt => {
-    const patientMatch = !selectedPatient || opt.patientId === selectedPatient;
-    const dateMatch = !selectedDate || opt.date === selectedDate;
-    return patientMatch && dateMatch;
-  });
+  // Sort filtered schedules so the latest date is first
+  const filteredSchedules = scheduleOptions
+    .filter(opt => {
+      const patientMatch = !selectedPatient || opt.patientId === selectedPatient;
+      const dateMatch = !selectedDate || opt.date === selectedDate;
+      return patientMatch && dateMatch;
+    })
+    .sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>
