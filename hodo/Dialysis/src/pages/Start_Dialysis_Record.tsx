@@ -25,6 +25,9 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
   const [scheduleOptions, setScheduleOptions] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
 
+  const [formKey, setFormKey] = useState(0);
+
+
   useEffect(() => {
     Promise.all([
       fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
@@ -41,26 +44,26 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
     });
   }, []);
 
-  // Sync dropdown with selectedSchedule from parent
-  useEffect(() => {
-    if (!selectedSchedule) return;
-    // Wait for scheduleOptions to be loaded
-    if (scheduleOptions.length > 0) {
-      // Set Formik field value if needed
-      const form = document.querySelector('form');
-      if (form) {
-        const select = form.querySelector('select[name="SA_ID_FK_PK"]') as HTMLSelectElement;
-        if (select && select.value !== selectedSchedule) {
-          select.value = selectedSchedule;
-          // Trigger change event
-          select.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      }
-    }
-  }, [selectedSchedule, scheduleOptions]);
+  // // Sync dropdown with selectedSchedule from parent
+  // useEffect(() => {
+  //   if (!selectedSchedule) return;
+  //   // Wait for scheduleOptions to be loaded
+  //   if (scheduleOptions.length > 0) {
+  //     // Set Formik field value if needed
+  //     const form = document.querySelector('form');
+  //     if (form) {
+  //       const select = form.querySelector('select[name="SA_ID_FK_PK"]') as HTMLSelectElement;
+  //       if (select && select.value !== selectedSchedule) {
+  //         select.value = selectedSchedule;
+  //         // Trigger change event
+  //         select.dispatchEvent(new Event('change', { bubbles: true }));
+  //       }
+  //     }
+  //   }
+  // }, [selectedSchedule, scheduleOptions]);
 
   const initialValues = {
-    SA_ID_FK_PK: '',
+    // SA_ID_FK_PK: '',
     Dialysis_Unit: '',
     SDR_Start_time: '',
     SDR_Vascular_access: '',
@@ -79,15 +82,37 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
       <PageContainer> */}
       {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
       <Formik
+        key={formKey} // <-- Forces full reinitialization
+
         initialValues={initialValues}
         validationSchema={Yup.object({
-          SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+          // SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
           Dialysis_Unit: Yup.string().required('Dialysis Unit is required'),
           SDR_Start_time: Yup.string().required('Start time is required'),
           SDR_Vascular_access: Yup.string().required('Vascular Access is required'),
           Dialyzer_Type: Yup.string().required('Dialyzer Type is required'),
           SDR_Notes: Yup.string(),
         })}
+
+
+
+        // onSubmit={async (values, { resetForm }) => {
+        //   setSuccessMsg('');
+        //   setErrorMsg('');
+        //   try {
+        //     const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
+        //       method: 'POST',
+        //       headers: { 'Content-Type': 'application/json' },
+        //       body: JSON.stringify({SA_ID_FK_PK: selectedSchedule, ...values}),
+        //     });
+        //     if (!res.ok) throw new Error('Failed to save');
+        //     setSuccessMsg('Start Dialysis record saved successfully!');
+        //     resetForm();
+        //   } catch (err) {
+        //     setErrorMsg('Error saving start dialysis record.');
+        //   }
+        // }}
+
         onSubmit={async (values, { resetForm }) => {
           setSuccessMsg('');
           setErrorMsg('');
@@ -95,24 +120,64 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
             const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(values),
+              body: JSON.stringify({ SA_ID_FK_PK: selectedSchedule, ...values }),
             });
+
             if (!res.ok) throw new Error('Failed to save');
+
             setSuccessMsg('Start Dialysis record saved successfully!');
-            resetForm();
+
+            // ✅ Explicitly reset the form with initial values
+            // This ensures both Formik state and custom field values are cleared
+            setTimeout(() => {
+              setSuccessMsg('');
+              setErrorMsg('');
+            }, 3000);
+
+            resetForm({
+
+              values: {
+                Dialysis_Unit: '',
+                SDR_Start_time: '',
+                SDR_Vascular_access: '',
+                Dialyzer_Type: '',
+                SDR_Notes: '',
+              },
+            });
+
+            // ✅ Force full remount of the form
+            // Helps custom components fully refresh their UI
+            setFormKey(prev => prev + 1);
+
           } catch (err) {
             setErrorMsg('Error saving start dialysis record.');
           }
         }}
+
+
+
+
       >
-        {({ isSubmitting, resetForm }) => (
+        {({ isSubmitting, resetForm, errors, submitCount }) =>
+        (
           <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            {/* Danger message for missing required fields */}
+            {Object.keys(errors).length > 0 && submitCount > 0 && (
+              <div style={{ color: 'red', background: '#fff2f2', border: '1px solid #ffcccc', padding: 10, borderRadius: 5, marginBottom: 16, textAlign: 'center' }}>
+                Please fill in the following required fields:<br />
+                <ul style={{ color: 'red', textAlign: 'left', maxWidth: 400, margin: '8px auto' }}>
+                  {Object.entries(errors).map(([field, msg]) => (
+                    <li key={field}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {!selectedSchedule && (
               <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
                 Please select a schedule to enable this form.
               </div>
             )}
-            <div style={{ display: 'none' }}>
+            {/* <div style={{ display: 'none' }}>
               <SelectField
                 label="Schedule ID (SA_ID_FK_PK)"
                 name="SA_ID_FK_PK"
@@ -121,10 +186,10 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 placeholder="Select Schedule"
                 disabled
               />
-            </div>
+            </div> */}
             <div>
-            <label className="blueBar">
-            {(() => {
+              <label className="blueBar">
+                {(() => {
                   const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
                   return selected?.label || 'No schedule selected';
                 })()}
@@ -170,7 +235,12 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
               />
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
-              <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setSuccessMsg(''); setErrorMsg(''); }} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
+              <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => {
+                setFormKey(prev => prev + 1); // force re-mount
+                //  resetForm(); 
+                setSuccessMsg('');
+                setErrorMsg('');
+              }} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
               <ButtonWithGradient type="submit" disabled={!selectedSchedule || isSubmitting}>Save</ButtonWithGradient>
             </div>
             {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}

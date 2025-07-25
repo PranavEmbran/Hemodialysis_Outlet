@@ -185,8 +185,19 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
           setSubmitting(false);
         }}
       >
-        {({ values, isSubmitting, resetForm }) => (
+        {({ values, isSubmitting, resetForm, errors, submitCount }) => (
           <Form style={{ margin: '2rem auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
+            {/* Danger message for missing required fields */}
+            {Object.keys(errors).length > 0 && submitCount > 0 && (
+              <div style={{ color: 'red', background: '#fff2f2', border: '1px solid #ffcccc', padding: 10, borderRadius: 5, marginBottom: 16, textAlign: 'center' }}>
+                Please fill in the following required fields:<br />
+                <ul style={{color: 'red', textAlign: 'left', maxWidth: 400, margin: '8px auto'}}>
+                  {Object.entries(errors).map(([field, msg]) => (
+                    <li key={field}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {!selectedSchedule && (
               <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>
                 Please select a schedule to enable this form.
