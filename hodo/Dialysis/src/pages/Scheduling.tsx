@@ -35,8 +35,25 @@ const steps = [
   { label: 'View Assigned Schedules' }
 ];
 
+
+
 const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [unitsCount, setUnitsCount] = useState<number>(0);
+
+  const [formKey, setFormKey] = useState(0);// Used to force re-render of Formik form to fully reset all fields including custom select inputs
+
+
+  // Fetch No. of Units from scheduling_lookup on mount
+  useEffect(() => {
+    fetch(`${API_URL}/data/scheduling_lookup`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setUnitsCount(Number(data[0].SL_No_of_units) || 0);
+        }
+      });
+  }, []);
 
   // Fetch all assigned schedules when switching to view step
   useEffect(() => {
@@ -117,6 +134,14 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
     setError('');
     setConflictInfo({conflictingRows: [], message: ''});
+
+    if (!values.patient) {
+      setScheduleRows([]);
+      setSelectedRows([]);
+      setError('Please select a patient.');
+      return;
+    }
+
     if (fromDate && tillDate && new Date(fromDate) > new Date(tillDate)) {
       setScheduleRows([]);
       setSelectedRows([]);
@@ -183,7 +208,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   };
 
   const handleRowSelect = (row: any) => {
-    if (row.isConflicting) return; // Prevent selection if conflicting
+    // if (row.isConflicting) return; // Prevent selection if conflicting
+    if (row.isConflicting && row.atCapacity) return; // Prevent selection if conflicting
     setSelectedRows(prev =>
       prev.some(r => r.id === row.id)
         ? prev.filter(r => r.id !== row.id)
@@ -191,7 +217,12 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     );
   };
 
+
+  
+
   const handleSave = async (patientId: string, resetForm?: () => void) => {
+    setFormKey(prev => prev + 1); // force re-render to fully reset select
+
     if (!patientId || selectedRows.length === 0) {
       setSaveStatus('Select a patient and at least one session.');
       return;
@@ -249,7 +280,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         {currentStep === 0 && (
           <>
             {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
-            <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Formik key={formKey} initialValues={initialValues} onSubmit={handleSubmit}>
            {({ values, resetForm }) => (
              <Form>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -307,31 +338,42 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 <>
                   <h4 className="blueBar">Schedule Table</h4>
                   {conflictInfo.message && (
-                      // <div style={{ color: 'red', marginBottom: 8 }}>{conflictInfo.message}</div>
-                      <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
-                    )}
-                    <Table
+                    <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
+                  )}
+                  <Table
                     columns={[
                       { key: 'date', header: 'Date' },
                       { key: 'time', header: 'Time' },
                       { key: 'dayName', header: 'Day Name' },
                       { key: 'monthName', header: 'Month Name' },
                       { key: 'nthSession', header: 'Nth Session of Day' },
+                      { key: 'booked', header: 'Booked/Units' },
                       { key: 'select', header: 'Select' },
                     ]}
-                    data={scheduleRows.map(row => ({
-                      ...row,
-                      select: (
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.some(r => r.id === row.id)}
-                          onChange={() => handleRowSelect(row)}
-                          disabled={row.isConflicting}
-                        />
-                      ),
-                      // Highlight row if conflicting
-                      _rowStyle: row.isConflicting ? { backgroundColor: '#ffd6d6' } : {},
-                    }))}
+                    data={scheduleRows.map(row => {
+                       const bookedCount = assignedSessions.filter(a => a.SA_Date === row.date && a.SA_Time === row.time).length;
+                       const atCapacity = bookedCount >= unitsCount;
+                       console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
+                       return {
+                        ...row,
+                        booked: `${bookedCount} / ${unitsCount}`,
+                        atCapacity,
+                        select: (
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.some(r => r.id === row.id)}
+                            onChange={() => handleRowSelect(row)}
+                            // disabled={row.isConflicting || atCapacity}
+                            disabled={row.isConflicting && atCapacity}
+                          />
+                        ),
+                        _rowStyle: row.isConflicting
+                          ? { backgroundColor: '#ffd6d6' }
+                          : atCapacity
+                          ? { backgroundColor: '#ffe7ba' }
+                          : {},
+                      };
+                    })}
                   />
 
                   {selectedRows.length > 0 && (
@@ -364,9 +406,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             </Form>
           )}
         </Formik>
-        </>)}
+        </>
+        )}
         {currentStep === 1 && (
-          <div style={{ marginTop: 32 }}>
+          <>
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
             <Table
               columns={[
@@ -383,12 +426,11 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 PatientName: (patients.find(p => p.id === row.P_ID_FK)?.Name) || '',
               }))}
             />
-          </div>
+          </>
         )}
       </PageContainer>
-      <Footer />
     </>
   );
-};
+}
 
 export default Scheduling;
