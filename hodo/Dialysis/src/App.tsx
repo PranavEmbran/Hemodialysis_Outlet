@@ -21,7 +21,7 @@ import Predialysis_Record from './pages/Predialysis_Record';
 import Start_Dialysis_Record from './pages/Start_Dialysis_Record';
 import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
 import Records from './pages/HDflow_Records';
-import Dialysis_Workflow_Entry from './pages/HDflow_Entry';
+import HDflow_Entry from './pages/HDflow_Entry';
 import InProcess_records from "./pages/InProcess_records";
 
 
@@ -64,7 +64,7 @@ const App: React.FC = () => {
                      
                       {/* <Route path="/post-dialysis-record" element={<Post_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
                       <Route path="/post-dialysis-record" element={<Post_Dialysis_Record />} />
-                      <Route path="/hdflow-entry" element={<Dialysis_Workflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/hdflow-entry" element={<HDflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/hdflow-records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                     </Routes>
                   </div>
