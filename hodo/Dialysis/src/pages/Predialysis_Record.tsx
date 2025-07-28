@@ -10,7 +10,7 @@ import { API_URL } from '../config';
 import * as Yup from 'yup';
 
 // const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
+const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[]; onSaveSuccess?: () => void }> = ({ selectedSchedule, records = [], onSaveSuccess }) => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [form, setForm] = useState({
@@ -58,6 +58,9 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
       setForm(prev => ({ ...prev, SA_ID_FK_PK: '', P_ID_FK: '' }));
     }
   }, [selectedSchedule, appointments, patients]);
+
+  // Disable logic: check if selectedSchedule exists in records
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule));
 
   // Get only active appointments
   const availableSchedules = appointments.filter(a => a.isDeleted === 10);
@@ -120,6 +123,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
         PreDR_Notes: '',
       });
       setErrors({});
+      if (onSaveSuccess) onSaveSuccess();
     } catch (err) {
       setErrorMsg('Error saving predialysis record.');
     }
@@ -142,6 +146,11 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
 
   return (
     <>
+      {isDisabled && (
+        <div style={{ color: 'red', marginBottom: 16 }}>
+          Predialysis form is disabled because a record already exists for the selected schedule.
+        </div>
+      )}
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} /> */}
       {/* <PageContainer> */}
       {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
@@ -225,7 +234,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 name="PreDR_Vitals_BP"
                 required
                 placeholder="Enter blood pressure (e.g. 120/80)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -239,7 +248,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 name="PreDR_Vitals_HeartRate"
                 required
                 placeholder="Enter heart rate (bpm)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -253,7 +262,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 name="PreDR_Vitals_Temperature"
                 required
                 placeholder="Enter temperature (e.g. 100.333)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 inputMode="decimal"
                 pattern="\d{1,3}(\.\d{1,3})?"
                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
@@ -290,7 +299,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 name="PreDR_Vitals_Weight"
                 required
                 placeholder="Enter weight (kg)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -306,7 +315,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedS
                 name="PreDR_Notes"
                 rows={3}
                 placeholder="Enter any notes (optional)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>

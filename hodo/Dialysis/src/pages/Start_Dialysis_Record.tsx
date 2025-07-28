@@ -16,7 +16,7 @@ import { useDialyzerTypes } from './DialyzerTypeLookup';
 import { API_URL } from '../config';
 
 // const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
+const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[]; onSaveSuccess?: () => void }> = ({ selectedSchedule, records = [], onSaveSuccess }) => {
   const { units } = useUnits();
   const { accesses } = useAccessTypes();
   const { dialyzerTypes } = useDialyzerTypes();
@@ -76,17 +76,20 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
   const accessOptions = accesses.map(a => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type }));
   const dialyzerOptions = dialyzerTypes.map(d => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name }));
 
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
+
   return (
     <>
-      {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
-      <PageContainer> */}
-      {/* <SectionHeading title="Start Dialysis Record" subtitle="Start Dialysis Record" /> */}
+      {isDisabled && (
+        <div style={{ color: 'red', marginBottom: 16 }}>
+          Start Dialysis form is disabled because a record already exists for the selected schedule.
+        </div>
+      )}
       <Formik
         key={formKey} // <-- Forces full reinitialization
 
         initialValues={initialValues}
         validationSchema={Yup.object({
-          // SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
           Dialysis_Unit: Yup.string().required('Dialysis Unit is required'),
           SDR_Start_time: Yup.string().required('Start time is required'),
           SDR_Vascular_access: Yup.string().required('Vascular Access is required'),
@@ -94,26 +97,11 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
           SDR_Notes: Yup.string(),
         })}
 
-
-
-        // onSubmit={async (values, { resetForm }) => {
-        //   setSuccessMsg('');
-        //   setErrorMsg('');
-        //   try {
-        //     const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
-        //       method: 'POST',
-        //       headers: { 'Content-Type': 'application/json' },
-        //       body: JSON.stringify({SA_ID_FK_PK: selectedSchedule, ...values}),
-        //     });
-        //     if (!res.ok) throw new Error('Failed to save');
-        //     setSuccessMsg('Start Dialysis record saved successfully!');
-        //     resetForm();
-        //   } catch (err) {
-        //     setErrorMsg('Error saving start dialysis record.');
-        //   }
-        // }}
-
-        onSubmit={async (values, { resetForm }) => {
+        onSubmit={async (values, { setSubmitting, resetForm, setErrors }) => {
+          if (isDisabled) {
+            setSubmitting(false);
+            return;
+          }
           setSuccessMsg('');
           setErrorMsg('');
           try {
@@ -202,13 +190,13 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 options={unitOptions}
                 required
                 placeholder="Select Dialysis Unit"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
               <TimeField
                 label="Start Time (SDR_Start time)"
                 name="SDR_Start_time"
                 required
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
               <SelectField
                 label="Vascular Access (SDR_Vascular_access)"
@@ -216,7 +204,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 options={accessOptions}
                 required
                 placeholder="Select Vascular Access"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
               <SelectField
                 label="Dialyzer Type"
@@ -224,14 +212,14 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 options={dialyzerOptions}
                 required
                 placeholder="Select Dialyzer Type"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
               <TextareaField
                 label="Notes (SDR_Notes)"
                 name="SDR_Notes"
                 rows={3}
                 placeholder="Enter any notes (optional)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
@@ -240,7 +228,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ select
                 //  resetForm(); 
                 setSuccessMsg('');
                 setErrorMsg('');
-              }} disabled={!selectedSchedule}>Reset</ButtonWithGradient>
+              }} disabled={isDisabled || !selectedSchedule}>Reset</ButtonWithGradient>
               <ButtonWithGradient type="submit" disabled={!selectedSchedule || isSubmitting}>Save</ButtonWithGradient>
             </div>
             {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}

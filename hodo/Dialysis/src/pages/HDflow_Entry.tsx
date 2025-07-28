@@ -29,13 +29,19 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [patients, setPatients] = useState<{ id: string; name: string }[]>([]);
+  const [predialysisRecords, setPredialysisRecords] = useState<any[]>([]);
+  const [startDialysisRecords, setStartDialysisRecords] = useState<any[]>([]);
+  const [postDialysisRecords, setPostDialysisRecords] = useState<any[]>([]);
 
-  useEffect(() => {
-    // Fetch schedules and patients to build dropdown options
+  // Fetch schedules, patients, and all records
+  const refetchRecords = () => {
     Promise.all([
       fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
-      fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
-    ]).then(([schedules, patientsData]) => {
+      fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+      fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
+      fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
+      fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
+    ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
       setPatients(patientsData.map((p: any) => ({ id: p.id, name: (p['Name'] || p.name) })));
       const options = schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
         const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
@@ -48,12 +54,19 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
         };
       });
       setScheduleOptions(options);
+      setPredialysisRecords(predialysis);
+      setStartDialysisRecords(startDialysis);
+      setPostDialysisRecords(postDialysis);
     });
+  };
+
+  useEffect(() => {
+    refetchRecords();
   }, []);
 
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSchedule(e.target.value);
-  };
+  }; // Optionally, could refetchRecords here if needed
 
   const handleStepChange = (step: number) => {
     setCurrentStep(step);
@@ -74,15 +87,18 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   if (
     StepComponent === Predialysis_Record ||
     StepComponent === Start_Dialysis_Record ||
-    // StepComponent === HaemodialysisRecordDetailsPage ||
     StepComponent === Post_Dialysis_Record
-  ) 
-  // {
+  ) {
     stepProps.selectedSchedule = selectedSchedule;
-  //   if (StepComponent === HaemodialysisRecordDetailsPage) {
-  //     stepProps.setSelectedSchedule = setSelectedSchedule;
-  //   }
-  // }
+    stepProps.onSaveSuccess = refetchRecords;
+    if (StepComponent === Predialysis_Record) {
+      stepProps.records = predialysisRecords;
+    } else if (StepComponent === Start_Dialysis_Record) {
+      stepProps.records = startDialysisRecords;
+    } else if (StepComponent === Post_Dialysis_Record) {
+      stepProps.records = postDialysisRecords;
+    }
+  }
   console.log('Current step:', currentStep, 'StepComponent:', StepComponent.name, 'selectedSchedule:', selectedSchedule);
   return (
     <>

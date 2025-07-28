@@ -10,7 +10,7 @@ import { API_URL } from '../config';
 import * as Yup from 'yup';
 
 // const Post_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
-const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selectedSchedule }) => {
+const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[]; onSaveSuccess?: () => void }> = ({ selectedSchedule, records = [], onSaveSuccess }) => {
   // const { appointments, patients } = useDialysis();
 
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -39,7 +39,8 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
     });
   }, []);
 
-  // Sync dropdown with selectedSchedule from parent
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
+
   useEffect(() => {
     if (selectedSchedule && appointments.length > 0) {
       setForm(prev => {
@@ -60,7 +61,6 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
     }
   }, [selectedSchedule, appointments, patients]);
 
-  // When schedule is selected, auto-fill patient
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
     setForm(prev => ({ ...prev, SA_ID_FK: scheduleId }));
@@ -113,6 +113,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
         PostDR_Notes: '',
       });
       setErrors({});
+      if (onSaveSuccess) onSaveSuccess();
     } catch (err) {
       setErrorMsg('Error saving postdialysis record.');
     }
@@ -135,6 +136,11 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
 
   return (
     <>
+      {isDisabled && (
+        <div style={{ color: 'red', marginBottom: 16 }}>
+          Post Dialysis form is disabled because a record already exists for the selected schedule.
+        </div>
+      )}
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer> */}
       {/* <SectionHeading title="Postdialysis Record" subtitle="Postdialysis Record" /> */}
@@ -150,6 +156,10 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
           PostDR_Notes: Yup.string(),
         })}
         onSubmit={async (values, { setSubmitting, resetForm, setErrors }) => {
+          if (isDisabled) {
+            setSubmitting(false);
+            return;
+          }
           setSuccessMsg('');
           setErrorMsg('');
           try {
@@ -161,6 +171,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
             if (!res.ok) throw new Error('Failed to save');
             setSuccessMsg('Postdialysis record saved successfully!');
             resetForm();
+            if (onSaveSuccess) onSaveSuccess();
           } catch (err) {
             setErrorMsg('Error saving postdialysis record.');
           }
@@ -206,7 +217,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 name="PreDR_Vitals_BP"
                 required
                 placeholder="Enter blood pressure (e.g. 120/80)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -220,7 +231,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 name="PreDR_Vitals_HeartRate"
                 required
                 placeholder="Enter heart rate (bpm)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -234,7 +245,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 name="PreDR_Vitals_Temperature"
                 required
                 placeholder="Enter temperature (e.g. 100.333)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 inputMode="decimal"
                 pattern="\d{1,3}(\.\d{1,3})?"
                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
@@ -269,7 +280,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 name="PreDR_Vitals_Weight"
                 required
                 placeholder="Enter weight (kg)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
                 maxLength={3}
                 inputMode="numeric"
                 pattern="\d{1,3}"
@@ -284,7 +295,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string }> = ({ selecte
                 name="PostDR_Notes"
                 rows={3}
                 placeholder="Enter any notes (optional)"
-                disabled={!selectedSchedule}
+                disabled={isDisabled || !selectedSchedule}
               />
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'left', marginTop: 16 }}>
