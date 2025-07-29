@@ -1,0 +1,11 @@
+npm install swagger-jsdoc swagger-ui-express
+
+npm install --save-dev @types/swagger-ui-express
+
+npm install --save-dev @types/swagger-jsdoc
+
+
+npm install mssql
+
+
+npm install --save-dev @types/mssql

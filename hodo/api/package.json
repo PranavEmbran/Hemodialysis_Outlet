@@ -12,12 +12,18 @@
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "lowdb": "^6.1.1",
-    "nanoid": "^4.0.2"
+    "mssql": "^11.0.1",
+    "nanoid": "^4.0.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/mssql": "^9.1.7",
     "@types/node": "^24.0.14",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
