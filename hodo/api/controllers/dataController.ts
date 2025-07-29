@@ -1,7 +1,11 @@
 import type { Request, Response } from 'express';
 import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening } from '../services/dataFactory.js';
-import { addPredialysisRecord, addStartDialysisRecord, addInProcessRecord, addPostDialysisRecord } from '../services/lowdbService.js';
+import * as lowdbService from '../services/lowdbService.js';
+import * as mssqlService from '../services/mssqlService.js';
 import db from '../db/lowdb.js';
+import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
+
+const useMSSQL = process.env.USE_MSSQL === 'true';
 
 export const getAll = async (req: Request, res: Response) => {
   try {
@@ -119,6 +123,21 @@ export const saveStartDialysisRecord = async (req: Request, res: Response) => {
   }
 };
 
+export const getInProcessRecords = async (req: Request, res: Response) => {
+  try {
+    let records;
+    if (useMSSQL) {
+      records = await mssqlService.getInProcessRecords();
+    } else {
+      await db.read();
+      records = db.data?.InProcess_records || [];
+    }
+    res.json(records);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch in-process records' });
+  }
+};
+
 export const saveInProcessRecord = async (req: Request, res: Response) => {
   try {
     await db.read();
@@ -155,8 +174,14 @@ export const savePostDialysisRecord = async (req: Request, res: Response) => {
 
 export const getPredialysisRecords = async (req: Request, res: Response) => {
   try {
-    await db.read();
-    res.json(db.data?.predialysis_records || []);
+    let records;
+    if (useMSSQL) {
+      records = await mssqlService.getPredialysisRecords();
+    } else {
+      await db.read();
+      records = db.data?.predialysis_records || [];
+    }
+    res.json(records);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch predialysis records' });
   }
@@ -164,8 +189,14 @@ export const getPredialysisRecords = async (req: Request, res: Response) => {
 
 export const getStartDialysisRecords = async (req: Request, res: Response) => {
   try {
-    await db.read();
-    res.json(db.data?.start_dialysis_records || []);
+    let records;
+    if (useMSSQL) {
+      records = await mssqlService.getStartDialysisRecords();
+    } else {
+      await db.read();
+      records = db.data?.start_dialysis_records || [];
+    }
+    res.json(records);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch start dialysis records' });
   }
@@ -173,8 +204,14 @@ export const getStartDialysisRecords = async (req: Request, res: Response) => {
 
 export const getPostDialysisRecords = async (req: Request, res: Response) => {
   try {
-    await db.read();
-    res.json(db.data?.post_dialysis_records || []);
+    let records;
+    if (useMSSQL) {
+      records = await mssqlService.getPostDialysisRecords();
+    } else {
+      await db.read();
+      records = db.data?.post_dialysis_records || [];
+    }
+    res.json(records);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch post dialysis records' });
   }
