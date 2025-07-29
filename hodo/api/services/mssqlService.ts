@@ -246,20 +246,286 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
 export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpening> => {
   try {
     const pool = await sql.connect(config);
-    await pool.request()
-      .input('hcoId', sql.VarChar, caseOpening.HCO_ID_PK)
-      .input('pId', sql.VarChar, caseOpening.P_ID_FK)
-      .input('bloodGroup', sql.VarChar, caseOpening.HCO_Blood_Group)
-      .input('caseNature', sql.VarChar, caseOpening.HCO_Case_nature)
+    const result = await pool.request()
+      .input('P_ID_FK', sql.VarChar, caseOpening.P_ID_FK)
+      .input('HCO_Blood_Group', sql.VarChar, caseOpening.HCO_Blood_Group)
+      .input('HCO_Case_nature', sql.VarChar, caseOpening.HCO_Case_nature)
       .query(`
-        INSERT INTO HD_Case_Opening 
-        (HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature)
-        VALUES (@hcoId, @pId, @bloodGroup, @caseNature);
+        INSERT INTO HD_Case_Opening (P_ID_FK, HCO_Blood_Group, HCO_Case_nature)
+        OUTPUT INSERTED.HCO_ID_PK, INSERTED.P_ID_FK, INSERTED.HCO_Blood_Group, INSERTED.HCO_Case_nature
+        VALUES (@P_ID_FK, @HCO_Blood_Group, @HCO_Case_nature)
       `);
-    
-    return caseOpening;
-  } catch (err) {
-    console.error('MSSQL addCaseOpening error:', err);
-    throw new Error('Failed to add case opening to MSSQL');
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding case opening:', error);
+    throw error;
+  }
+};
+
+// --- Units Lookup Functions ---
+export const getUnits = async (): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM Units_Master');
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching units:', error);
+    throw error;
+  }
+};
+
+export const addUnit = async (unit: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('Unit_Name', sql.VarChar, unit.Unit_Name)
+      .input('Unit_Description', sql.VarChar, unit.Unit_Description || '')
+      .query(`
+        INSERT INTO Units_Master (Unit_Name, Unit_Description)
+        OUTPUT INSERTED.*
+        VALUES (@Unit_Name, @Unit_Description)
+      `);
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding unit:', error);
+    throw error;
+  }
+};
+
+export const updateUnit = async (unitData: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const { Unit_ID_PK, ...rest } = unitData;
+    const result = await pool.request()
+      .input('Unit_ID_PK', sql.Int, Unit_ID_PK)
+      .input('Unit_Name', sql.VarChar, rest.Unit_Name)
+      .input('Unit_Description', sql.VarChar, rest.Unit_Description || '')
+      .query(`
+        UPDATE Units_Master 
+        SET Unit_Name = @Unit_Name, Unit_Description = @Unit_Description
+        OUTPUT INSERTED.*
+        WHERE Unit_ID_PK = @Unit_ID_PK
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Unit not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating unit:', error);
+    throw error;
+  }
+};
+
+export const deleteUnit = async (id: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('Unit_ID_PK', sql.Int, id)
+      .query('DELETE FROM Units_Master WHERE Unit_ID_PK = @Unit_ID_PK');
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error('Error deleting unit:', error);
+    throw error;
+  }
+};
+
+// --- Vascular Access Lookup Functions ---
+export const getVascularAccesses = async (): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM Vascular_Access_Lookup');
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching vascular accesses:', error);
+    throw error;
+  }
+};
+
+export const addVascularAccess = async (access: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('VAL_Name', sql.VarChar, access.VAL_Name)
+      .input('VAL_Description', sql.VarChar, access.VAL_Description || '')
+      .query(`
+        INSERT INTO Vascular_Access_Lookup (VAL_Name, VAL_Description)
+        OUTPUT INSERTED.*
+        VALUES (@VAL_Name, @VAL_Description)
+      `);
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding vascular access:', error);
+    throw error;
+  }
+};
+
+export const updateVascularAccess = async (accessData: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const { VAL_ID_PK, ...rest } = accessData;
+    const result = await pool.request()
+      .input('VAL_ID_PK', sql.Int, VAL_ID_PK)
+      .input('VAL_Name', sql.VarChar, rest.VAL_Name)
+      .input('VAL_Description', sql.VarChar, rest.VAL_Description || '')
+      .query(`
+        UPDATE Vascular_Access_Lookup 
+        SET VAL_Name = @VAL_Name, VAL_Description = @VAL_Description
+        OUTPUT INSERTED.*
+        WHERE VAL_ID_PK = @VAL_ID_PK
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Vascular access not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating vascular access:', error);
+    throw error;
+  }
+};
+
+export const deleteVascularAccess = async (id: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('VAL_ID_PK', sql.Int, id)
+      .query('DELETE FROM Vascular_Access_Lookup WHERE VAL_ID_PK = @VAL_ID_PK');
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error('Error deleting vascular access:', error);
+    throw error;
+  }
+};
+
+// --- Dialyzer Types Lookup Functions ---
+export const getDialyzerTypes = async (): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM Dialyzer_Type_Lookup');
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching dialyzer types:', error);
+    throw error;
+  }
+};
+
+export const addDialyzerType = async (type: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('DTL_Name', sql.VarChar, type.DTL_Name)
+      .input('DTL_Description', sql.VarChar, type.DTL_Description || '')
+      .query(`
+        INSERT INTO Dialyzer_Type_Lookup (DTL_Name, DTL_Description)
+        OUTPUT INSERTED.*
+        VALUES (@DTL_Name, @DTL_Description)
+      `);
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding dialyzer type:', error);
+    throw error;
+  }
+};
+
+export const updateDialyzerType = async (typeData: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const { DTL_ID_PK, ...rest } = typeData;
+    const result = await pool.request()
+      .input('DTL_ID_PK', sql.Int, DTL_ID_PK)
+      .input('DTL_Name', sql.VarChar, rest.DTL_Name)
+      .input('DTL_Description', sql.VarChar, rest.DTL_Description || '')
+      .query(`
+        UPDATE Dialyzer_Type_Lookup 
+        SET DTL_Name = @DTL_Name, DTL_Description = @DTL_Description
+        OUTPUT INSERTED.*
+        WHERE DTL_ID_PK = @DTL_ID_PK
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Dialyzer type not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating dialyzer type:', error);
+    throw error;
+  }
+};
+
+export const deleteDialyzerType = async (id: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('DTL_ID_PK', sql.Int, id)
+      .query('DELETE FROM Dialyzer_Type_Lookup WHERE DTL_ID_PK = @DTL_ID_PK');
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error('Error deleting dialyzer type:', error);
+    throw error;
+  }
+};
+
+// --- Scheduling Lookup Functions ---
+export const getSchedulingLookup = async (): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM Scheduling_Lookup');
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching scheduling lookup:', error);
+    throw error;
+  }
+};
+
+export const addSchedulingLookup = async (lookup: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('SL_Name', sql.VarChar, lookup.SL_Name)
+      .input('SL_No_of_units', sql.Int, lookup.SL_No_of_units)
+      .query(`
+        INSERT INTO Scheduling_Lookup (SL_Name, SL_No_of_units)
+        OUTPUT INSERTED.*
+        VALUES (@SL_Name, @SL_No_of_units)
+      `);
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding scheduling lookup:', error);
+    throw error;
+  }
+};
+
+export const updateSchedulingLookup = async (lookupData: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const { id, ...rest } = lookupData;
+    const result = await pool.request()
+      .input('id', sql.Int, id)
+      .input('SL_Name', sql.VarChar, rest.SL_Name)
+      .input('SL_No_of_units', sql.Int, rest.SL_No_of_units)
+      .query(`
+        UPDATE Scheduling_Lookup 
+        SET SL_Name = @SL_Name, SL_No_of_units = @SL_No_of_units
+        OUTPUT INSERTED.*
+        WHERE id = @id
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Scheduling lookup not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating scheduling lookup:', error);
+    throw error;
+  }
+};
+
+export const deleteSchedulingLookup = async (id: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM Scheduling_Lookup WHERE id = @id');
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error('Error deleting scheduling lookup:', error);
+    throw error;
   }
 };
