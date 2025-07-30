@@ -1,5 +1,19 @@
 /* Form Controls - Shared Styles for Reusable Form Components */
 
+/* Style for horizontal radio group */
+.horizontal-radio-group .radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem; /* adjust spacing between options */
+}
+
+.horizontal-radio-group .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+
 .required-indicator {
   color: red;
   margin-left: 2px;

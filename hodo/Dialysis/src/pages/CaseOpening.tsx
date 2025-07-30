@@ -74,8 +74,8 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
     DCO_Case_Nature: Yup.string().required('Case Nature is required.'),
   });
 
-const [formKey, setFormKey] = useState(0);
-const regenerateForm = () => setFormKey(prev => prev + 1);
+  const [formKey, setFormKey] = useState(0);
+  const regenerateForm = () => setFormKey(prev => prev + 1);
 
 
   // Initial values
@@ -147,12 +147,13 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
                   required
                   placeholder="Select Blood Group"
                 />
-                <RadioGroupField
-                  label="Case Nature"
-                  name="DCO_Case_Nature"
-                  options={caseNatureOptions}
-                  required
-                />
+                  <RadioGroupField
+                    label="Case Nature"
+                    name="DCO_Case_Nature"
+                    options={caseNatureOptions}
+                    required
+                    className="horizontal-radio-group"
+                  />
               </div>
               {/* <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}> */}
               <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
@@ -186,28 +187,28 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value)}
           />
           <Table
-              columns={[
-                { key: 'DCO_P_ID_FK', header: 'Patient ID' },
-                { key: 'PatientName', header: 'Patient Name' },
-                { key: 'DCO_Blood_Group', header: 'Blood Group' },
-                { key: 'DCO_Case_Nature', header: 'Case Nature' },
-              ]}
-              data={caseOpenings
-                .map(row => ({
-                  ...row,
-                  PatientName: (patientOptions.find(p => p.value === String(row.DCO_P_ID_FK))?.label?.split(' - ')[1]) || row.DCO_P_ID_FK
-                }))
-                .filter(row => {
-                  const q = searchText.toLowerCase();
-                  return (
-                    String(row.DCO_P_ID_FK)?.toLowerCase().includes(q) ||
-                    row.PatientName?.toLowerCase().includes(q) ||
-                    row.DCO_Blood_Group?.toLowerCase().includes(q) ||
-                    row.DCO_Case_Nature?.toLowerCase().includes(q)
-                  );
-                })
-              }
-            />
+            columns={[
+              { key: 'DCO_P_ID_FK', header: 'Patient ID' },
+              { key: 'PatientName', header: 'Patient Name' },
+              { key: 'DCO_Blood_Group', header: 'Blood Group' },
+              { key: 'DCO_Case_Nature', header: 'Case Nature' },
+            ]}
+            data={caseOpenings
+              .map(row => ({
+                ...row,
+                PatientName: (patientOptions.find(p => p.value === String(row.DCO_P_ID_FK))?.label?.split(' - ')[1]) || row.DCO_P_ID_FK
+              }))
+              .filter(row => {
+                const q = searchText.toLowerCase();
+                return (
+                  String(row.DCO_P_ID_FK)?.toLowerCase().includes(q) ||
+                  row.PatientName?.toLowerCase().includes(q) ||
+                  row.DCO_Blood_Group?.toLowerCase().includes(q) ||
+                  row.DCO_Case_Nature?.toLowerCase().includes(q)
+                );
+              })
+            }
+          />
         </div>
       </PageContainer>
       <Footer />

@@ -120,7 +120,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       fetch(`${API_URL}/data/case_openings`).then(res => res.json())
     ]).then(([patientsData, caseOpenings]) => {
       if (Array.isArray(patientsData) && Array.isArray(caseOpenings)) {
-        const allowedIds = new Set(caseOpenings.map((c: any) => c.P_ID_FK));
+        const allowedIds = new Set(caseOpenings.map((c: any) => c.DCO_P_ID_FK));
         setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
       }
     });
