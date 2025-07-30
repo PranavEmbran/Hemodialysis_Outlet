@@ -1,6 +1,8 @@
-import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening } from '../services/dataFactory.js';
-import { addPredialysisRecord, addStartDialysisRecord, addPostDialysisRecord } from '../services/lowdbService.js';
+import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening, getUnits as getUnitsService, addUnit as addUnitService, updateUnit as updateUnitService, deleteUnit as deleteUnitService, getVascularAccesses as getVascularAccessesService, addVascularAccess as addVascularAccessService, updateVascularAccess as updateVascularAccessService, deleteVascularAccess as deleteVascularAccessService, getDialyzerTypes as getDialyzerTypesService, addDialyzerType as addDialyzerTypeService, updateDialyzerType as updateDialyzerTypeService, deleteDialyzerType as deleteDialyzerTypeService, getSchedulingLookup as getSchedulingLookupService, addSchedulingLookup as addSchedulingLookupService, updateSchedulingLookup as updateSchedulingLookupService, deleteSchedulingLookup as deleteSchedulingLookupService } from '../services/dataFactory.js';
+import * as mssqlService from '../services/mssqlService.js';
 import db from '../db/lowdb.js';
+import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
+const useMSSQL = process.env.USE_MSSQL === 'true';
 export const getAll = async (req, res) => {
     try {
         const items = await getData();
@@ -118,6 +120,22 @@ export const saveStartDialysisRecord = async (req, res) => {
         res.status(500).json({ error: 'Failed to save start dialysis record' });
     }
 };
+export const getInProcessRecords = async (req, res) => {
+    try {
+        let records;
+        if (useMSSQL) {
+            records = await mssqlService.getInProcessRecords();
+        }
+        else {
+            await db.read();
+            records = db.data?.InProcess_records || [];
+        }
+        res.json(records);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch in-process records' });
+    }
+};
 export const saveInProcessRecord = async (req, res) => {
     try {
         await db.read();
@@ -155,8 +173,15 @@ export const savePostDialysisRecord = async (req, res) => {
 };
 export const getPredialysisRecords = async (req, res) => {
     try {
-        await db.read();
-        res.json(db.data?.predialysis_records || []);
+        let records;
+        if (useMSSQL) {
+            records = await mssqlService.getPredialysisRecords();
+        }
+        else {
+            await db.read();
+            records = db.data?.predialysis_records || [];
+        }
+        res.json(records);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch predialysis records' });
@@ -164,8 +189,15 @@ export const getPredialysisRecords = async (req, res) => {
 };
 export const getStartDialysisRecords = async (req, res) => {
     try {
-        await db.read();
-        res.json(db.data?.start_dialysis_records || []);
+        let records;
+        if (useMSSQL) {
+            records = await mssqlService.getStartDialysisRecords();
+        }
+        else {
+            await db.read();
+            records = db.data?.start_dialysis_records || [];
+        }
+        res.json(records);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch start dialysis records' });
@@ -173,8 +205,15 @@ export const getStartDialysisRecords = async (req, res) => {
 };
 export const getPostDialysisRecords = async (req, res) => {
     try {
-        await db.read();
-        res.json(db.data?.post_dialysis_records || []);
+        let records;
+        if (useMSSQL) {
+            records = await mssqlService.getPostDialysisRecords();
+        }
+        else {
+            await db.read();
+            records = db.data?.post_dialysis_records || [];
+        }
+        res.json(records);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch post dialysis records' });
@@ -228,10 +267,8 @@ export const updatePostDialysisRecord = async (req, res) => {
 // --- Units CRUD ---
 export const getUnits = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.units)
-            db.data.units = [];
-        res.json(db.data.units);
+        const units = await getUnitsService();
+        res.json(units);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch units' });
@@ -239,15 +276,8 @@ export const getUnits = async (req, res) => {
 };
 export const addUnit = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.units)
-            db.data.units = [];
-        const unit = req.body;
-        if (!unit.Unit_ID_PK)
-            unit.Unit_ID_PK = Date.now();
-        db.data.units.push(unit);
-        await db.write();
-        res.status(201).json(unit);
+        const unit = await addUnitService(req.body);
+        res.json(unit);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to add unit' });
@@ -255,33 +285,25 @@ export const addUnit = async (req, res) => {
 };
 export const updateUnit = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.units)
-            db.data.units = [];
-        const { Unit_ID_PK, ...rest } = req.body;
-        const idx = db.data.units.findIndex(u => u.Unit_ID_PK == Unit_ID_PK);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Unit not found' });
-        db.data.units[idx] = { ...db.data.units[idx], ...rest, Unit_ID_PK };
-        await db.write();
-        res.json(db.data.units[idx]);
+        const unit = await updateUnitService(req.body);
+        res.json(unit);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update unit' });
+        if (err instanceof Error && err.message === 'Unit not found') {
+            res.status(404).json({ error: 'Unit not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update unit' });
+        }
     }
 };
 export const deleteUnit = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.units)
-            db.data.units = [];
-        const id = req.params.id;
-        const idx = db.data.units.findIndex(u => u.Unit_ID_PK == id);
-        if (idx === -1)
+        const deleted = await deleteUnitService(req.params.id);
+        if (!deleted) {
             return res.status(404).json({ error: 'Unit not found' });
-        db.data.units.splice(idx, 1);
-        await db.write();
-        res.json({ success: true });
+        }
+        res.json({ message: 'Unit deleted successfully' });
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to delete unit' });
@@ -290,72 +312,53 @@ export const deleteUnit = async (req, res) => {
 // --- Vascular Access CRUD ---
 export const getVascularAccesses = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.vascular_access)
-            db.data.vascular_access = [];
-        res.json(db.data.vascular_access);
+        const accesses = await getVascularAccessesService();
+        res.json(accesses);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to fetch vascular access types' });
+        res.status(500).json({ error: 'Failed to fetch vascular accesses' });
     }
 };
 export const addVascularAccess = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.vascular_access)
-            db.data.vascular_access = [];
-        const access = req.body;
-        if (!access.VAL_Access_ID_PK)
-            access.VAL_Access_ID_PK = Date.now();
-        db.data.vascular_access.push(access);
-        await db.write();
-        res.status(201).json(access);
+        const access = await addVascularAccessService(req.body);
+        res.json(access);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to add vascular access type' });
+        res.status(500).json({ error: 'Failed to add vascular access' });
     }
 };
 export const updateVascularAccess = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.vascular_access)
-            db.data.vascular_access = [];
-        const { VAL_Access_ID_PK, ...rest } = req.body;
-        const idx = db.data.vascular_access.findIndex(a => a.VAL_Access_ID_PK == VAL_Access_ID_PK);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Vascular access type not found' });
-        db.data.vascular_access[idx] = { ...db.data.vascular_access[idx], ...rest, VAL_Access_ID_PK };
-        await db.write();
-        res.json(db.data.vascular_access[idx]);
+        const access = await updateVascularAccessService(req.body);
+        res.json(access);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update vascular access type' });
+        if (err instanceof Error && err.message === 'Vascular access not found') {
+            res.status(404).json({ error: 'Vascular access not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update vascular access' });
+        }
     }
 };
 export const deleteVascularAccess = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.vascular_access)
-            db.data.vascular_access = [];
-        const id = req.params.id;
-        const idx = db.data.vascular_access.findIndex(a => a.VAL_Access_ID_PK == id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Vascular access type not found' });
-        db.data.vascular_access.splice(idx, 1);
-        await db.write();
-        res.json({ success: true });
+        const deleted = await deleteVascularAccessService(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ error: 'Vascular access not found' });
+        }
+        res.json({ message: 'Vascular access deleted successfully' });
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to delete vascular access type' });
+        res.status(500).json({ error: 'Failed to delete vascular access' });
     }
 };
 // --- Dialyzer Types CRUD ---
 export const getDialyzerTypes = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.dialyzer_types)
-            db.data.dialyzer_types = [];
-        res.json(db.data.dialyzer_types);
+        const types = await getDialyzerTypesService();
+        res.json(types);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch dialyzer types' });
@@ -363,15 +366,8 @@ export const getDialyzerTypes = async (req, res) => {
 };
 export const addDialyzerType = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.dialyzer_types)
-            db.data.dialyzer_types = [];
-        const dialyzer = req.body;
-        if (!dialyzer.DTL_ID_PK)
-            dialyzer.DTL_ID_PK = Date.now();
-        db.data.dialyzer_types.push(dialyzer);
-        await db.write();
-        res.status(201).json(dialyzer);
+        const type = await addDialyzerTypeService(req.body);
+        res.json(type);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to add dialyzer type' });
@@ -379,33 +375,25 @@ export const addDialyzerType = async (req, res) => {
 };
 export const updateDialyzerType = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.dialyzer_types)
-            db.data.dialyzer_types = [];
-        const { DTL_ID_PK, ...rest } = req.body;
-        const idx = db.data.dialyzer_types.findIndex(d => d.DTL_ID_PK == DTL_ID_PK);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Dialyzer type not found' });
-        db.data.dialyzer_types[idx] = { ...db.data.dialyzer_types[idx], ...rest, DTL_ID_PK };
-        await db.write();
-        res.json(db.data.dialyzer_types[idx]);
+        const type = await updateDialyzerTypeService(req.body);
+        res.json(type);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update dialyzer type' });
+        if (err instanceof Error && err.message === 'Dialyzer type not found') {
+            res.status(404).json({ error: 'Dialyzer type not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update dialyzer type' });
+        }
     }
 };
 export const deleteDialyzerType = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.dialyzer_types)
-            db.data.dialyzer_types = [];
-        const id = req.params.id;
-        const idx = db.data.dialyzer_types.findIndex(d => d.DTL_ID_PK == id);
-        if (idx === -1)
+        const deleted = await deleteDialyzerTypeService(req.params.id);
+        if (!deleted) {
             return res.status(404).json({ error: 'Dialyzer type not found' });
-        db.data.dialyzer_types.splice(idx, 1);
-        await db.write();
-        res.json({ success: true });
+        }
+        res.json({ message: 'Dialyzer type deleted successfully' });
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to delete dialyzer type' });
@@ -414,10 +402,8 @@ export const deleteDialyzerType = async (req, res) => {
 // --- Scheduling Lookup CRUD ---
 export const getSchedulingLookup = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.scheduling_lookup)
-            db.data.scheduling_lookup = [];
-        res.json(db.data.scheduling_lookup);
+        const lookups = await getSchedulingLookupService();
+        res.json(lookups);
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch scheduling lookup' });
@@ -425,51 +411,36 @@ export const getSchedulingLookup = async (req, res) => {
 };
 export const addSchedulingLookup = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.scheduling_lookup)
-            db.data.scheduling_lookup = [];
-        const entry = req.body;
-        if (!entry.id)
-            entry.id = Date.now();
-        db.data.scheduling_lookup.push(entry);
-        await db.write();
-        res.status(201).json(entry);
+        const lookup = await addSchedulingLookupService(req.body);
+        res.json(lookup);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to add scheduling lookup entry' });
+        res.status(500).json({ error: 'Failed to add scheduling lookup' });
     }
 };
 export const updateSchedulingLookup = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.scheduling_lookup)
-            db.data.scheduling_lookup = [];
-        const { id, ...rest } = req.body;
-        const idx = db.data.scheduling_lookup.findIndex(e => e.id == id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Scheduling lookup entry not found' });
-        db.data.scheduling_lookup[idx] = { ...db.data.scheduling_lookup[idx], ...rest, id };
-        await db.write();
-        res.json(db.data.scheduling_lookup[idx]);
+        const lookup = await updateSchedulingLookupService(req.body);
+        res.json(lookup);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update scheduling lookup entry' });
+        if (err instanceof Error && err.message === 'Scheduling lookup not found') {
+            res.status(404).json({ error: 'Scheduling lookup not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update scheduling lookup' });
+        }
     }
 };
 export const deleteSchedulingLookup = async (req, res) => {
     try {
-        await db.read();
-        if (!db.data.scheduling_lookup)
-            db.data.scheduling_lookup = [];
-        const id = req.params.id;
-        const idx = db.data.scheduling_lookup.findIndex(e => e.id == id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Scheduling lookup entry not found' });
-        db.data.scheduling_lookup.splice(idx, 1);
-        await db.write();
-        res.json({ success: true });
+        const deleted = await deleteSchedulingLookupService(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ error: 'Scheduling lookup not found' });
+        }
+        res.json({ message: 'Scheduling lookup deleted successfully' });
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to delete scheduling lookup entry' });
+        res.status(500).json({ error: 'Failed to delete scheduling lookup' });
     }
 };

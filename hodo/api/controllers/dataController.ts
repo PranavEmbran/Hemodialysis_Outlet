@@ -110,11 +110,11 @@ export const getCaseOpeningsHandler = async (req: Request, res: Response) => {
 
 export const addCaseOpeningHandler = async (req: Request, res: Response) => {
   try {
-    const { HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature } = req.body;
-    if (!HCO_ID_PK || !P_ID_FK || !HCO_Blood_Group || !HCO_Case_nature) {
+    const { DCO_ID_PK, P_ID_FK, DCO_Blood_Group, DCO_Case_nature } = req.body;
+    if (!DCO_ID_PK || !P_ID_FK || !DCO_Blood_Group || !DCO_Case_nature) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const newCaseOpening = await addCaseOpening({ HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature });
+    const newCaseOpening = await addCaseOpening({ DCO_ID_PK, P_ID_FK, DCO_Blood_Group, DCO_Case_nature });
     res.status(201).json(newCaseOpening);
   } catch (err) {
     res.status(500).json({ error: 'Failed to add case opening' });

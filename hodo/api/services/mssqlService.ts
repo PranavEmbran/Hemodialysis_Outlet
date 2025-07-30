@@ -40,10 +40,11 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT TOP 10
+      SELECT TOP 30
         PM_Card_PK,
         PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
-      FROM PAT_Patient_Master_1;
+      FROM PAT_Patient_Master_1
+      ORDER BY PM_LastModifiedOn DESC;
     `);
     return result.recordset.map((row: any) => ({
       id: row.PM_Card_PK,
@@ -173,19 +174,19 @@ export const getSchedulesAssigned = async (): Promise<ScheduleAssigned[]> => {
 export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promise<ScheduleAssigned[]> => {
   try {
     const pool = await sql.connect(config);
-    
+
     // Start a transaction
     const transaction = new sql.Transaction(pool);
     await transaction.begin();
-    
+
     try {
       // Get the next available ID
       const idResult = await transaction.request()
         .query(`SELECT ISNULL(MAX(CAST(SUBSTRING(SA_ID_PK, 3, LEN(SA_ID_PK)) AS INT)), 0) + 1 as nextId FROM Schedules_Assigned`);
-      
+
       let nextId = idResult.recordset[0].nextId;
       const newSessions = [];
-      
+
       // Insert each session
       for (const session of sessions) {
         const sessionId = `SA${String(nextId).padStart(3, '0')}`;
@@ -202,7 +203,7 @@ export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promis
             (SA_ID_PK, P_ID_FK, SA_Date, SA_Time, isDeleted, Added_by, Added_on, Modified_by, Modified_on, Provider_FK, Outlet_FK)
             VALUES (@id, @pId, @date, @time, 0, @addedBy, GETDATE(), @addedBy, GETDATE(), @providerFk, @outletFk)
           `);
-        
+
         newSessions.push({
           ...session,
           SA_ID_PK: sessionId,
@@ -212,7 +213,7 @@ export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promis
         });
         nextId++;
       }
-      
+
       await transaction.commit();
       return newSessions;
     } catch (err) {
@@ -230,10 +231,10 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
       SELECT 
-        HCO_ID_PK,
+        DCO_ID_PK,
         P_ID_FK,
-        HCO_Blood_Group,
-        HCO_Case_nature
+        DCO_Blood_Group,
+        DCO_Case_nature
       FROM HD_Case_Opening;
     `);
     return result.recordset;
@@ -248,13 +249,31 @@ export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpen
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('P_ID_FK', sql.VarChar, caseOpening.P_ID_FK)
-      .input('HCO_Blood_Group', sql.VarChar, caseOpening.HCO_Blood_Group)
-      .input('HCO_Case_nature', sql.VarChar, caseOpening.HCO_Case_nature)
+      .input('DCO_Blood_Group', sql.VarChar, caseOpening.DCO_Blood_Group)
+      .input('DCO_Case_nature', sql.VarChar, caseOpening.DCO_Case_nature)
       .query(`
-        INSERT INTO HD_Case_Opening (P_ID_FK, HCO_Blood_Group, HCO_Case_nature)
-        OUTPUT INSERTED.HCO_ID_PK, INSERTED.P_ID_FK, INSERTED.HCO_Blood_Group, INSERTED.HCO_Case_nature
-        VALUES (@P_ID_FK, @HCO_Blood_Group, @HCO_Case_nature)
+        INSERT INTO Dialysis_Case_Opening (
+    DCO_P_ID_FK, 
+    DCO_Blood_Group, 
+    DCO_Case_Nature
+)
+OUTPUT 
+    INSERTED.DCO_ID_PK, 
+    INSERTED.DCO_P_ID_FK, 
+    INSERTED.DCO_Blood_Group, 
+    INSERTED.DCO_Case_Nature
+VALUES (
+    @DCO_P_ID_FK, 
+    @DCO_Blood_Group, 
+    @DCO_Case_Nature
+);
       `);
+      
+    // .query(`
+    //   INSERT INTO Dialysis_Case_Opening (P_ID_FK, DCO_Blood_Group, DCO_Case_nature)
+    //   OUTPUT INSERTED.DCO_ID_PK, INSERTED.P_ID_FK, INSERTED.DCO_Blood_Group, INSERTED.DCO_Case_nature
+    //   VALUES (@P_ID_FK, @DCO_Blood_Group, @DCO_Case_nature)
+    // `);
     return result.recordset[0];
   } catch (error) {
     console.error('Error adding case opening:', error);

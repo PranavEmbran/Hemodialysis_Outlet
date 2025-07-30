@@ -70,8 +70,8 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   // Validation schema
   const validationSchema = Yup.object({
     P_ID_FK: Yup.string().required('Patient ID is required.'),
-    HCO_Blood_Group: Yup.string().required('Blood Group is required.'),
-    HCO_Case_nature: Yup.string().required('Case Nature is required.'),
+    DCO_Blood_Group: Yup.string().required('Blood Group is required.'),
+    DCO_Case_nature: Yup.string().required('Case Nature is required.'),
   });
 
 const [formKey, setFormKey] = useState(0);
@@ -81,9 +81,9 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
   // Initial values
   const getInitialValues = () => ({
     P_ID_FK: '',
-    HCO_ID_PK: uuidv4(),
-    HCO_Blood_Group: '',
-    HCO_Case_nature: 'Acute',
+    DCO_ID_PK: uuidv4(),
+    DCO_Blood_Group: '',
+    DCO_Case_nature: 'Acute',
   });
 
   return (
@@ -92,7 +92,7 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
       <PageContainer>
         <SectionHeading title="Dialysis Case Opening" subtitle="Case Opening for Registered Patient" />
 
-        {/* HCO Form Start */}
+        {/* DCO Form Start */}
         <Formik
           key={formKey} // This forces Formik to re-render cleanly
 
@@ -141,21 +141,21 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
                 {/* Hidden UUID field */}
                 <InputField
                   label="Case Opening ID (auto-generated)"
-                  name="HCO_ID_PK"
+                  name="DCO_ID_PK"
                   type="text"
                   disabled
                   className="d-none"
                 />
                 <SelectField
                   label="Blood Group"
-                  name="HCO_Blood_Group"
+                  name="DCO_Blood_Group"
                   options={bloodGroupOptions}
                   required
                   placeholder="Select Blood Group"
                 />
                 <RadioGroupField
                   label="Case Nature"
-                  name="HCO_Case_nature"
+                  name="DCO_Case_nature"
                   options={caseNatureOptions}
                   required
                 />
@@ -182,7 +182,7 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
             </Form>
           )}
         </Formik>
-        {/* HCO Form End */}
+        {/* DCO Form End */}
 
         {/* Case Openings Table */}
         <div style={{ marginTop: 40 }}>
@@ -195,8 +195,8 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
             columns={[
               { key: 'P_ID_FK', header: 'Patient ID' },
               { key: 'PatientName', header: 'Patient Name' },
-              { key: 'HCO_Blood_Group', header: 'Blood Group' },
-              { key: 'HCO_Case_nature', header: 'Case Nature' },
+              { key: 'DCO_Blood_Group', header: 'Blood Group' },
+              { key: 'DCO_Case_nature', header: 'Case Nature' },
             ]}
             data={caseOpenings
               .map(row => ({
@@ -208,8 +208,8 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
                 return (
                   row.P_ID_FK?.toLowerCase().includes(q) ||
                   row.PatientName?.toLowerCase().includes(q) ||
-                  row.HCO_Blood_Group?.toLowerCase().includes(q) ||
-                  row.HCO_Case_nature?.toLowerCase().includes(q)
+                  row.DCO_Blood_Group?.toLowerCase().includes(q) ||
+                  row.DCO_Case_nature?.toLowerCase().includes(q)
                 );
               })
             }

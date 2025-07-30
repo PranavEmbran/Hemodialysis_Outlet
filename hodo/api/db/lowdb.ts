@@ -43,10 +43,10 @@ export interface ScheduleAssigned {
 }
 
 export interface CaseOpening {
-  HCO_ID_PK: string;
+  DCO_ID_PK: string;
   P_ID_FK: string;
-  HCO_Blood_Group: string;
-  HCO_Case_nature: string;
+  DCO_Blood_Group: string;
+  DCO_Case_nature: string;
 }
 
 // ✅ Default data structure
