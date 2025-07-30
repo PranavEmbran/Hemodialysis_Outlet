@@ -230,13 +230,19 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT 
-        DCO_ID_PK,
-        P_ID_FK,
-        DCO_Blood_Group,
-        DCO_Case_nature
-      FROM HD_Case_Opening;
+      SELECT *
+FROM dbo.Dialysis_Case_Opening
+ORDER BY DCO_Added_On DESC;
+
     `);
+    // const result = await pool.request().query(`
+    //   SELECT 
+    //     DCO_ID_PK,
+    //     P_ID_FK,
+    //     DCO_Blood_Group,
+    //     DCO_Case_nature
+    //   FROM HD_Case_Opening;
+    // `);
     return result.recordset;
   } catch (err) {
     console.error('MSSQL getCaseOpenings error:', err);
@@ -248,32 +254,22 @@ export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpen
   try {
     const pool = await sql.connect(config);
     const result = await pool.request()
-      .input('P_ID_FK', sql.VarChar, caseOpening.P_ID_FK)
-      .input('DCO_Blood_Group', sql.VarChar, caseOpening.DCO_Blood_Group)
-      .input('DCO_Case_nature', sql.VarChar, caseOpening.DCO_Case_nature)
+      .input('DCO_P_ID_FK', sql.BigInt, caseOpening.DCO_P_ID_FK)
+      .input('DCO_Blood_Group', sql.VarChar(5), caseOpening.DCO_Blood_Group)
+      .input('DCO_Case_Nature', sql.VarChar(20), caseOpening.DCO_Case_Nature)
       .query(`
         INSERT INTO Dialysis_Case_Opening (
-    DCO_P_ID_FK, 
-    DCO_Blood_Group, 
-    DCO_Case_Nature
-)
-OUTPUT 
-    INSERTED.DCO_ID_PK, 
-    INSERTED.DCO_P_ID_FK, 
-    INSERTED.DCO_Blood_Group, 
-    INSERTED.DCO_Case_Nature
-VALUES (
-    @DCO_P_ID_FK, 
-    @DCO_Blood_Group, 
-    @DCO_Case_Nature
-);
+          DCO_P_ID_FK,
+          DCO_Blood_Group,
+          DCO_Case_Nature
+        )
+        OUTPUT INSERTED.DCO_ID_PK, INSERTED.DCO_P_ID_FK, INSERTED.DCO_Blood_Group, INSERTED.DCO_Case_Nature
+        VALUES (
+          @DCO_P_ID_FK,
+          @DCO_Blood_Group,
+          @DCO_Case_Nature
+        );
       `);
-      
-    // .query(`
-    //   INSERT INTO Dialysis_Case_Opening (P_ID_FK, DCO_Blood_Group, DCO_Case_nature)
-    //   OUTPUT INSERTED.DCO_ID_PK, INSERTED.P_ID_FK, INSERTED.DCO_Blood_Group, INSERTED.DCO_Case_nature
-    //   VALUES (@P_ID_FK, @DCO_Blood_Group, @DCO_Case_nature)
-    // `);
     return result.recordset[0];
   } catch (error) {
     console.error('Error adding case opening:', error);

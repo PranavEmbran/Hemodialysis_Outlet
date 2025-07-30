@@ -110,13 +110,25 @@ export const getCaseOpeningsHandler = async (req: Request, res: Response) => {
 
 export const addCaseOpeningHandler = async (req: Request, res: Response) => {
   try {
-    const { DCO_ID_PK, P_ID_FK, DCO_Blood_Group, DCO_Case_nature } = req.body;
-    if (!DCO_ID_PK || !P_ID_FK || !DCO_Blood_Group || !DCO_Case_nature) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    const { DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature } = req.body;
+    if (
+      DCO_P_ID_FK === undefined ||
+      DCO_Blood_Group === undefined ||
+      DCO_Case_Nature === undefined
+    ) {
+      return res.status(400).json({ error: 'Missing required fields: DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature' });
     }
-    const newCaseOpening = await addCaseOpening({ DCO_ID_PK, P_ID_FK, DCO_Blood_Group, DCO_Case_nature });
+    // Only pass the allowed fields
+    const newCaseOpening = await addCaseOpening({
+      DCO_P_ID_FK,
+      DCO_Blood_Group,
+      DCO_Case_Nature
+    });
     res.status(201).json(newCaseOpening);
   } catch (err) {
+    if (err instanceof Error && err.message.startsWith('Missing required fields')) {
+      return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Failed to add case opening' });
   }
 };

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { InputField, SelectField, RadioGroupField } from '../components/forms';
+import { SelectField, RadioGroupField } from '../components/forms';
 import ButtonWithGradient from '../components/ButtonWithGradient';
-import { v4 as uuidv4 } from 'uuid';
+
 // import HaemodialysisRecordDetails from '../components/HaemodialysisRecordDetails';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -69,9 +69,9 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
 
   // Validation schema
   const validationSchema = Yup.object({
-    P_ID_FK: Yup.string().required('Patient ID is required.'),
+    DCO_P_ID_FK: Yup.string().required('Patient ID is required.'),
     DCO_Blood_Group: Yup.string().required('Blood Group is required.'),
-    DCO_Case_nature: Yup.string().required('Case Nature is required.'),
+    DCO_Case_Nature: Yup.string().required('Case Nature is required.'),
   });
 
 const [formKey, setFormKey] = useState(0);
@@ -80,10 +80,9 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
 
   // Initial values
   const getInitialValues = () => ({
-    P_ID_FK: '',
-    DCO_ID_PK: uuidv4(),
+    DCO_P_ID_FK: '',
     DCO_Blood_Group: '',
-    DCO_Case_nature: 'Acute',
+    DCO_Case_Nature: 'Acute',
   });
 
   return (
@@ -100,18 +99,21 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
           validationSchema={validationSchema}
           onSubmit={async (values, { resetForm }) => {
             try {
+              const payload = {
+                DCO_P_ID_FK: values.DCO_P_ID_FK,
+                DCO_Blood_Group: values.DCO_Blood_Group,
+                DCO_Case_Nature: values.DCO_Case_Nature
+              };
               const response = await fetch(`${API_URL}/data/case_openings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
+                body: JSON.stringify(payload),
               });
               if (!response.ok) {
                 throw new Error('Failed to save case opening');
               }
               regenerateForm();
               // resetForm({ values: getInitialValues() });
-
-
 
               // Refresh case openings after successful submit
               fetch(`${API_URL}/data/case_openings`)
@@ -133,18 +135,10 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}>
                 <SelectField
                   label="Select Patient"
-                  name="P_ID_FK"
+                  name="DCO_P_ID_FK"
                   options={patientOptions}
                   required
                   placeholder="Select Patient"
-                />
-                {/* Hidden UUID field */}
-                <InputField
-                  label="Case Opening ID (auto-generated)"
-                  name="DCO_ID_PK"
-                  type="text"
-                  disabled
-                  className="d-none"
                 />
                 <SelectField
                   label="Blood Group"
@@ -155,7 +149,7 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
                 />
                 <RadioGroupField
                   label="Case Nature"
-                  name="DCO_Case_nature"
+                  name="DCO_Case_Nature"
                   options={caseNatureOptions}
                   required
                 />
@@ -192,28 +186,28 @@ const regenerateForm = () => setFormKey(prev => prev + 1);
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value)}
           />
           <Table
-            columns={[
-              { key: 'P_ID_FK', header: 'Patient ID' },
-              { key: 'PatientName', header: 'Patient Name' },
-              { key: 'DCO_Blood_Group', header: 'Blood Group' },
-              { key: 'DCO_Case_nature', header: 'Case Nature' },
-            ]}
-            data={caseOpenings
-              .map(row => ({
-                ...row,
-                PatientName: (patientOptions.find(p => p.value === row.P_ID_FK)?.label?.split(' - ')[1]) || row.P_ID_FK
-              }))
-              .filter(row => {
-                const q = searchText.toLowerCase();
-                return (
-                  row.P_ID_FK?.toLowerCase().includes(q) ||
-                  row.PatientName?.toLowerCase().includes(q) ||
-                  row.DCO_Blood_Group?.toLowerCase().includes(q) ||
-                  row.DCO_Case_nature?.toLowerCase().includes(q)
-                );
-              })
-            }
-          />
+              columns={[
+                { key: 'DCO_P_ID_FK', header: 'Patient ID' },
+                { key: 'PatientName', header: 'Patient Name' },
+                { key: 'DCO_Blood_Group', header: 'Blood Group' },
+                { key: 'DCO_Case_Nature', header: 'Case Nature' },
+              ]}
+              data={caseOpenings
+                .map(row => ({
+                  ...row,
+                  PatientName: (patientOptions.find(p => p.value === String(row.DCO_P_ID_FK))?.label?.split(' - ')[1]) || row.DCO_P_ID_FK
+                }))
+                .filter(row => {
+                  const q = searchText.toLowerCase();
+                  return (
+                    String(row.DCO_P_ID_FK)?.toLowerCase().includes(q) ||
+                    row.PatientName?.toLowerCase().includes(q) ||
+                    row.DCO_Blood_Group?.toLowerCase().includes(q) ||
+                    row.DCO_Case_Nature?.toLowerCase().includes(q)
+                  );
+                })
+              }
+            />
         </div>
       </PageContainer>
       <Footer />

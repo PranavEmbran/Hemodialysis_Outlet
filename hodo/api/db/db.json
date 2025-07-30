@@ -1247,171 +1247,181 @@
   "case_openings": [
     {
       "DCO_ID_PK": "65949b63-88c3-4e81-b53d-08561cbdadb6",
-      "P_ID_FK": "20250715/001",
+      "DCO_P_ID_FK": "20250715/001",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "b29da2ec-17cc-4b46-8b57-3d3863e8a99e",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "f4a58272-7834-4159-abda-48560f177532",
-      "P_ID_FK": "20250715/003",
+      "DCO_P_ID_FK": "20250715/003",
       "DCO_Blood_Group": "AB+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "1ace0d45-85d3-4759-bcad-21b0fc6bd3d0",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "B+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "f87d348a-272c-48b5-9487-2a9a3ea75b30",
-      "P_ID_FK": "20250715/001",
+      "DCO_P_ID_FK": "20250715/001",
       "DCO_Blood_Group": "O+",
-      "DCO_Case_nature": "Chronic"
+      "DCO_Case_Nature": "Chronic"
     },
     {
       "DCO_ID_PK": "56f4791e-f4ab-4e19-a9d1-05af14ce4500",
-      "P_ID_FK": "20250715/003",
+      "DCO_P_ID_FK": "20250715/003",
       "DCO_Blood_Group": "B+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "48e305dc-4d9b-4e0b-8836-747454e54a7b",
-      "P_ID_FK": "20250715/009",
+      "DCO_P_ID_FK": "20250715/009",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "45005585-ef73-410b-bba3-e7120dbe4877",
-      "P_ID_FK": "20250715/006",
+      "DCO_P_ID_FK": "20250715/006",
       "DCO_Blood_Group": "O+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "75b0ca1c-1d97-4246-9573-02f0dd4cdc51",
-      "P_ID_FK": "20250715/010",
+      "DCO_P_ID_FK": "20250715/010",
       "DCO_Blood_Group": "AB+",
-      "DCO_Case_nature": "Chronic"
+      "DCO_Case_Nature": "Chronic"
     },
     {
       "DCO_ID_PK": "fa835572-5580-48de-9b99-3ddd50ba9c5c",
-      "P_ID_FK": "20250715/007",
+      "DCO_P_ID_FK": "20250715/007",
       "DCO_Blood_Group": "AB+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "4038a11b-966f-4fef-833d-afdce1043057",
-      "P_ID_FK": "20250715/008",
+      "DCO_P_ID_FK": "20250715/008",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "456f1f18-34a1-4722-8556-91d7290c41b4",
-      "P_ID_FK": "20250715/005",
+      "DCO_P_ID_FK": "20250715/005",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "df314407-f5f5-4214-974e-986e7a23c82f",
-      "P_ID_FK": "20250715/007",
+      "DCO_P_ID_FK": "20250715/007",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "3dce86ed-c0e4-4552-be5d-03ce3249d073",
-      "P_ID_FK": "20250715/005",
+      "DCO_P_ID_FK": "20250715/005",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "dfe834d0-1750-40ef-a546-f9fed8b74f38",
-      "P_ID_FK": "20250715/003",
+      "DCO_P_ID_FK": "20250715/003",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "a1631500-c7c5-48b1-b36c-64144d36d8be",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "20c04338-81dc-42e2-ad88-03663ba4aa1c",
-      "P_ID_FK": "20250715/001",
+      "DCO_P_ID_FK": "20250715/001",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "dcf250d1-d826-494c-ac52-4e79698350cc",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "40035c0b-1860-458e-abd4-6ff1dc9ee004",
-      "P_ID_FK": "20250715/005",
+      "DCO_P_ID_FK": "20250715/005",
       "DCO_Blood_Group": "AB+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "e0a023bc-fee1-454c-beab-a9917e4eb85d",
-      "P_ID_FK": "20250715/006",
+      "DCO_P_ID_FK": "20250715/006",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "b9e2c359-e51e-44bf-aeae-6a5790478644",
-      "P_ID_FK": "20250715/008",
+      "DCO_P_ID_FK": "20250715/008",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "f46d89e5-5e37-41ac-ae36-8c2b17e8c0c1",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "915d36d8-322c-44bd-a7cf-d8bb42dec740",
-      "P_ID_FK": "20250715/009",
+      "DCO_P_ID_FK": "20250715/009",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "b0295621-5233-4869-84f3-286214218d3c",
-      "P_ID_FK": "20250715/006",
+      "DCO_P_ID_FK": "20250715/006",
       "DCO_Blood_Group": "B+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "8c994ebc-d234-4e26-afb6-5f6fbfd471f2",
-      "P_ID_FK": "20250715/002",
+      "DCO_P_ID_FK": "20250715/002",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "91392baa-b2cc-4607-9e1f-94f5d3db6d80",
-      "P_ID_FK": "20250715/003",
+      "DCO_P_ID_FK": "20250715/003",
       "DCO_Blood_Group": "AB-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "9de6e313-92a4-4a8a-93ff-8913532f3c2c",
-      "P_ID_FK": "20250715/005",
+      "DCO_P_ID_FK": "20250715/005",
       "DCO_Blood_Group": "A-",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
     },
     {
       "DCO_ID_PK": "1b9fc0d8-2993-422b-80e8-852d8d0b3d92",
-      "P_ID_FK": "20250715/008",
+      "DCO_P_ID_FK": "20250715/008",
       "DCO_Blood_Group": "A+",
-      "DCO_Case_nature": "Acute"
+      "DCO_Case_Nature": "Acute"
+    },
+    {
+      "DCO_P_ID_FK": "20250715/005",
+      "DCO_Blood_Group": "O+",
+      "DCO_Case_Nature": "Acute"
+    },
+    {
+      "DCO_P_ID_FK": "20250715/008",
+      "DCO_Blood_Group": "A+",
+      "DCO_Case_Nature": "Chronic"
     }
   ],
   "predialysis_records": [

@@ -1,5 +1,6 @@
 import db, { initDB, Item } from '../db/lowdb.js';
 import { nanoid } from 'nanoid';
+import type { CaseOpening } from '../db/lowdb';
 
 export interface Patient {
   id: string;
@@ -83,12 +84,12 @@ export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promis
   return db.data!.Schedules_Assigned;
 };
 
-export interface CaseOpening {
-  DCO_ID_PK: string;
-  P_ID_FK: string;
-  DCO_Blood_Group: string;
-  DCO_Case_nature: string;
-}
+// export interface CaseOpening {
+//   DCO_ID_PK: string;
+//   P_ID_FK: string;
+//   DCO_Blood_Group: string;
+//   DCO_Case_nature: string;
+// }
 
 export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
   await initDB();
@@ -97,12 +98,23 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
   return db.data?.case_openings || [];
 };
 
-export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpening> => {
+export const addCaseOpening = async (caseOpening: Partial<CaseOpening>): Promise<CaseOpening> => {
   await initDB();
   await db.read();
-  db.data!.case_openings.push(caseOpening);
+  // Validate presence of required fields
+  const { DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature } = caseOpening;
+  if (DCO_P_ID_FK === undefined || DCO_Blood_Group === undefined || DCO_Case_Nature === undefined) {
+    throw new Error('Missing required fields: DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature');
+  }
+  // Only allow these fields
+  const newCaseOpening = {
+    DCO_P_ID_FK,
+    DCO_Blood_Group,
+    DCO_Case_Nature
+  };
+  db.data!.case_openings.push(newCaseOpening);
   await db.write();
-  return caseOpening;
+  return newCaseOpening as CaseOpening;
 };
 
 export interface PredialysisRecord {
