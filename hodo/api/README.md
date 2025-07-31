@@ -1,20 +1,20 @@
-# Schedules_Assigned API
+# Dialysis_Schedules API
 
 ## Save Dialysis Sessions
 
 ### Endpoint
-- **POST** `/api/data/schedules_assigned`
-- **Description:** Save one or more dialysis session assignments. The backend will auto-generate unique `SA_ID_PK` values (e.g., SA001, SA002, ...).
+- **POST** `/api/data/Dialysis_Schedules`
+- **Description:** Save one or more dialysis session assignments. The backend will auto-generate unique `DS_ID_PK` values (e.g., SA001, SA002, ...).
 
 ### Request Body
-An array of session objects (without `SA_ID_PK`):
+An array of session objects (without `DS_ID_PK`):
 ```json
 [
   {
     "P_ID_FK": "20250715/001",
-    "SA_Date": "2025-07-16",
-    "SA_Time": "08:30",
-    "isDeleted": 10,
+    "DS_Date": "2025-07-16",
+    "DS_Time": "08:30",
+    "Status": 10,
     "Added_by": "admin",
     "Added_on": "2025-07-15",
     "Modified_by": "admin",
@@ -26,15 +26,15 @@ An array of session objects (without `SA_ID_PK`):
 ```
 
 ### Response
-Returns the updated `Schedules_Assigned` array, with auto-generated `SA_ID_PK` fields:
+Returns the updated `Dialysis_Schedules` array, with auto-generated `DS_ID_PK` fields:
 ```json
 [
   {
-    "SA_ID_PK": "SA001",
+    "DS_ID_PK": "SA001",
     "P_ID_FK": "20250715/001",
-    "SA_Date": "2025-07-16",
-    "SA_Time": "08:30",
-    "isDeleted": 10,
+    "DS_Date": "2025-07-16",
+    "DS_Time": "08:30",
+    "Status": 10,
     "Added_by": "admin",
     "Added_on": "2025-07-15",
     "Modified_by": "admin",
@@ -50,5 +50,5 @@ Returns the updated `Schedules_Assigned` array, with auto-generated `SA_ID_PK` f
 - The backend will assign unique IDs and persist the data in `db.json`.
 
 ### Get All Assigned Schedules
-- **GET** `/api/data/schedules_assigned`
+- **GET** `/api/data/Dialysis_Schedules`
 - Returns all assigned sessions. 

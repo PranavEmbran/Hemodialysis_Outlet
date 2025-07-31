@@ -11,7 +11,7 @@ export interface Item {
 export interface DBData {
   items: Item[];
   patients_derived: Patient[];
-  Schedules_Assigned: ScheduleAssigned[];
+  Dialysis_Schedules: DialysisSchedules[];
   case_openings: CaseOpening[];
   predialysis_records: PredialysisRecord[];
   start_dialysis_records: StartDialysisRecord[];
@@ -28,18 +28,18 @@ export interface Patient {
   Name: string;
 }
 
-export interface ScheduleAssigned {
-  SA_ID_PK: string;
-  P_ID_FK: string;
-  SA_Date: string;
-  SA_Time: string;
-  isDeleted: number;
-  Added_by: string;
-  Added_on: string;
-  Modified_by: string;
-  Modified_on: string;
-  Provider_FK: string;
-  Outlet_FK: string;
+export interface DialysisSchedules {
+  DS_ID_PK: string;
+  DS_P_ID_FK: string;
+  DS_Date: string;
+  DS_Time: string;
+  DS_Status: number;
+  DS_Added_by: string;
+  DS_Added_on: string;
+  DS_Modified_by: string;
+  DS_Modified_on: string;
+  DS_Provider_FK: string;
+  DS_Outlet_FK: string;
 }
 
 export interface CaseOpening {
@@ -53,7 +53,7 @@ export interface CaseOpening {
 const defaultData: DBData = {
   items: [],
   patients_derived: [],
-  Schedules_Assigned: [],
+  Dialysis_Schedules: [],
   case_openings: [],
   predialysis_records: [],
   start_dialysis_records: [],

@@ -68,11 +68,11 @@ const HaemodialysisRecordDetailsPage: React.FC<{ sidebarCollapsed: boolean; togg
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
       fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
     ]).then(([schedulesData, patientsData]) => {
       setPatients(patientsData);
-      setSchedules(schedulesData.filter((a: any) => a.isDeleted === 10));
+      setSchedules(schedulesData.filter((a: any) => a.Status === 10));
       setLoading(false);
     });
   }, []);
@@ -80,7 +80,7 @@ const HaemodialysisRecordDetailsPage: React.FC<{ sidebarCollapsed: boolean; togg
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
     setSelectedSchedule(scheduleId);
-    const selected = schedules.find((s: any) => s.SA_ID_PK === scheduleId);
+    const selected = schedules.find((s: any) => s.DS_ID_PK === scheduleId);
     if (selected) {
       const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
       setSelectedPatient(patient ? patient.name : selected.P_ID_FK);
@@ -143,7 +143,7 @@ const HaemodialysisRecordDetailsPage: React.FC<{ sidebarCollapsed: boolean; togg
                     const patient = patients.find((p: any) => p.id === sch.P_ID_FK);
                     const patientLabel = patient ? ((patient as any)['Name'] || patient.name) : sch.P_ID_FK;
                     return (
-                      <option key={sch.SA_ID_PK} value={sch.SA_ID_PK}>{sch.SA_ID_PK} - {patientLabel}</option>
+                      <option key={sch.DS_ID_PK} value={sch.DS_ID_PK}>{sch.DS_ID_PK} - {patientLabel}</option>
                     );
                   })}
                 </select>

@@ -30,15 +30,15 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
       fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
     ]).then(([schedules, patientsData]) => {
       setPatients(patientsData);
-      setScheduleOptions(schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+      setScheduleOptions(schedules.filter((a: any) => a.Status === 10).map((sch: any) => {
         const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
         return {
-          value: sch.SA_ID_PK,
-          label: `${sch.SA_ID_PK} - ${patient ? patient.Name : sch.P_ID_FK}`
+          value: sch.DS_ID_PK,
+          label: `${sch.DS_ID_PK} - ${patient ? patient.Name : sch.P_ID_FK}`
         };
       }));
     });

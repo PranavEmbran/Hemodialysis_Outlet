@@ -87,7 +87,7 @@ router.delete('/:id', deleteById);
 router.get('/patients_derived', getPatientsDerivedHandler);
 /**
  * @swagger
- * /api/data/schedules_assigned:
+ * /api/data/Dialysis_Schedules:
  *   get:
  *     summary: Get assigned schedules
  *     responses:
@@ -98,12 +98,12 @@ router.get('/patients_derived', getPatientsDerivedHandler);
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/ScheduleAssigned'
+ *                 $ref: '#/components/schemas/DialysisSchedules'
  */
-router.get('/schedules_assigned', getSchedulesAssignedHandler);
+router.get('/Dialysis_Schedules', getSchedulesAssignedHandler);
 /**
  * @swagger
- * /api/data/schedules_assigned:
+ * /api/data/Dialysis_Schedules:
  *   post:
  *     summary: Add assigned schedules
  *     requestBody:
@@ -113,7 +113,7 @@ router.get('/schedules_assigned', getSchedulesAssignedHandler);
  *           schema:
  *             type: array
  *             items:
- *               $ref: '#/components/schemas/ScheduleAssigned'
+ *               $ref: '#/components/schemas/DialysisSchedules'
  *     responses:
  *       200:
  *         description: Assigned schedules added
@@ -122,9 +122,9 @@ router.get('/schedules_assigned', getSchedulesAssignedHandler);
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/ScheduleAssigned'
+ *                 $ref: '#/components/schemas/DialysisSchedules'
  */
-router.post('/schedules_assigned', addSchedulesAssignedHandler);
+router.post('/Dialysis_Schedules', addSchedulesAssignedHandler);
 /**
  * @swagger
  * /api/data/case_openings:

@@ -58,20 +58,20 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   // Fetch all assigned schedules when switching to view step
   useEffect(() => {
     if (currentStep === 1) {
-      fetch(`${API_URL}/data/schedules_assigned`)
+      fetch(`${API_URL}/data/Dialysis_Schedules`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data)) {
-            // Sort by Added_on descending, then SA_ID_PK descending (if present)
+            // Sort by Added_on descending, then DS_ID_PK descending (if present)
             const sorted = [...data].sort((a, b) => {
               // Compare dates (descending)
-              const dateA = new Date(a.Added_on || a.SA_Date || 0);
-              const dateB = new Date(b.Added_on || b.SA_Date || 0);
+              const dateA = new Date(a.DS_Added_on || a.DS_Date || 0);
+              const dateB = new Date(b.DS_Added_on || b.DS_Date || 0);
               if (dateA > dateB) return -1;
               if (dateA < dateB) return 1;
-              // If dates equal, compare SA_ID_PK if present
-              if (a.SA_ID_PK && b.SA_ID_PK) {
-                return String(b.SA_ID_PK).localeCompare(String(a.SA_ID_PK));
+              // If dates equal, compare DS_ID_PK if present
+              if (a.DS_ID_PK && b.DS_ID_PK) {
+                return String(b.DS_ID_PK).localeCompare(String(a.DS_ID_PK));
               }
               return 0;
             });
@@ -181,11 +181,11 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     let conflicts: any[] = [];
     if (values.patient) {
       try {
-        const res = await fetch(`${API_URL}/data/schedules_assigned?patientId=${values.patient}`);
+        const res = await fetch(`${API_URL}/data/Dialysis_Schedules?patientId=${values.patient}`);
         const assigned = await res.json();
         setAssignedSessions(assigned);
         // Check for conflicts
-        conflicts = rows.filter(row => assigned.some((a: any) => a.SA_Date === row.date && a.SA_Time === row.time));
+        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
         // Mark isConflicting flag
         rows.forEach(row => {
           row.isConflicting = conflicts.some(c => c.date === row.date && c.time === row.time);
@@ -220,7 +220,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   
 
-  const handleSave = async (patientId: string, resetForm?: () => void) => {
+  const handleSave = async (patientId: number, resetForm?: () => void) => {
     setFormKey(prev => prev + 1); // force re-render to fully reset select
 
     if (!patientId || selectedRows.length === 0) {
@@ -230,20 +230,20 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
     const today = new Date().toISOString().slice(0, 10);
     const sessions = selectedRows.map(row => ({
-      P_ID_FK: patientId,
-      SA_Date: row.date,
-      SA_Time: row.time,
-      isDeleted: 10,
-      Added_by: 'admin',
-      Added_on: today,
-      Modified_by: 'admin',
-      Modified_on: today,
-      Provider_FK: 'PR001',
-      Outlet_FK: 'OUT001'
+      DS_P_ID_FK: patientId,
+      DS_Date: row.date,
+      DS_Time: row.time.length === 5 ? `${row.time}:00` : row.time, // add seconds also
+      DS_Status: 10,
+      DS_Added_by: null,
+      DS_Added_on: today,
+      DS_Modified_by: null,
+      DS_Modified_on: today,
+      DS_Provider_FK: null,
+      DS_Outlet_FK: null
     }));
 
     try {
-      const res = await fetch(`${API_URL}/data/schedules_assigned`, {
+      const res = await fetch(`${API_URL}/data/Dialysis_Schedules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sessions)
@@ -351,7 +351,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                       { key: 'select', header: 'Select' },
                     ]}
                     data={scheduleRows.map(row => {
-                       const bookedCount = assignedSessions.filter(a => a.SA_Date === row.date && a.SA_Time === row.time).length;
+                       const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
                        const atCapacity = bookedCount >= unitsCount;
                        console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
                        return {
@@ -390,7 +390,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                         data={selectedRows}
                       />
                       <div style={{ textAlign: 'center', marginTop: 24 }}>
-                        <ButtonWithGradient type="button" onClick={() => handleSave(values.patient, resetForm)}>
+                        <ButtonWithGradient type="button" onClick={() => handleSave(Number(values.patient), resetForm)}
+                        >
                           Save Sessions
                         </ButtonWithGradient>
                       </div>
@@ -413,17 +414,26 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
             <Table
               columns={[
-                { key: 'P_ID_FK', header: 'Patient ID' },
-                { key: 'PatientName', header: 'Patient Name' },
-                { key: 'SA_Date', header: 'Date' },
-                { key: 'SA_Time', header: 'Time' },
-                { key: 'Added_on', header: 'Added On' },
+                { key: 'DS_P_ID_FK', header: 'Patient ID' },
+                { key: 'DS_PatientName', header: 'Patient Name' },
+                { key: 'DS_Date', header: 'Date' },
+                { key: 'DS_Time', header: 'Time' },
+                { key: 'DS_Added_on', header: 'Added On' },
                 // { key: 'Provider_FK', header: 'Provider' },
                 // { key: 'Outlet_FK', header: 'Outlet' }
               ]}
               data={assignedSessions.map(row => ({
                 ...row,
-                PatientName: (patients.find(p => p.id === row.P_ID_FK)?.Name) || '',
+                DS_PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
+                DS_Added_on: new Date(row.DS_Added_on).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: true,
+                }),
               }))}
             />
           </>

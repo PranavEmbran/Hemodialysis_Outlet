@@ -189,6 +189,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
           <Table
             columns={[
               { key: 'DCO_P_ID_FK', header: 'Patient ID' },
+              { key: 'DCO_Formatted_ID', header: 'Case ID' },
               { key: 'PatientName', header: 'Patient Name' },
               { key: 'DCO_Blood_Group', header: 'Blood Group' },
               { key: 'DCO_Case_Nature', header: 'Case Nature' },
@@ -202,6 +203,7 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                 const q = searchText.toLowerCase();
                 return (
                   String(row.DCO_P_ID_FK)?.toLowerCase().includes(q) ||
+                  String(row.DCO_Formatted_ID)?.toLowerCase().includes(q) ||
                   row.PatientName?.toLowerCase().includes(q) ||
                   row.DCO_Blood_Group?.toLowerCase().includes(q) ||
                   row.DCO_Case_Nature?.toLowerCase().includes(q)

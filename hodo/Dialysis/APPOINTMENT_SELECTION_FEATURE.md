@@ -50,7 +50,7 @@ interface DialysisProcessFormValues {
 const getAvailableAppointments = () => {
   return appointments.filter(apt => 
     apt.status !== 'Completed' && 
-    apt.isDeleted !== 0
+    apt.Status !== 0
   );
 };
 ```

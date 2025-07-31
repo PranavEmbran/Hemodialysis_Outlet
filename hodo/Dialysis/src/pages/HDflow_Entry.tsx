@@ -36,21 +36,21 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   // Fetch schedules, patients, and all records
   const refetchRecords = () => {
     Promise.all([
-      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
       fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
       fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
       fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
       fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
     ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
       setPatients(patientsData.map((p: any) => ({ id: p.id, name: (p['Name'] || p.name) })));
-      const options = schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+      const options = schedules.filter((a: any) => a.Status === 10).map((sch: any) => {
         const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
         const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
         return {
-          value: sch.SA_ID_PK,
-          label: `${sch.SA_ID_PK} - ${patientLabel}`,
+          value: sch.DS_ID_PK,
+          label: `${sch.DS_ID_PK} - ${patientLabel}`,
           patientId: sch.P_ID_FK,
-          date: sch.SA_Date
+          date: sch.DS_Date
         };
       });
       setScheduleOptions(options);

@@ -9,7 +9,7 @@
 
 ## Implementation Steps
 1. Fetch `SL_No_of_units` from `scheduling_lookup` and store in a state variable.
-2. For each session slot, count how many bookings exist in `schedules_assigned` for that slot.
+2. For each session slot, count how many bookings exist in `Dialysis_Schedules` for that slot.
 3. Show `booked/total units` in the schedule table.
 4. Disable selection if `booked >= unitsCount`.
 5. Prevent overbooking in the backend as well.

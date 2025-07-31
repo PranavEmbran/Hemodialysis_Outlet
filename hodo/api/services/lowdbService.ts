@@ -39,36 +39,49 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   return db.data?.patients_derived || [];
 };
 
-export interface ScheduleAssigned {
-  SA_ID_PK: string;
-  P_ID_FK: string;
-  SA_Date: string;
-  SA_Time: string;
-  isDeleted: number;
-  Added_by: string;
-  Added_on: string;
-  Modified_by: string;
-  Modified_on: string;
-  Provider_FK: string;
-  Outlet_FK: string;
+export interface DialysisSchedules {
+  DS_ID_PK: string;
+  DS_P_ID_FK: string;
+  DS_Date: string;
+  DS_Time: string;
+  DS_Status: number;
+  DS_Added_by: string;
+  DS_Added_on: string;
+  DS_Modified_by: string;
+  DS_Modified_on: string;
+  DS_Provider_FK: string;
+  DS_Outlet_FK: string;
 }
 
-export const getSchedulesAssigned = async (): Promise<ScheduleAssigned[]> => {
+export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
   await initDB();
   await db.read();
   // @ts-ignore
-  return db.data?.Schedules_Assigned || [];
+  const arr = db.data?.Dialysis_Schedules || [];
+  return arr.map((item: any) => ({
+    DS_ID_PK: item.DS_ID_PK ?? "",
+    DS_P_ID_FK: item.DS_P_ID_FK ?? "",
+    DS_Date: item.DS_Date ?? "",
+    DS_Time: item.DS_Time ?? "",
+    DS_Status: item.DS_Status ?? 0,
+    DS_Added_by: item.DS_Added_by ?? "",
+    DS_Added_on: item.DS_Added_on ?? "",
+    DS_Modified_by: item.DS_Modified_by ?? "",
+    DS_Modified_on: item.DS_Modified_on ?? "",
+    DS_Provider_FK: item.DS_Provider_FK ?? "",
+    DS_Outlet_FK: item.DS_Outlet_FK ?? "",
+  }));
 };
 
-export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promise<ScheduleAssigned[]> => {
+export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promise<DialysisSchedules[]> => {
   await initDB();
   await db.read();
   // @ts-ignore
-  const existing = db.data!.Schedules_Assigned || [];
-  // Find the max numeric part of existing SA_ID_PK
+  const existing = db.data!.Dialysis_Schedules || [];
+  // Find the max numeric part of existing DS_ID_PK
   let maxNum = 0;
   for (const s of existing) {
-    const match = typeof s.SA_ID_PK === 'string' && s.SA_ID_PK.match(/^SA(\d{3,})$/);
+    const match = typeof s.DS_ID_PK === 'string' && s.DS_ID_PK.match(/^SA(\d{3,})$/);
     if (match) {
       const num = parseInt(match[1], 10);
       if (num > maxNum) maxNum = num;
@@ -77,11 +90,11 @@ export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promis
   // Assign new IDs
   const newSessions = sessions.map((session, idx) => ({
     ...session,
-    SA_ID_PK: `SA${String(maxNum + idx + 1).padStart(3, '0')}`
+    DS_ID_PK: `SA${String(maxNum + idx + 1).padStart(3, '0')}`
   }));
-  db.data!.Schedules_Assigned = [...existing, ...newSessions];
+  db.data!.Dialysis_Schedules = [...existing, ...newSessions];
   await db.write();
-  return db.data!.Schedules_Assigned;
+  return db.data!.Dialysis_Schedules;
 };
 
 // export interface CaseOpening {

@@ -1,4 +1,4 @@
-import type { CaseOpening, Item, Patient, ScheduleAssigned } from '../db/lowdb.js';
+import type { CaseOpening, Item, Patient, DialysisSchedules } from '../db/lowdb.js';
 import sql from 'mssql';
 
 function getEnv(name: string): string {
@@ -145,25 +145,52 @@ export const getInProcessRecords = async (): Promise<any[]> => {
   }
 };
 
-export const getSchedulesAssigned = async (): Promise<ScheduleAssigned[]> => {
+export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
   try {
     const pool = await sql.connect(config);
+    // const result = await pool.request().query(`
+    //   SELECT * FROM Dialysis_Schedules;
+
+    // `);
     const result = await pool.request().query(`
-      SELECT 
-        SA_ID_PK,
-        P_ID_FK,
-        CONVERT(varchar, SA_Date, 23) as SA_Date,
-        CONVERT(varchar, CAST(SA_Time AS TIME), 108) as SA_Time,
-        isDeleted,
-        Added_by,
-        CONVERT(varchar, Added_on, 120) as Added_on,
-        Modified_by,
-        CONVERT(varchar, Modified_on, 120) as Modified_on,
-        Provider_FK,
-        Outlet_FK
-      FROM Schedules_Assigned
-      WHERE isDeleted = 0;
+     SELECT 
+  DS_ID_PK,
+  DS_P_ID_FK,
+  CONVERT(VARCHAR, DS_Date, 23) AS DS_Date,
+  CONVERT(VARCHAR, DS_Time, 108) AS DS_Time,
+  DS_Status,
+  DS_Added_By,
+  REPLACE(CONVERT(VARCHAR, DS_Added_On, 120), ' ', 'T') AS DS_Added_on,
+  DS_Modified_By,
+  REPLACE(CONVERT(VARCHAR, DS_Modified_On, 120), ' ', 'T') AS DS_Modified_on,
+  DS_Provider_FK,
+  DS_Outlet_FK
+FROM dbo.Dialysis_Schedules
+WHERE DS_Status = 10
+ORDER BY DS_Date DESC, DS_Time DESC;
+
     `);
+
+    //************************************************** */
+    //************************************************** */
+    // Why 'T' is required for the UI:
+    // JavaScript’s Date constructor (and new Date(...)) expects ISO 8601 format, which looks like:
+
+    // ts
+    // Copy
+    // Edit
+    // '2025-07-31T14:30:00' // ✅ Valid
+    // '2025-07-31 14:30:00' // ❌ Invalid or inconsistent in many browsers
+    // Without the 'T', some browsers treat the date-time string as invalid, or even assume it’s in UTC, which may:
+
+    // lead to incorrect rendering,
+
+    // or fail entirely (e.g., Invalid Date).
+    //************************************************** */
+    //************************************************** */
+
+
+
     return result.recordset;
   } catch (err) {
     console.error('MSSQL getSchedulesAssigned error:', err);
@@ -171,53 +198,151 @@ export const getSchedulesAssigned = async (): Promise<ScheduleAssigned[]> => {
   }
 };
 
-export const addSchedulesAssigned = async (sessions: ScheduleAssigned[]): Promise<ScheduleAssigned[]> => {
+export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promise<DialysisSchedules[]> => {
   try {
     const pool = await sql.connect(config);
-
-    // Start a transaction
     const transaction = new sql.Transaction(pool);
     await transaction.begin();
-
     try {
-      // Get the next available ID
-      const idResult = await transaction.request()
-        .query(`SELECT ISNULL(MAX(CAST(SUBSTRING(SA_ID_PK, 3, LEN(SA_ID_PK)) AS INT)), 0) + 1 as nextId FROM Schedules_Assigned`);
-
-      let nextId = idResult.recordset[0].nextId;
       const newSessions = [];
-
-      // Insert each session
+      // Transform and validate payload to match MSSQL schema
       for (const session of sessions) {
-        const sessionId = `SA${String(nextId).padStart(3, '0')}`;
-        await transaction.request()
-          .input('id', sql.VarChar, sessionId)
-          .input('pId', sql.VarChar, session.P_ID_FK)
-          .input('date', sql.Date, session.SA_Date)
-          .input('time', sql.Time, session.SA_Time)
-          .input('addedBy', sql.VarChar, session.Added_by || 'system')
-          .input('providerFk', sql.VarChar, session.Provider_FK || null)
-          .input('outletFk', sql.VarChar, session.Outlet_FK || null)
-          .query(`
-            INSERT INTO Schedules_Assigned 
-            (SA_ID_PK, P_ID_FK, SA_Date, SA_Time, isDeleted, Added_by, Added_on, Modified_by, Modified_on, Provider_FK, Outlet_FK)
-            VALUES (@id, @pId, @date, @time, 0, @addedBy, GETDATE(), @addedBy, GETDATE(), @providerFk, @outletFk)
-          `);
 
-        newSessions.push({
-          ...session,
-          SA_ID_PK: sessionId,
-          isDeleted: 0,
-          Added_on: new Date().toISOString(),
-          Modified_on: new Date().toISOString()
-        });
-        nextId++;
+        const DS_P_ID_FK = Number(session.DS_P_ID_FK);
+        const DS_Date = session.DS_Date;
+        const DS_Time = session.DS_Time;
+        const DS_Status = typeof session.DS_Status === 'number' ? session.DS_Status : 10;
+
+        const DS_Added_by = session.DS_Added_by !== null ? Number(session.DS_Added_by) : null;
+        const DS_Modified_by = session.DS_Modified_by !== null ? Number(session.DS_Modified_by) : null;
+
+        const DS_Added_On = session.DS_Added_on ?? null;
+        const DS_Modified_On = session.DS_Modified_on ?? null;
+
+        const DS_Provider_FK = session.DS_Provider_FK !== null ? Number(session.DS_Provider_FK) : null;
+        const DS_Outlet_FK = session.DS_Outlet_FK !== null ? Number(session.DS_Outlet_FK) : null;
+
+
+        // Map/convert fields for MSSQL
+        // const DS_P_ID_FK = Number(session.DS_P_ID_FK ?? session.DS_P_ID_FK);
+        // const DS_Date = session.DS_Date;
+        // const DS_Time = session.DS_Time;
+        // const DS_Status = typeof session.DS_Status === 'number' ? session.DS_Status : 10;
+        // const DS_Added_by = Number(session.DS_Added_by ?? session.DS_Added_by ?? null);
+        // const DS_Provider_FK = session.DS_Provider_FK ? Number(session.DS_Provider_FK) : null;
+        // const DS_Outlet_FK = session.DS_Outlet_FK ? Number(session.DS_Outlet_FK) : null;
+        // Validate required fields
+
+        if (!DS_P_ID_FK || !DS_Date || !DS_Time) {
+          throw new Error(`Missing required fields: DS_P_ID_FK=${DS_P_ID_FK}, DS_Date=${DS_Date}, DS_Time=${DS_Time}`);
+        }
+        // Ensure DS_Time is in 'HH:mm:ss' format
+        let formattedTime: string;
+        if (Object.prototype.toString.call(DS_Time) === '[object Date]') {
+          const dateObj = DS_Time as unknown as Date;
+          if (isNaN(dateObj.getTime())) {
+            throw new Error('DS_Time is an invalid Date object');
+          }
+          // Get hours, minutes, seconds and pad to two digits
+          const hh = String(dateObj.getHours()).padStart(2, '0');
+          const mm = String(dateObj.getMinutes()).padStart(2, '0');
+          const ss = String(dateObj.getSeconds()).padStart(2, '0');
+          formattedTime = `${hh}:${mm}:${ss}`;
+        } else if (typeof DS_Time === 'string') {
+          // Acceptable formats: 'H:m', 'HH:mm', 'HH:mm:ss', etc.
+          const timeMatch = DS_Time.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+          if (timeMatch) {
+            let hh = parseInt(timeMatch[1], 10);
+            let mm = parseInt(timeMatch[2], 10);
+            let ss = timeMatch[3] ? parseInt(timeMatch[3], 10) : 0;
+            // Validate ranges
+            if (hh < 0 || hh > 23 || mm < 0 || mm > 59 || ss < 0 || ss > 59) {
+              throw new Error(`Invalid DS_Time value: ${DS_Time}`);
+            }
+            formattedTime = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+          } else {
+            throw new Error(`Invalid DS_Time format: ${DS_Time}`);
+          }
+        } else {
+          throw new Error(`DS_Time must be a Date or string, got: ${typeof DS_Time}`);
+        }
+        console.log('DS_Time formatted value:', formattedTime, 'Original:', DS_Time);
+        try {
+          const result = await transaction.request()
+            .input('DS_P_ID_FK', sql.BigInt, DS_P_ID_FK)
+            .input('DS_Date', sql.Date, DS_Date)
+            // .input('DS_Time', sql.Time, new Date('1970-01-01T08:00:00'))
+            .input(
+              'DS_Time',
+              sql.Time,
+              Object.prototype.toString.call(DS_Time) === '[object Date]'
+                ? DS_Time
+                : new Date(`1970-01-01T${formattedTime}`)
+            )
+
+
+
+
+            .input('DS_Status', sql.TinyInt, DS_Status)
+            // .input('DS_Added_On', sql.Date, DS_Added_On)
+            .input('DS_Added_By', sql.BigInt, DS_Added_by)
+
+            .input('DS_Modified_By', sql.BigInt, DS_Modified_by)
+            .input('DS_Modified_On', sql.Date, DS_Modified_On)
+            .input('DS_Provider_FK', sql.BigInt, DS_Provider_FK)
+            .input('DS_Outlet_FK', sql.BigInt, DS_Outlet_FK)
+
+            // .input('DS_Modified_by', sql.BigInt, DS_Modified_by)
+            // .input('DS_Modified_on', sql.Date, DS_Modified_on)
+            // .input('DS_Provider_FK', sql.BigInt, DS_Provider_FK)
+            // .input('DS_Outlet_FK', sql.BigInt, DS_Outlet_FK)
+
+            .query(`
+              INSERT INTO dbo.Dialysis_Schedules (
+                DS_P_ID_FK,
+                DS_Date,
+                DS_Time,
+                DS_Status,
+                DS_Added_By,
+                DS_Modified_By,
+                DS_Modified_On,
+                DS_Provider_FK,
+                DS_Outlet_FK
+              )
+              OUTPUT 
+                INSERTED.DS_ID_PK,
+                INSERTED.DS_P_ID_FK,
+                INSERTED.DS_Date,
+                INSERTED.DS_Time,
+                INSERTED.DS_Status,
+                INSERTED.DS_Added_By,
+                INSERTED.DS_Modified_By,
+                INSERTED.DS_Modified_On,
+                INSERTED.DS_Provider_FK,
+                INSERTED.DS_Outlet_FK
+              VALUES (
+                @DS_P_ID_FK,
+                @DS_Date,
+                @DS_Time,
+                @DS_Status,
+                @DS_Added_By,
+                @DS_Modified_By,
+                @DS_Modified_On,
+                @DS_Provider_FK,
+                @DS_Outlet_FK
+              );
+            `);
+          newSessions.push(result.recordset[0]);
+        } catch (insertErr) {
+          console.error('MSSQL addSchedulesAssigned insert error:', insertErr);
+          throw insertErr;
+        }
       }
-
       await transaction.commit();
       return newSessions;
     } catch (err) {
       await transaction.rollback();
+      console.error('MSSQL addSchedulesAssigned transaction error:', err);
       throw err;
     }
   } catch (err) {
@@ -230,11 +355,20 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT *
-FROM dbo.Dialysis_Case_Opening
+      SELECT 
+  'DCO' + RIGHT('0000' + CAST(DCO_ID_PK AS VARCHAR), 4) AS DCO_Formatted_ID,
+  *  
+FROM Dialysis_Case_Opening
 ORDER BY DCO_Added_On DESC;
 
     `);
+
+    //     const result = await pool.request().query(`
+    //       SELECT *
+    // FROM dbo.Dialysis_Case_Opening
+    // ORDER BY DCO_Added_On DESC;
+    //     `);
+
     // const result = await pool.request().query(`
     //   SELECT 
     //     DCO_ID_PK,

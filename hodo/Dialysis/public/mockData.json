@@ -13,7 +13,7 @@
             "fistulaCreationDate": "2023-02-01",
             "catheterDate": "2023-01-01",
             "fistulaDate": "2023-02-01",
-            "isDeleted": 10
+            "Status": 10
         },
         {
             "id": "P002",
@@ -28,7 +28,7 @@
             "fistulaCreationDate": "2023-04-01",
             "catheterDate": "2023-03-01",
             "fistulaDate": "2023-04-01",
-            "isDeleted": 10
+            "Status": 10
         }
     ],
     "appointments": [
@@ -43,7 +43,7 @@
             "admittingDoctor": "Dr. Brown",
             "status": "Scheduled",
             "remarks": "First session",
-            "isDeleted": 10
+            "Status": 10
         },
         {
             "id": "A002",
@@ -56,7 +56,7 @@
             "admittingDoctor": "Dr. Davis",
             "status": "Completed",
             "remarks": "Follow-up",
-            "isDeleted": 10
+            "Status": 10
         }
     ],
     "billing": [
@@ -68,7 +68,7 @@
             "totalAmount": 2000,
             "status": "PAID",
             "description": "Routine dialysis",
-            "isDeleted": 10
+            "Status": 10
         },
         {
             "id": "B002",
@@ -78,7 +78,7 @@
             "totalAmount": 1800,
             "status": "PENDING",
             "description": "Dialysis with consultation",
-            "isDeleted": 10
+            "Status": 10
         }
     ],
     "history": [
@@ -93,7 +93,7 @@
             "gender": "Male",
             "notes": "Stable",
             "nursingNotes": "No issues",
-            "isDeleted": 10
+            "Status": 10
         },
         {
             "id": "H002",
@@ -106,7 +106,7 @@
             "gender": "Female",
             "notes": "Mild cramps",
             "nursingNotes": "Observed for 30 min",
-            "isDeleted": 10
+            "Status": 10
         }
     ],
     "haemodialysisRecords": [

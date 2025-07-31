@@ -28,7 +28,7 @@ When a dialysis process is submitted through the DialysisProcess page, the syste
      - Patient ID matches the selected patient
      - Date matches current date
      - Status is not already "Completed"
-     - Appointment is not soft-deleted (isDeleted !== 0)
+     - Appointment is not soft-deleted (Status !== 0)
    
 3. **Status Update**:
    - If matching appointment is found, status is updated to "Completed"
@@ -56,7 +56,7 @@ const correspondingAppointment = appointments.find(apt =>
   apt.patientId === values.patientId && 
   apt.date === currentDate &&
   apt.status !== 'Completed' &&
-  apt.isDeleted !== 0
+  apt.Status !== 0
 );
 
 // Update appointment status

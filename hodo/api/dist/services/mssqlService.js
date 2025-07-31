@@ -142,19 +142,19 @@ export const getSchedulesAssigned = async () => {
         const pool = await sql.connect(config);
         const result = await pool.request().query(`
       SELECT 
-        SA_ID_PK,
+        DS_ID_PK,
         P_ID_FK,
-        CONVERT(varchar, SA_Date, 23) as SA_Date,
-        CONVERT(varchar, CAST(SA_Time AS TIME), 108) as SA_Time,
-        isDeleted,
+        CONVERT(varchar, DS_Date, 23) as DS_Date,
+        CONVERT(varchar, CAST(DS_Time AS TIME), 108) as DS_Time,
+        Status,
         Added_by,
         CONVERT(varchar, Added_on, 120) as Added_on,
         Modified_by,
         CONVERT(varchar, Modified_on, 120) as Modified_on,
         Provider_FK,
         Outlet_FK
-      FROM Schedules_Assigned
-      WHERE isDeleted = 0;
+      FROM Dialysis_Schedules
+      WHERE Status = 0;
     `);
         return result.recordset;
     }
@@ -172,7 +172,7 @@ export const addSchedulesAssigned = async (sessions) => {
         try {
             // Get the next available ID
             const idResult = await transaction.request()
-                .query(`SELECT ISNULL(MAX(CAST(SUBSTRING(SA_ID_PK, 3, LEN(SA_ID_PK)) AS INT)), 0) + 1 as nextId FROM Schedules_Assigned`);
+                .query(`SELECT ISNULL(MAX(CAST(SUBSTRING(DS_ID_PK, 3, LEN(DS_ID_PK)) AS INT)), 0) + 1 as nextId FROM Dialysis_Schedules`);
             let nextId = idResult.recordset[0].nextId;
             const newSessions = [];
             // Insert each session
@@ -181,22 +181,22 @@ export const addSchedulesAssigned = async (sessions) => {
                 await transaction.request()
                     .input('id', sql.VarChar, sessionId)
                     .input('pId', sql.VarChar, session.P_ID_FK)
-                    .input('date', sql.Date, session.SA_Date)
-                    .input('time', sql.Time, session.SA_Time)
+                    .input('date', sql.Date, session.DS_Date)
+                    .input('time', sql.Time, session.DS_Time)
                     .input('addedBy', sql.VarChar, session.Added_by || 'system')
                     .input('providerFk', sql.VarChar, session.Provider_FK || null)
                     .input('outletFk', sql.VarChar, session.Outlet_FK || null)
                     .query(`
-            INSERT INTO Schedules_Assigned 
-            (SA_ID_PK, P_ID_FK, SA_Date, SA_Time, isDeleted, Added_by, Added_on, Modified_by, Modified_on, Provider_FK, Outlet_FK)
+            INSERT INTO Dialysis_Schedules 
+            (DS_ID_PK, P_ID_FK, DS_Date, DS_Time, Status, Added_by, Added_on, Modified_by, Modified_on, Provider_FK, Outlet_FK)
             VALUES (@id, @pId, @date, @time, 0, @addedBy, GETDATE(), @addedBy, GETDATE(), @providerFk, @outletFk)
           `);
                 newSessions.push({
                     ...session,
-                    SA_ID_PK: sessionId,
-                    isDeleted: 0,
-                    Added_on: new Date().toISOString(),
-                    Modified_on: new Date().toISOString()
+                    DS_ID_PK: sessionId,
+                    DS_Status: 0,
+                    DS_Added_on: new Date().toISOString(),
+                    DS_Modified_on: new Date().toISOString()
                 });
                 nextId++;
             }

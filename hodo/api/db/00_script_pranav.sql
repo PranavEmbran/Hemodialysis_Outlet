@@ -35,6 +35,41 @@ END;
 GO
 
 
+-- ===========================================
+-- Create Table: Dialysis_Schedules
+-- ===========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Dialysis_Schedules'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Dialysis_Schedules (
+        DS_ID_PK BIGINT IDENTITY(1,1) PRIMARY KEY,          -- Primary Key
+
+        DS_P_ID_FK BIGINT NOT NULL,                         -- FK to patient master
+        DS_Date DATE NOT NULL,                              -- Scheduled date
+        DS_Time TIME NOT NULL,                              -- Scheduled time
+
+        DS_Status TINYINT DEFAULT 10,                       -- 10 = active, 0 = soft deleted
+
+        DS_Added_By BIGINT NULL,
+        DS_Added_On DATETIME DEFAULT GETDATE(),
+        DS_Modified_By BIGINT NULL,
+        DS_Modified_On DATETIME NULL,
+
+        DS_Provider_FK BIGINT NULL,
+        DS_Outlet_FK BIGINT NULL,
+
+        -- Foreign Key to Patient Master (no delete cascade)
+        CONSTRAINT FK_DialysisSchedules_Patient FOREIGN KEY (DS_P_ID_FK)
+            REFERENCES dbo.PAT_Patient_Master_1(PM_Card_PK)
+            ON UPDATE CASCADE
+    );
+END;
+GO
+
 
 
 

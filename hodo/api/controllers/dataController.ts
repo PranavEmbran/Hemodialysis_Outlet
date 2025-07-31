@@ -137,7 +137,7 @@ export const savePredialysisRecord = async (req: Request, res: Response) => {
   try {
     const record = req.body;
     // Basic validation
-    if (!record.SA_ID_FK_PK || !record.P_ID_FK) {
+    if (!record.DS_ID_FK_PK || !record.P_ID_FK) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     const saved = await addPredialysisRecord(record);

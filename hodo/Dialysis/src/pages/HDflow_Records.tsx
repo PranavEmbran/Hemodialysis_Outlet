@@ -61,11 +61,11 @@ const getEditEndpointForStep = (step: number) => {
 const mapRowToFormData = (row: any, step: number, patients: any[], schedules: any[]) => {
   if (step === 0) {
     const patient = patients.find(p => p.name === row.P_ID_FK || p.id === row.P_ID_FK);
-    const schedule = schedules.find(s => s.SA_ID_PK === row.SA_ID_FK_PK);
+    const schedule = schedules.find(s => s.DS_ID_PK === row.SA_ID_FK_PK);
     return {
       patientName: patient ? patient.name : row.P_ID_FK,
-      date: schedule ? schedule.SA_Date : row.date,
-      time: schedule ? schedule.SA_Time : row.time,
+      date: schedule ? schedule.DS_Date : row.date,
+      time: schedule ? schedule.DS_Time : row.time,
       PreDR_Vitals_BP: row.PreDR_Vitals_BP,
       PreDR_Vitals_HeartRate: row.PreDR_Vitals_HeartRate,
       PreDR_Vitals_Temperature: row.PreDR_Vitals_Temperature,
@@ -76,12 +76,12 @@ const mapRowToFormData = (row: any, step: number, patients: any[], schedules: an
     };
   }
   if (step === 1) {
-    const schedule = schedules.find(s => s.SA_ID_PK === row.SA_ID_FK_PK);
+    const schedule = schedules.find(s => s.DS_ID_PK === row.SA_ID_FK_PK);
     const patient = schedule ? patients.find(p => p.id === schedule.P_ID_FK) : undefined;
     return {
       name: patient ? patient.name : '',
-      date: schedule ? schedule.SA_Date : row.date,
-      time: schedule ? schedule.SA_Time : row.time,
+      date: schedule ? schedule.DS_Date : row.date,
+      time: schedule ? schedule.DS_Time : row.time,
       Dialysis_Unit: row.Dialysis_Unit,
       SDR_Start_time: row.SDR_Start_time,
       SDR_Vascular_access: row.SDR_Vascular_access,
@@ -93,11 +93,11 @@ const mapRowToFormData = (row: any, step: number, patients: any[], schedules: an
   }
   if (step === 2) {
     const patient = patients.find(p => p.name === row.P_ID_FK || p.id === row.P_ID_FK);
-    const schedule = schedules.find(s => s.SA_ID_PK === row.SA_ID_FK);
+    const schedule = schedules.find(s => s.DS_ID_PK === row.SA_ID_FK);
     return {
       patientName: patient ? patient.name : row.P_ID_FK,
-      date: schedule ? schedule.SA_Date : row.date,
-      time: schedule ? schedule.SA_Time : row.time,
+      date: schedule ? schedule.DS_Date : row.date,
+      time: schedule ? schedule.DS_Time : row.time,
       PreDR_Vitals_BP: row.PreDR_Vitals_BP,
       PreDR_Vitals_HeartRate: row.PreDR_Vitals_HeartRate,
       PreDR_Vitals_Temperature: row.PreDR_Vitals_Temperature,
@@ -129,7 +129,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
       fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
       fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
       fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
@@ -143,15 +143,15 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       const safePostDialysis = Array.isArray(postDialysis) ? postDialysis : [];
       setSchedules(safeSchedules);
       setPatients(safePatients.map((p: any) => ({ id: p.id, name: p.Name || p.name })));
-      const options = safeSchedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+      const options = safeSchedules.filter((a: any) => a.Status === 10).map((sch: any) => {
         const patient = safePatients.find((p: any) => p.id === sch.P_ID_FK);
         const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
         return {
-          value: sch.SA_ID_PK,
-          label: `${sch.SA_ID_PK} - ${patientLabel}`,
+          value: sch.DS_ID_PK,
+          label: `${sch.DS_ID_PK} - ${patientLabel}`,
           patientId: sch.P_ID_FK,
-          date: sch.SA_Date,
-          time: sch.SA_Time
+          date: sch.DS_Date,
+          time: sch.DS_Time
         };
       });
       setScheduleOptions(options);
@@ -201,7 +201,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       setEditRow(null);
       setLoading(true);
       Promise.all([
-        fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+        fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
         fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
         fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
         fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
@@ -209,15 +209,15 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
         setSchedules(schedules);
         setPatients(patientsData.map((p: any) => ({ id: p.id, name: p.Name || p.name })));
-        const options = schedules.filter((a: any) => a.isDeleted === 10).map((sch: any) => {
+        const options = schedules.filter((a: any) => a.Status === 10).map((sch: any) => {
           const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
           const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
           return {
-            value: sch.SA_ID_PK,
-            label: `${sch.SA_ID_PK} - ${patientLabel}`,
+            value: sch.DS_ID_PK,
+            label: `${sch.DS_ID_PK} - ${patientLabel}`,
             patientId: sch.P_ID_FK,
-            date: sch.SA_Date,
-            time: sch.SA_Time
+            date: sch.DS_Date,
+            time: sch.DS_Time
           };
         });
         setScheduleOptions(options);
@@ -234,11 +234,11 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   // Helper to add date/time to each record
   const addDateTimeToRecords = (records: any[], getScheduleId: (r: any) => string) => {
     return records.map(r => {
-      const schedule = schedules.find((s: any) => s.SA_ID_PK === getScheduleId(r));
+      const schedule = schedules.find((s: any) => s.DS_ID_PK === getScheduleId(r));
       return {
         ...r,
-        date: schedule ? schedule.SA_Date : '',
-        time: schedule ? schedule.SA_Time : '',
+        date: schedule ? schedule.DS_Date : '',
+        time: schedule ? schedule.DS_Time : '',
       };
     });
   };
@@ -254,7 +254,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         return (
           (selectedSchedule ? r.SA_ID_FK_PK === selectedSchedule : true) &&
            (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-           (selectedDate ? (schedules.find(s => s.SA_ID_PK === r.SA_ID_FK_PK)?.SA_Date === selectedDate || r.date === selectedDate) : true)
+           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.SA_ID_FK_PK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK_PK
@@ -263,17 +263,17 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     columns = startDialysisColumns;
     filteredRecords = addDateTimeToRecords(
       startDialysisRecords.filter(r => {
-        const schedule = schedules.find((s: any) => s.SA_ID_PK === r.SA_ID_FK_PK);
+        const schedule = schedules.find((s: any) => s.DS_ID_PK === r.SA_ID_FK_PK);
         return (
           (selectedSchedule ? r.SA_ID_FK_PK === selectedSchedule : true) &&
            (selectedPatient ? (schedule && schedule.P_ID_FK === selectedPatient) : true) &&
-           (selectedDate ? ((schedule && schedule.SA_Date === selectedDate) || r.date === selectedDate) : true)
+           (selectedDate ? ((schedule && schedule.DS_Date === selectedDate) || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK_PK
     ).map(r => {
       // Add patient name by looking up the schedule and then the patient
-      const schedule = schedules.find((s: any) => s.SA_ID_PK === r.SA_ID_FK_PK);
+      const schedule = schedules.find((s: any) => s.DS_ID_PK === r.SA_ID_FK_PK);
       const patient = schedule ? patients.find(p => p.id === schedule.P_ID_FK) : undefined;
       return {
         ...r,
@@ -288,7 +288,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         return (
           (selectedSchedule ? r.SA_ID_FK === selectedSchedule : true) &&
            (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-           (selectedDate ? (schedules.find(s => s.SA_ID_PK === r.SA_ID_FK)?.SA_Date === selectedDate || r.date === selectedDate) : true)
+           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.SA_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
       r => r.SA_ID_FK

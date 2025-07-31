@@ -31,10 +31,10 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_URL}/data/schedules_assigned`).then(res => res.json()),
+      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
       fetch(`${API_URL}/data/patients_derived`).then(res => res.json())
     ]).then(([schedules, patientsData]) => {
-      setAppointments(schedules.filter((a: any) => a.isDeleted === 10));
+      setAppointments(schedules.filter((a: any) => a.Status === 10));
       setPatients(patientsData);
     });
   }, []);
@@ -45,7 +45,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[
     if (selectedSchedule && appointments.length > 0) {
       setForm(prev => {
         if (prev.SA_ID_FK !== selectedSchedule) {
-          const selected = appointments.find(a => a.SA_ID_PK === selectedSchedule);
+          const selected = appointments.find(a => a.DS_ID_PK === selectedSchedule);
           let patientName = '';
           if (selected) {
             const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
@@ -64,7 +64,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
     setForm(prev => ({ ...prev, SA_ID_FK: scheduleId }));
-    const selected = appointments.find(a => a.SA_ID_PK === scheduleId);
+    const selected = appointments.find(a => a.DS_ID_PK === scheduleId);
     if (selected) {
       const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
       setForm(prev => ({ ...prev, P_ID_FK: patient ? patient.Name : '' }));
@@ -198,10 +198,10 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[
             )}
             <div className="form-group mb-0">
               {(() => {
-                const selectedScheduleObj = appointments.find(sch => sch.SA_ID_PK === values.SA_ID_FK);
+                const selectedScheduleObj = appointments.find(sch => sch.DS_ID_PK === values.SA_ID_FK);
                 const patient = selectedScheduleObj ? patients.find((p: any) => p.id === selectedScheduleObj.P_ID_FK) : null;
                 const labelText = selectedScheduleObj
-                  ? `${selectedScheduleObj.SA_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
+                  ? `${selectedScheduleObj.DS_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
                   : 'No schedule selected';
                 return (
                   <label className="blueBar">

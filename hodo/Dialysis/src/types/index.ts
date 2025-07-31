@@ -17,8 +17,8 @@ export interface Patient {
   catheterInsertionDate?: string;
   fistulaCreationDate?: string;
   dateOfBirth?: string;
-  // isDeleted?: boolean;
-  isDeleted?: number;
+  // Status?: boolean;
+  Status?: number;
   deletedAt?: string;
 }
 
@@ -31,7 +31,7 @@ export interface Appointment {
   type: string;
   status: string;
   notes?: string;
-  isDeleted?: number;
+  Status?: number;
   deletedAt?: string;
 }
 
@@ -46,7 +46,7 @@ export interface Billing {
   sessionDate?: string;
   sessionDuration?: number;
   totalAmount?: number;
-  isDeleted?: number;
+  Status?: number;
   deletedAt?: string;
 }
 
@@ -79,7 +79,7 @@ export interface History {
       weight?: number;
     };
   };
-  isDeleted?: number;
+  Status?: number;
   deletedAt?: string;
 }
 
@@ -98,7 +98,7 @@ export interface HistoryRecord {
   treatmentType?: string;
   duration?: string;
   status?: string;
-  isDeleted?: number;
+  Status?: number;
   deletedAt?: string;
 }
 
@@ -119,7 +119,7 @@ export interface ScheduleEntry {
   admittingDoctor: string;
   status?: string;
   remarks?: string;
-  // isDeleted?: boolean;
-  isDeleted?: number;
+  // Status?: boolean;
+  Status?: number;
   deletedAt?: string;
 } 

@@ -4,7 +4,7 @@ import { JSONFile } from 'lowdb/node';
 const defaultData = {
     items: [],
     patients_derived: [],
-    Schedules_Assigned: [],
+    Dialysis_Schedules: [],
     case_openings: [],
     predialysis_records: [],
     start_dialysis_records: [],

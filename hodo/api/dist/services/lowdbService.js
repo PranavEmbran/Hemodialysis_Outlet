@@ -33,17 +33,17 @@ export const getSchedulesAssigned = async () => {
     await initDB();
     await db.read();
     // @ts-ignore
-    return db.data?.Schedules_Assigned || [];
+    return db.data?.Dialysis_Schedules || [];
 };
 export const addSchedulesAssigned = async (sessions) => {
     await initDB();
     await db.read();
     // @ts-ignore
-    const existing = db.data.Schedules_Assigned || [];
-    // Find the max numeric part of existing SA_ID_PK
+    const existing = db.data.Dialysis_Schedules || [];
+    // Find the max numeric part of existing DS_ID_PK
     let maxNum = 0;
     for (const s of existing) {
-        const match = typeof s.SA_ID_PK === 'string' && s.SA_ID_PK.match(/^SA(\d{3,})$/);
+        const match = typeof s.DS_ID_PK === 'string' && s.DS_ID_PK.match(/^SA(\d{3,})$/);
         if (match) {
             const num = parseInt(match[1], 10);
             if (num > maxNum)
@@ -53,11 +53,11 @@ export const addSchedulesAssigned = async (sessions) => {
     // Assign new IDs
     const newSessions = sessions.map((session, idx) => ({
         ...session,
-        SA_ID_PK: `SA${String(maxNum + idx + 1).padStart(3, '0')}`
+        DS_ID_PK: `SA${String(maxNum + idx + 1).padStart(3, '0')}`
     }));
-    db.data.Schedules_Assigned = [...existing, ...newSessions];
+    db.data.Dialysis_Schedules = [...existing, ...newSessions];
     await db.write();
-    return db.data.Schedules_Assigned;
+    return db.data.Dialysis_Schedules;
 };
 export const getCaseOpenings = async () => {
     await initDB();
