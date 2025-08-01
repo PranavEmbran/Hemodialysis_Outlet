@@ -104,6 +104,11 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   const today = new Date().toISOString().split('T')[0];
 
+  const isMSSQL = React.useMemo(() => {
+    return assignedSessions.some(row => row.DS_Added_on?.includes('T'));
+  }, [assignedSessions]);
+
+
   const initialValues = {
     patient: '',
     interval: 'daily',
@@ -185,7 +190,11 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         const assigned = await res.json();
         setAssignedSessions(assigned);
         // Check for conflicts
-        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
+        // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
+        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))));
+        
+
+
         // Mark isConflicting flag
         rows.forEach(row => {
           row.isConflicting = conflicts.some(c => c.date === row.date && c.time === row.time);
@@ -220,7 +229,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   
 
-  const handleSave = async (patientId: number, resetForm?: () => void) => {
+  const handleSave = async (patientId: string | number, resetForm?: () => void) => {
     setFormKey(prev => prev + 1); // force re-render to fully reset select
 
     if (!patientId || selectedRows.length === 0) {
@@ -351,7 +360,11 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                       { key: 'select', header: 'Select' },
                     ]}
                     data={scheduleRows.map(row => {
-                       const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
+                      // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
+                      const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
+                      
+
+
                        const atCapacity = bookedCount >= unitsCount;
                        console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
                        return {
@@ -390,7 +403,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                         data={selectedRows}
                       />
                       <div style={{ textAlign: 'center', marginTop: 24 }}>
-                        <ButtonWithGradient type="button" onClick={() => handleSave(Number(values.patient), resetForm)}
+                        <ButtonWithGradient type="button" onClick={() => handleSave(values.patient, resetForm)}
                         >
                           Save Sessions
                         </ButtonWithGradient>
@@ -429,11 +442,16 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                   year: 'numeric',
                   month: '2-digit',
                   day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: true,
+                  ...(isMSSQL
+                    ? {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true,
+                      }
+                    : {}),
                 }),
+                
               }))}
             />
           </>

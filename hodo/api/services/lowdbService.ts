@@ -53,6 +53,25 @@ export interface DialysisSchedules {
   DS_Outlet_FK: string;
 }
 
+// export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
+//   await initDB();
+//   await db.read();
+//   // @ts-ignore
+//   const arr = db.data?.Dialysis_Schedules || [];
+//   return arr.map((item: any) => ({
+//     DS_ID_PK: item.DS_ID_PK ?? "",
+//     DS_P_ID_FK: item.DS_P_ID_FK ?? "",
+//     DS_Date: item.DS_Date ?? "",
+//     DS_Time: item.DS_Time ?? "",
+//     DS_Status: item.DS_Status ?? 0,
+//     DS_Added_by: item.DS_Added_by ?? "",
+//     DS_Added_on: item.DS_Added_on ?? "",
+//     DS_Modified_by: item.DS_Modified_by ?? "",
+//     DS_Modified_on: item.DS_Modified_on ?? "",
+//     DS_Provider_FK: item.DS_Provider_FK ?? "",
+//     DS_Outlet_FK: item.DS_Outlet_FK ?? "",
+//   }));
+// };
 export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
   await initDB();
   await db.read();
@@ -60,18 +79,20 @@ export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
   const arr = db.data?.Dialysis_Schedules || [];
   return arr.map((item: any) => ({
     DS_ID_PK: item.DS_ID_PK ?? "",
-    DS_P_ID_FK: item.DS_P_ID_FK ?? "",
+    // Map DS_P_ID_FK from either DS_P_ID_FK or P_ID_FK for compatibility
+    DS_P_ID_FK: item.DS_P_ID_FK ?? item.P_ID_FK ?? "",
     DS_Date: item.DS_Date ?? "",
     DS_Time: item.DS_Time ?? "",
-    DS_Status: item.DS_Status ?? 0,
-    DS_Added_by: item.DS_Added_by ?? "",
-    DS_Added_on: item.DS_Added_on ?? "",
-    DS_Modified_by: item.DS_Modified_by ?? "",
-    DS_Modified_on: item.DS_Modified_on ?? "",
-    DS_Provider_FK: item.DS_Provider_FK ?? "",
-    DS_Outlet_FK: item.DS_Outlet_FK ?? "",
+    DS_Status: item.DS_Status ?? item.Status ?? 0,
+    DS_Added_by: item.DS_Added_by ?? item.Added_by ?? "",
+    DS_Added_on: item.DS_Added_on ?? item.Added_on ?? "",
+    DS_Modified_by: item.DS_Modified_by ?? item.Modified_by ?? "",
+    DS_Modified_on: item.DS_Modified_on ?? item.Modified_on ?? "",
+    DS_Provider_FK: item.DS_Provider_FK ?? item.Provider_FK ?? "",
+    DS_Outlet_FK: item.DS_Outlet_FK ?? item.Outlet_FK ?? "",
   }));
 };
+
 
 export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promise<DialysisSchedules[]> => {
   await initDB();
