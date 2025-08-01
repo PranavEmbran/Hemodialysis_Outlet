@@ -40,7 +40,7 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT TOP 30
+      SELECT TOP 25
         PM_Card_PK,
         PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
       FROM PAT_Patient_Master_1
@@ -154,20 +154,26 @@ export const getSchedulesAssigned = async (): Promise<DialysisSchedules[]> => {
     // `);
     const result = await pool.request().query(`
      SELECT 
-  DS_ID_PK,
-  DS_P_ID_FK,
-  CONVERT(VARCHAR, DS_Date, 23) AS DS_Date,
-  CONVERT(VARCHAR, DS_Time, 108) AS DS_Time,
-  DS_Status,
-  DS_Added_By,
-  REPLACE(CONVERT(VARCHAR, DS_Added_On, 120), ' ', 'T') AS DS_Added_on,
-  DS_Modified_By,
-  REPLACE(CONVERT(VARCHAR, DS_Modified_On, 120), ' ', 'T') AS DS_Modified_on,
-  DS_Provider_FK,
-  DS_Outlet_FK
-FROM dbo.Dialysis_Schedules
-WHERE DS_Status = 10
-ORDER BY DS_Date DESC, DS_Time DESC;
+        DS_ID_PK,
+        DS_P_ID_FK,
+        CONVERT(VARCHAR, DS_Date, 23) AS DS_Date,
+        CONVERT(VARCHAR, DS_Time, 108) AS DS_Time,
+        DS_Status,
+        DS_Added_By,
+        REPLACE(CONVERT(VARCHAR, DS_Added_On, 120), ' ', 'T') AS DS_Added_on,
+        DS_Modified_By,
+        REPLACE(CONVERT(VARCHAR, DS_Modified_On, 120), ' ', 'T') AS DS_Modified_on,
+        DS_Provider_FK,
+        DS_Outlet_FK,
+        PM.PM_FirstName + 
+          ISNULL(' ' + PM.PM_MiddleName, '') + 
+          ISNULL(' ' + PM.PM_LastName, '') AS PatientName
+      FROM 
+        Dialysis_Schedules DS
+      JOIN 
+        PAT_Patient_Master_1 PM ON PM.PM_Card_PK = DS.DS_P_ID_FK
+      WHERE DS_Status = 10
+      ORDER BY DS_Date DESC, DS_Time DESC;
 
     `);
 
@@ -356,12 +362,28 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
       SELECT 
-  'DCO' + RIGHT('0000' + CAST(DCO_ID_PK AS VARCHAR), 4) AS DCO_Formatted_ID,
-  *  
-FROM Dialysis_Case_Opening
-ORDER BY DCO_Added_On DESC;
+        'DCO' + RIGHT('0000' + CAST(DCO.DCO_ID_PK AS VARCHAR), 4) AS DCO_Formatted_ID,
+        DCO.*,
+        PM.PM_FirstName + 
+          ISNULL(' ' + PM.PM_MiddleName, '') + 
+          ISNULL(' ' + PM.PM_LastName, '') AS PatientName
+      FROM 
+        Dialysis_Case_Opening DCO
+      JOIN 
+        PAT_Patient_Master_1 PM ON PM.PM_Card_PK = DCO.DCO_P_ID_FK
+      ORDER BY 
+        DCO.DCO_Added_On ASC;
+
 
     `);
+    // const result = await pool.request().query(`
+    //   SELECT 
+    //   'DCO' + RIGHT('0000' + CAST(DCO_ID_PK AS VARCHAR), 4) AS DCO_Formatted_ID,
+    //   *  
+    //   FROM Dialysis_Case_Opening
+    //   ORDER BY DCO_Added_On ASC;
+
+    // `);
 
     //     const result = await pool.request().query(`
     //       SELECT *

@@ -100,7 +100,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   const [error, setError] = useState<string>('');
   const [saveStatus, setSaveStatus] = useState<string>('');
   const [assignedSessions, setAssignedSessions] = useState<any[]>([]);
-  const [conflictInfo, setConflictInfo] = useState<{conflictingRows: any[], message: string}>({conflictingRows: [], message: ''});
+  const [conflictInfo, setConflictInfo] = useState<{ conflictingRows: any[], message: string }>({ conflictingRows: [], message: '' });
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -138,7 +138,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     const { fromDate, tillDate, interval, sessionPreferred, numSessions } = values;
 
     setError('');
-    setConflictInfo({conflictingRows: [], message: ''});
+    setConflictInfo({ conflictingRows: [], message: '' });
 
     if (!values.patient) {
       setScheduleRows([]);
@@ -192,7 +192,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         // Check for conflicts
         // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
         conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))));
-        
+
 
 
         // Mark isConflicting flag
@@ -206,7 +206,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             message: `The sessions already booked cannot be selected or saved.`
           });
         } else {
-          setConflictInfo({conflictingRows: [], message: ''});
+          setConflictInfo({ conflictingRows: [], message: '' });
         }
       } catch (err) {
         setAssignedSessions([]);
@@ -227,7 +227,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   };
 
 
-  
+
 
   const handleSave = async (patientId: string | number, resetForm?: () => void) => {
     setFormKey(prev => prev + 1); // force re-render to fully reset select
@@ -279,7 +279,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-      <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
+        <SectionHeading title="Scheduling" subtitle="Fill the form to generate schedule" />
 
         <Breadcrumb
           steps={steps}
@@ -290,108 +290,65 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
           <>
             {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
             <Formik key={formKey} initialValues={initialValues} onSubmit={handleSubmit}>
-           {({ values, resetForm }) => (
-             <Form>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <SelectField
-                  label="Patient"
-                  name="patient"
-                  options={patients.map(p => ({ value: p.id, label: `${p.id} - ${p.Name}` }))}
-                  required
-                  placeholder="Select Patient"
-                />
-                <SelectField
-                  label="Interval"
-                  name="interval"
-                  options={intervalOptions}
-                  required
-                  placeholder="Select Interval"
-                  defaultValue={intervalOptions[0]}
-                />
-                <SelectField
-                  label="Session Preferred"
-                  name="sessionPreferred"
-                  options={sessionOptions}
-                  required
-                  placeholder="Select Session"
-                  defaultValue={sessionOptions[0]}
-                />
-                <InputField
-                  label="Number of Sessions"
-                  name="numSessions"
-                  type="number"
-                  required
-                  min={1}
-                  defaultValue={5}
-                />
-                <InputField
-                  label="From Date"
-                  name="fromDate"
-                  type="date"
-                  required
-                  min={today}
-                  defaultValue={today}
-                />
-                <InputField
-                  label="Till Date"
-                  name="tillDate"
-                  type="date"
-                  min={values.fromDate}
-                />
-              </div>
-              <div style={{ textAlign: 'left', marginTop: 16 }}>
-                <ButtonWithGradient type="submit">Generate Schedule</ButtonWithGradient>
-              </div>
+              {({ values, resetForm }) => (
+                <Form>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <SelectField
+                      label="Patient"
+                      name="patient"
+                      options={patients.map(p => ({ value: p.id, label: `${p.id} - ${p.Name}` }))}
+                      required
+                      placeholder="Select Patient"
+                    />
+                    <SelectField
+                      label="Interval"
+                      name="interval"
+                      options={intervalOptions}
+                      required
+                      placeholder="Select Interval"
+                      defaultValue={intervalOptions[0]}
+                    />
+                    <SelectField
+                      label="Session Preferred"
+                      name="sessionPreferred"
+                      options={sessionOptions}
+                      required
+                      placeholder="Select Session"
+                      defaultValue={sessionOptions[0]}
+                    />
+                    <InputField
+                      label="Number of Sessions"
+                      name="numSessions"
+                      type="number"
+                      required
+                      min={1}
+                      defaultValue={5}
+                    />
+                    <InputField
+                      label="From Date"
+                      name="fromDate"
+                      type="date"
+                      required
+                      min={today}
+                      defaultValue={today}
+                    />
+                    <InputField
+                      label="Till Date"
+                      name="tillDate"
+                      type="date"
+                      min={values.fromDate}
+                    />
+                  </div>
+                  <div style={{ textAlign: 'left', marginTop: 16 }}>
+                    <ButtonWithGradient type="submit">Generate Schedule</ButtonWithGradient>
+                  </div>
 
-              {scheduleRows.length > 0 && (
-                <>
-                  <h4 className="blueBar">Schedule Table</h4>
-                  {conflictInfo.message && (
-                    <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
-                  )}
-                  <Table
-                    columns={[
-                      { key: 'date', header: 'Date' },
-                      { key: 'time', header: 'Time' },
-                      { key: 'dayName', header: 'Day Name' },
-                      { key: 'monthName', header: 'Month Name' },
-                      { key: 'nthSession', header: 'Nth Session of Day' },
-                      { key: 'booked', header: 'Booked/Units' },
-                      { key: 'select', header: 'Select' },
-                    ]}
-                    data={scheduleRows.map(row => {
-                      // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
-                      const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
-                      
-
-
-                       const atCapacity = bookedCount >= unitsCount;
-                       console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
-                       return {
-                        ...row,
-                        booked: `${bookedCount} / ${unitsCount}`,
-                        atCapacity,
-                        select: (
-                          <input
-                            type="checkbox"
-                            checked={selectedRows.some(r => r.id === row.id)}
-                            onChange={() => handleRowSelect(row)}
-                            // disabled={row.isConflicting || atCapacity}
-                            disabled={row.isConflicting && atCapacity}
-                          />
-                        ),
-                        _rowStyle: row.isConflicting
-                          ? { backgroundColor: '#ffd6d6' }
-                          : atCapacity
-                          ? { backgroundColor: '#ffe7ba' }
-                          : {},
-                      };
-                    })}
-                  />
-
-                  {selectedRows.length > 0 && (
+                  {scheduleRows.length > 0 && (
                     <>
-                      <h4 className="blueBar">Selected Sessions</h4>
+                      <h4 className="blueBar">Schedule Table</h4>
+                      {conflictInfo.message && (
+                        <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
+                      )}
                       <Table
                         columns={[
                           { key: 'date', header: 'Date' },
@@ -399,28 +356,71 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                           { key: 'dayName', header: 'Day Name' },
                           { key: 'monthName', header: 'Month Name' },
                           { key: 'nthSession', header: 'Nth Session of Day' },
+                          { key: 'booked', header: 'Booked/Units' },
+                          { key: 'select', header: 'Select' },
                         ]}
-                        data={selectedRows}
+                        data={scheduleRows.map(row => {
+                          // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
+                          const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
+
+
+
+                          const atCapacity = bookedCount >= unitsCount;
+                          console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
+                          return {
+                            ...row,
+                            booked: `${bookedCount} / ${unitsCount}`,
+                            atCapacity,
+                            select: (
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.some(r => r.id === row.id)}
+                                onChange={() => handleRowSelect(row)}
+                                // disabled={row.isConflicting || atCapacity}
+                                disabled={row.isConflicting && atCapacity}
+                              />
+                            ),
+                            _rowStyle: row.isConflicting
+                              ? { backgroundColor: '#ffd6d6' }
+                              : atCapacity
+                                ? { backgroundColor: '#ffe7ba' }
+                                : {},
+                          };
+                        })}
                       />
-                      <div style={{ textAlign: 'center', marginTop: 24 }}>
-                        <ButtonWithGradient type="button" onClick={() => handleSave(values.patient, resetForm)}
-                        >
-                          Save Sessions
-                        </ButtonWithGradient>
-                      </div>
-                      {saveStatus && (
-                        <div style={{ textAlign: 'center', color: saveStatus.includes('success') ? 'green' : 'red', marginTop: 8 }}>
-                          {saveStatus}
-                        </div>
+
+                      {selectedRows.length > 0 && (
+                        <>
+                          <h4 className="blueBar">Selected Sessions</h4>
+                          <Table
+                            columns={[
+                              { key: 'date', header: 'Date' },
+                              { key: 'time', header: 'Time' },
+                              { key: 'dayName', header: 'Day Name' },
+                              { key: 'monthName', header: 'Month Name' },
+                              { key: 'nthSession', header: 'Nth Session of Day' },
+                            ]}
+                            data={selectedRows}
+                          />
+                          <div style={{ textAlign: 'center', marginTop: 24 }}>
+                            <ButtonWithGradient type="button" onClick={() => handleSave(values.patient, resetForm)}
+                            >
+                              Save Sessions
+                            </ButtonWithGradient>
+                          </div>
+                          {saveStatus && (
+                            <div style={{ textAlign: 'center', color: saveStatus.includes('success') ? 'green' : 'red', marginTop: 8 }}>
+                              {saveStatus}
+                            </div>
+                          )}
+                        </>
                       )}
                     </>
                   )}
-                </>
+                </Form>
               )}
-            </Form>
-          )}
-        </Formik>
-        </>
+            </Formik>
+          </>
         )}
         {currentStep === 1 && (
           <>
@@ -428,31 +428,34 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             <Table
               columns={[
                 { key: 'DS_P_ID_FK', header: 'Patient ID' },
-                { key: 'DS_PatientName', header: 'Patient Name' },
+                { key: 'PatientName', header: 'Patient Name' },
                 { key: 'DS_Date', header: 'Date' },
                 { key: 'DS_Time', header: 'Time' },
                 { key: 'DS_Added_on', header: 'Added On' },
                 // { key: 'Provider_FK', header: 'Provider' },
                 // { key: 'Outlet_FK', header: 'Outlet' }
               ]}
-              data={assignedSessions.map(row => ({
-                ...row,
-                DS_PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
-                DS_Added_on: new Date(row.DS_Added_on).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  ...(isMSSQL
-                    ? {
+              data={assignedSessions
+                .map(row => ({
+                  ...row,
+                //Uncomment to show patient name when USE_MSSQL=false
+                // PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
+                  
+                  DS_Added_on: new Date(row.DS_Added_on).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    ...(isMSSQL
+                      ? {
                         hour: '2-digit',
                         minute: '2-digit',
                         second: '2-digit',
                         hour12: true,
                       }
-                    : {}),
-                }),
-                
-              }))}
+                      : {}),
+                  }),
+                }))
+              }
             />
           </>
         )}

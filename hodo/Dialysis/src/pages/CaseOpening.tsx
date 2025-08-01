@@ -197,7 +197,8 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
             data={caseOpenings
               .map(row => ({
                 ...row,
-                PatientName: (patientOptions.find(p => p.value === String(row.DCO_P_ID_FK))?.label?.split(' - ')[1]) || row.DCO_P_ID_FK
+                //Uncomment to show patient name when USE_MSSQL=false
+                // PatientName: (patientOptions.find(p => p.value === String(row.DCO_P_ID_FK))?.label?.split(' - ')[1]) || row.DCO_P_ID_FK
               }))
               .filter(row => {
                 const q = searchText.toLowerCase();
