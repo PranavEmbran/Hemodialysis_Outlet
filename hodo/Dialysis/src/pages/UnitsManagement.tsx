@@ -47,7 +47,7 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
   const { units, setUnits } = useUnits();
   const [form, setForm] = useState({
     Unit_Name: '',
-    Unit_Status: '',
+    Unit_Availability_Status: '',
     Unit_Planned_Maintainance_DT: '',
     Unit_Technitian_Assigned: '',
   });
@@ -63,7 +63,7 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
   const validate = () => {
     const errs: { [key: string]: string } = {};
     if (!form.Unit_Name) errs.Unit_Name = 'Required';
-    if (!form.Unit_Status) errs.Unit_Status = 'Required';
+    if (!form.Unit_Availability_Status) errs.Unit_Availability_Status = 'Required';
     if (!form.Unit_Planned_Maintainance_DT) errs.Unit_Planned_Maintainance_DT = 'Required';
     if (!form.Unit_Technitian_Assigned) errs.Unit_Technitian_Assigned = 'Required';
     setErrors(errs);
@@ -79,12 +79,13 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     if (!validate()) return;
     if (editId !== null) {
       // Update
-      const updated = { ...form, Unit_ID_PK: editId };
+      const updated = { ...form, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(form.Unit_Availability_Status) };
       await fetch(`${API_URL}/data/units`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       });
+      handleReset();
     } else {
       // Create
       await fetch(`${API_URL}/data/units`, {
@@ -100,7 +101,7 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     setEditId(null);
     setForm({
       Unit_Name: '',
-      Unit_Status: '',
+      Unit_Availability_Status: '',
       Unit_Planned_Maintainance_DT: '',
       Unit_Technitian_Assigned: '',
     });
@@ -111,13 +112,15 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     setEditId(unit.Unit_ID_PK);
     setForm({
       Unit_Name: unit.Unit_Name,
-      Unit_Status: unit.Unit_Status,
-      Unit_Planned_Maintainance_DT: unit.Unit_Planned_Maintainance_DT,
-      Unit_Technitian_Assigned: unit.Unit_Technitian_Assigned,
+      Unit_Availability_Status: unit.Unit_Availability_Status || '',
+      Unit_Planned_Maintainance_DT: unit.Unit_Planned_Maintainance_DT || '',
+      Unit_Technitian_Assigned: unit.Unit_Technitian_Assigned || '',
     });
   };
 
   const handleDelete = async (id: number) => {
+    const confirmed = window.confirm('Are you sure you want to delete this unit? This action cannot be undone.');
+    if (!confirmed) return;
     await fetch(`${API_URL}/data/units/${id}`, { method: 'DELETE' });
     fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
       if (Array.isArray(data)) setUnits(data);
@@ -126,27 +129,29 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
       setEditId(null);
       setForm({
         Unit_Name: '',
-        Unit_Status: '',
+        Unit_Availability_Status: '',
         Unit_Planned_Maintainance_DT: '',
         Unit_Technitian_Assigned: '',
       });
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (resetFormikForm?: () => void) => {
     setForm({
       Unit_Name: '',
-      Unit_Status: '',
+      Unit_Availability_Status: '',
       Unit_Planned_Maintainance_DT: '',
       Unit_Technitian_Assigned: '',
     });
     setErrors({});
     setEditId(null);
-  };
+    if (resetFormikForm) resetFormikForm();
+  }
 
   const columns = [
+    { key: 'Unit_ID_PK', header: 'Unit ID' },
     { key: 'Unit_Name', header: 'Unit Name' },
-    { key: 'Unit_Status', header: 'Unit Status' },
+    { key: 'Unit_Availability_Status', header: 'Unit Status' },
     { key: 'Unit_Planned_Maintainance_DT', header: 'Planned Maintainance' },
     { key: 'Unit_Technitian_Assigned', header: 'Technitian Assigned' },
     { key: 'actions', header: 'Actions' },
@@ -173,19 +178,20 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
             enableReinitialize
             validationSchema={Yup.object({
               Unit_Name: Yup.string().required('Unit Name is required'),
-              Unit_Status: Yup.string().required('Unit Status is required'),
+              Unit_Availability_Status: Yup.string().required('Unit Status is required'),
               Unit_Planned_Maintainance_DT: Yup.string().required('Planned Maintenance is required'),
               Unit_Technitian_Assigned: Yup.string().required('Technitian Assigned is required'),
             })}
             onSubmit={async (values, { resetForm }) => {
               if (editId !== null) {
                 // Update
-                const updated = { ...values, Unit_ID_PK: editId };
+                const updated = { ...values, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(values.Unit_Availability_Status) };
                 await fetch(`${API_URL}/data/units`, {
                   method: 'PUT',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(updated),
                 });
+                handleReset(resetForm);
               } else {
                 // Create
                 await fetch(`${API_URL}/data/units`, {
@@ -215,7 +221,7 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
                   />
                   <SelectField
                     label="Unit Status"
-                    name="Unit_Status"
+                    name="Unit_Availability_Status"
                     options={unitStatusOptions}
                     required
                     placeholder="Select status"
@@ -241,7 +247,7 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
                     id="unit-technitian"
                   />
                   <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
-                    <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setEditId(null); }}>
+                    <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => handleReset(resetForm)}>
                       Reset
                     </ButtonWithGradient>
                     <ButtonWithGradient type="submit">

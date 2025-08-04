@@ -505,7 +505,7 @@ export const updateCaseOpening = async ({
 export const getUnits = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
-    const result = await pool.request().query('SELECT * FROM Units_Master');
+    const result = await pool.request().query('SELECT * FROM Units_Master where Unit_Status = 10');
     return result.recordset;
   } catch (error) {
     console.error('Error fetching units:', error);
@@ -518,11 +518,15 @@ export const addUnit = async (unit: any): Promise<any> => {
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('Unit_Name', sql.VarChar, unit.Unit_Name)
-      .input('Unit_Description', sql.VarChar, unit.Unit_Description || '')
+      .input('Unit_Availability_Status', sql.VarChar, unit.Unit_Availability_Status) // Map Unit_Status from frontend to Unit_Availability_Status in DB
+      .input('Unit_Planned_Maintainance_DT', sql.DateTime, unit.Unit_Planned_Maintainance_DT)
+      .input('Unit_Technitian_Assigned', sql.VarChar, unit.Unit_Technitian_Assigned)
+      // .input('Unit_Status', sql.TinyInt, 10) // Always active
       .query(`
-        INSERT INTO Units_Master (Unit_Name, Unit_Description)
+        INSERT INTO Units_Master
+        (Unit_Name, Unit_Availability_Status, Unit_Planned_Maintainance_DT, Unit_Technitian_Assigned)
         OUTPUT INSERTED.*
-        VALUES (@Unit_Name, @Unit_Description)
+        VALUES (@Unit_Name, @Unit_Availability_Status, @Unit_Planned_Maintainance_DT, @Unit_Technitian_Assigned)
       `);
     return result.recordset[0];
   } catch (error) {
@@ -535,13 +539,19 @@ export const updateUnit = async (unitData: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
     const { Unit_ID_PK, ...rest } = unitData;
+    console.log('Updating Unit_ID_PK:', Unit_ID_PK);
     const result = await pool.request()
-      .input('Unit_ID_PK', sql.Int, Unit_ID_PK)
+      .input('Unit_ID_PK', sql.BigInt, Unit_ID_PK)
       .input('Unit_Name', sql.VarChar, rest.Unit_Name)
-      .input('Unit_Description', sql.VarChar, rest.Unit_Description || '')
+      .input('Unit_Availability_Status', sql.VarChar, rest.Unit_Availability_Status)
+      .input('Unit_Planned_Maintainance_DT', sql.DateTime, rest.Unit_Planned_Maintainance_DT)
+      .input('Unit_Technitian_Assigned', sql.VarChar, rest.Unit_Technitian_Assigned)
       .query(`
-        UPDATE Units_Master 
-        SET Unit_Name = @Unit_Name, Unit_Description = @Unit_Description
+        UPDATE Units_Master
+        SET Unit_Name = @Unit_Name,
+            Unit_Availability_Status = @Unit_Availability_Status,
+            Unit_Planned_Maintainance_DT = @Unit_Planned_Maintainance_DT,
+            Unit_Technitian_Assigned = @Unit_Technitian_Assigned
         OUTPUT INSERTED.*
         WHERE Unit_ID_PK = @Unit_ID_PK
       `);
@@ -560,7 +570,12 @@ export const deleteUnit = async (id: string): Promise<boolean> => {
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('Unit_ID_PK', sql.Int, id)
-      .query('DELETE FROM Units_Master WHERE Unit_ID_PK = @Unit_ID_PK');
+      // .query('DELETE FROM Units_Master WHERE Unit_ID_PK = @Unit_ID_PK');
+      .query(`
+        UPDATE Units_Master
+        SET Unit_Status = 0
+        WHERE Unit_ID_PK = @Unit_ID_PK
+      `);
     return result.rowsAffected[0] > 0;
   } catch (error) {
     console.error('Error deleting unit:', error);
@@ -718,12 +733,27 @@ export const addSchedulingLookup = async (lookup: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request()
-      .input('SL_Name', sql.VarChar, lookup.SL_Name)
       .input('SL_No_of_units', sql.Int, lookup.SL_No_of_units)
+      .input('SL_Working_hrs', sql.Decimal(4,2), lookup.SL_Working_hrs)
+      .input('SL_Working_days', sql.Int, lookup.SL_Working_days)
+      .input('SL_Pre_dialysis_time', sql.Decimal(4,2), lookup.SL_Pre_dialysis_time)
+      .input('SL_Dialysis_Session_Time', sql.Decimal(4,2), lookup.SL_Dialysis_Session_Time)
       .query(`
-        INSERT INTO Scheduling_Lookup (SL_Name, SL_No_of_units)
+        INSERT INTO Scheduling_Lookup (
+          SL_No_of_units,
+          SL_Working_hrs,
+          SL_Working_days,
+          SL_Pre_dialysis_time,
+          SL_Dialysis_Session_Time
+        )
         OUTPUT INSERTED.*
-        VALUES (@SL_Name, @SL_No_of_units)
+        VALUES (
+          @SL_No_of_units,
+          @SL_Working_hrs,
+          @SL_Working_days,
+          @SL_Pre_dialysis_time,
+          @SL_Dialysis_Session_Time
+        )
       `);
     return result.recordset[0];
   } catch (error) {
@@ -738,13 +768,19 @@ export const updateSchedulingLookup = async (lookupData: any): Promise<any> => {
     const { id, ...rest } = lookupData;
     const result = await pool.request()
       .input('id', sql.Int, id)
-      .input('SL_Name', sql.VarChar, rest.SL_Name)
-      .input('SL_No_of_units', sql.Int, rest.SL_No_of_units)
+      .input('SL_Working_hrs', sql.Decimal(4,2), rest.SL_Working_hrs)
+      .input('SL_Working_days', sql.Int, rest.SL_Working_days)
+      .input('SL_Pre_dialysis_time', sql.Decimal(4,2), rest.SL_Pre_dialysis_time)
+      .input('SL_Dialysis_Session_Time', sql.Decimal(4,2), rest.SL_Dialysis_Session_Time)
       .query(`
         UPDATE Scheduling_Lookup 
-        SET SL_Name = @SL_Name, SL_No_of_units = @SL_No_of_units
+        SET
+          SL_Working_hrs = @SL_Working_hrs,
+          SL_Working_days = @SL_Working_days,
+          SL_Pre_dialysis_time = @SL_Pre_dialysis_time,
+          SL_Dialysis_Session_Time = @SL_Dialysis_Session_Time
         OUTPUT INSERTED.*
-        WHERE id = @id
+        WHERE SL_ID_PK = 1
       `);
     if (result.recordset.length === 0) {
       throw new Error('Scheduling lookup not found');

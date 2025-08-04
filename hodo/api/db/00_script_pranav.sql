@@ -71,6 +71,63 @@ END;
 GO
 
 
+-- ========================================
+-- Table: Scheduling_Lookup
+-- Purpose: Stores system-wide dialysis scheduling configuration
+-- ========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Scheduling_Lookup'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Scheduling_Lookup (
+        SL_ID_PK INT IDENTITY(1,1) PRIMARY KEY,
+        SL_No_of_units INT NOT NULL,
+        SL_Working_hrs DECIMAL(4,2) NOT NULL,
+        SL_Working_days INT NOT NULL,
+        SL_Pre_dialysis_time DECIMAL(4,2) NOT NULL,
+        SL_Dialysis_Session_Time DECIMAL(4,2) NOT NULL
+    );
+END
+GO
+
+-- Insert only if no row exists
+IF NOT EXISTS (SELECT 1 FROM dbo.Scheduling_Lookup)
+BEGIN
+    INSERT INTO dbo.Scheduling_Lookup (
+        SL_No_of_units,
+        SL_Working_hrs,
+        SL_Working_days,
+        SL_Pre_dialysis_time,
+        SL_Dialysis_Session_Time
+    ) VALUES (
+        6, 16.00, 7, 1.00, 4.00
+    );
+END
+GO
 
 
 
+-- ========================================
+-- Table: Units_Master
+-- Purpose: Stores dialysis machine unit information
+-- ========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Units_Master'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Units_Master (
+        Unit_ID_PK BIGINT IDENTITY(1,1) PRIMARY KEY,
+        Unit_Name VARCHAR(50) NOT NULL,
+        Unit_Availability_Status VARCHAR(20) NOT NULL,
+        Unit_Planned_Maintainance_DT DATETIME NOT NULL,
+        Unit_Technitian_Assigned VARCHAR(50) NOT NULL,
+        Unit_Status TINYINT NOT NULL DEFAULT 10  -- 10 = active, 0 = soft deleted
+    );
+END
+GO

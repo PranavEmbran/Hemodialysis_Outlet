@@ -21,7 +21,7 @@ const initialSchedulingLookup = [
     SL_No_of_units: 5,
     SL_Working_hrs: 15.0,
     SL_Working_days: 7,
-    SL_Pre_dialysis_time: 1.0 ,
+    SL_Pre_dialysis_time: 1.0,
     SL_Dialysis_Session_Time: 5.0,
   },
   // {
@@ -401,28 +401,28 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                   <tbody>
                     <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 10, textAlign: 'center' }}>Scheduling Master</p>
                     {rowLabels.map(({ key, label }) => (
-  <tr key={key}>
-    <td style={{ fontWeight: 500, padding: '10px 16px', borderBottom: '1px solid #f0f0f0', width: 160 }}>{label}</td>
-    <td style={{ padding: '10px 16px', borderBottom: '1px solid #f0f0f0' }}>
-      {key === 'SL_No_of_units' ? (
-        <>
-          {/* Always show units.length, disable editing */}
-          <span style={{ fontWeight: 600 }}>{units.length}</span>
-        </>
-      ) : editRowId === row.id ? (
-        <input
-          name={key}
-          value={editValues[key]}
-          onChange={handleInputChange}
-          type="number"
-          style={{ width: 120 }}
-        />
-      ) : (
-        row[key]
-      )}
-    </td>
-  </tr>
-))}
+                      <tr key={key}>
+                        <td style={{ fontWeight: 500, padding: '10px 16px', borderBottom: '1px solid #f0f0f0', width: 160 }}>{label}</td>
+                        <td style={{ padding: '10px 16px', borderBottom: '1px solid #f0f0f0' }}>
+                          {key === 'SL_No_of_units' ? (
+                            <>
+                              {/* Always show units.length, disable editing */}
+                              <span style={{ fontWeight: 600 }}>{units.length}</span>
+                            </>
+                          ) : editRowId === row.id ? (
+                            <input
+                              name={key}
+                              value={editValues[key]}
+                              onChange={handleInputChange}
+                              type="number"
+                              style={{ width: 120 }}
+                            />
+                          ) : (
+                            row[key]
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                     <tr>
                       <td style={{ fontWeight: 500, padding: '10px 16px', width: 160 }}>Actions</td>
                       <td style={{ padding: '10px 16px' }}>
