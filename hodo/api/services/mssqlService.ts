@@ -406,9 +406,20 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
   }
 };
 
-export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpening> => {
+export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpening | { alreadyExists: boolean; message: string }> => {
   try {
     const pool = await sql.connect(config);
+
+
+    // Check if case already exists
+    const existing = await pool.request()
+      .input('DCO_P_ID_FK', sql.BigInt, caseOpening.DCO_P_ID_FK)
+      .query('SELECT 1 FROM Dialysis_Case_Opening WHERE DCO_P_ID_FK = @DCO_P_ID_FK');
+
+    if (existing.recordset.length > 0) {
+      return { alreadyExists: true, message: 'Case already opened for this patient' };
+    }
+
     const result = await pool.request()
       .input('DCO_P_ID_FK', sql.BigInt, caseOpening.DCO_P_ID_FK)
       .input('DCO_Blood_Group', sql.VarChar(5), caseOpening.DCO_Blood_Group)
@@ -426,12 +437,69 @@ export const addCaseOpening = async (caseOpening: CaseOpening): Promise<CaseOpen
           @DCO_Case_Nature
         );
       `);
+
+
+    // const result = await pool.request()
+    //   .input('DCO_P_ID_FK', sql.BigInt, caseOpening.DCO_P_ID_FK)
+    //   .input('DCO_Blood_Group', sql.VarChar(5), caseOpening.DCO_Blood_Group)
+    //   .input('DCO_Case_Nature', sql.VarChar(20), caseOpening.DCO_Case_Nature)
+    //   .query(`
+    //     INSERT INTO Dialysis_Case_Opening (
+    //       DCO_P_ID_FK,
+    //       DCO_Blood_Group,
+    //       DCO_Case_Nature
+    //     )
+    //     OUTPUT INSERTED.DCO_ID_PK, INSERTED.DCO_P_ID_FK, INSERTED.DCO_Blood_Group, INSERTED.DCO_Case_Nature
+    //     VALUES (
+    //       @DCO_P_ID_FK,
+    //       @DCO_Blood_Group,
+    //       @DCO_Case_Nature
+    //     );
+    //   `);
     return result.recordset[0];
   } catch (error) {
     console.error('Error adding case opening:', error);
     throw error;
   }
 };
+
+
+export const updateCaseOpening = async ({
+  DCO_ID_PK,
+  DCO_P_ID_FK,
+  DCO_Blood_Group,
+  DCO_Case_Nature
+}: {
+  DCO_ID_PK: number;
+  DCO_P_ID_FK: number;
+  DCO_Blood_Group?: string;
+  DCO_Case_Nature?: string;
+}) => {
+  const pool = await sql.connect(config);
+
+  // Update the record
+  const result = await pool.request()
+    .input('DCO_ID_PK', sql.BigInt, DCO_ID_PK)
+    .input('DCO_P_ID_FK', sql.BigInt, DCO_P_ID_FK)
+    .input('DCO_Blood_Group', sql.VarChar, DCO_Blood_Group)
+    .input('DCO_Case_Nature', sql.VarChar, DCO_Case_Nature)
+    .query(`
+      UPDATE Dialysis_Case_Opening
+      SET DCO_Blood_Group = @DCO_Blood_Group,
+          DCO_Case_Nature = @DCO_Case_Nature
+      WHERE DCO_ID_PK = @DCO_ID_PK AND DCO_P_ID_FK = @DCO_P_ID_FK;
+
+      SELECT * FROM Dialysis_Case_Opening
+      WHERE DCO_ID_PK = @DCO_ID_PK AND DCO_P_ID_FK = @DCO_P_ID_FK;
+    `);
+
+  if (!result.recordset.length) {
+    throw new Error('Case opening not found');
+  }
+
+  return result.recordset[0];
+};
+
 
 // --- Units Lookup Functions ---
 export const getUnits = async (): Promise<any[]> => {

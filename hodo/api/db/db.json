@@ -1487,8 +1487,8 @@
     },
     {
       "DCO_Formatted_ID": "1b9fc0d8-2993-422b-80e8-852d8d0b3d92",
-      "DCO_P_ID_FK": "20250715/008",
-      "DCO_Blood_Group": "A+",
+      "DCO_P_ID_FK": "1007777771806103",
+      "DCO_Blood_Group": "AB-",
       "DCO_Case_Nature": "Acute"
     },
     {
@@ -1500,6 +1500,11 @@
       "DCO_P_ID_FK": "20250715/008",
       "DCO_Blood_Group": "A+",
       "DCO_Case_Nature": "Chronic"
+    },
+    {
+      "DCO_P_ID_FK": "20250715/001",
+      "DCO_Blood_Group": "A+",
+      "DCO_Case_Nature": "Acute"
     }
   ],
   "predialysis_records": [

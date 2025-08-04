@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAll, add, deleteById, getPatientsDerivedHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler,
+  getAll, add, deleteById, getPatientsDerivedHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
   savePredialysisRecord, saveStartDialysisRecord, saveInProcessRecord, savePostDialysisRecord,
   getPredialysisRecords, getStartDialysisRecords, getPostDialysisRecords,
   updatePredialysisRecord, updateStartDialysisRecord, updatePostDialysisRecord,
@@ -161,6 +161,7 @@ router.get('/case_openings', getCaseOpeningsHandler);
  *               $ref: '#/components/schemas/CaseOpening'
  */
 router.post('/case_openings', addCaseOpeningHandler);
+router.put('/case_openings/patient/:patientId/:caseOpeningId', updateCaseOpeningHandler);
 /**
  * @swagger
  * /api/data/predialysis_record:

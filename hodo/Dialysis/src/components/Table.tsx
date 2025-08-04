@@ -6,6 +6,8 @@ import Pagination from './Pagination';
 interface Column {
   key: string;
   header: string;
+  render?: (row: Record<string, any>) => React.ReactNode;
+
 }
 
 interface TableProps {

@@ -309,3 +309,47 @@ export const postDialysisFormConfig: FormConfig = {
     PostDR_Notes: data.PostDR_Notes || '',
   })
 }; 
+
+
+// Only Blood Group and Case Nature editable for Case Opening
+export const caseOpeningFormConfig: FormConfig = {
+  title: 'Edit Case Opening',
+  fields: [
+    {
+      name: 'DCO_Blood_Group',
+      label: 'Blood Group',
+      type: 'select',
+      required: true,
+      options: [
+        { value: 'A+', label: 'A+' },
+        { value: 'A-', label: 'A−' },
+        { value: 'B+', label: 'B+' },
+        { value: 'B-', label: 'B−' },
+        { value: 'AB+', label: 'AB+' },
+        { value: 'AB-', label: 'AB−' },
+        { value: 'O+', label: 'O+' },
+        { value: 'O-', label: 'O−' },
+      ],
+      colSize: 6,
+    },
+    {
+      name: 'DCO_Case_Nature',
+      label: 'Case Nature',
+      type: 'select',
+      required: true,
+      options: [
+        { value: 'Acute', label: 'Acute' },
+        { value: 'Chronic', label: 'Chronic' },
+      ],
+      colSize: 6,
+    }
+  ],
+  validationSchema: Yup.object({
+    DCO_Blood_Group: Yup.string().required('Blood Group is required.'),
+    DCO_Case_Nature: Yup.string().required('Case Nature is required.'),
+  }),
+  initialValues: (data: any = {}) => ({
+    DCO_Blood_Group: data.DCO_Blood_Group || '',
+    DCO_Case_Nature: data.DCO_Case_Nature || 'Acute',
+  }),
+};

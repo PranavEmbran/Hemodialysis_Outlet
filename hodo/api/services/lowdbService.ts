@@ -151,6 +151,19 @@ export const addCaseOpening = async (caseOpening: Partial<CaseOpening>): Promise
   return newCaseOpening as CaseOpening;
 };
 
+// Update a case opening by DCO_ID_PK
+export const updateCaseOpening = async (caseOpening: Partial<CaseOpening> & { DCO_ID_PK: string | number, DCO_P_ID_FK: string | number }): Promise<CaseOpening> => {
+  await initDB();
+  await db.read();
+  if (!db.data!.case_openings) db.data!.case_openings = [];
+  const { DCO_ID_PK, DCO_P_ID_FK, ...rest } = caseOpening;
+  const idx = db.data!.case_openings.findIndex((c: any) => c.DCO_ID_PK == DCO_ID_PK && c.DCO_P_ID_FK == DCO_P_ID_FK);
+  if (idx === -1) throw new Error('Case opening not found');
+  db.data!.case_openings[idx] = { ...db.data!.case_openings[idx], ...rest, DCO_ID_PK, DCO_P_ID_FK };
+  await db.write();
+  return db.data!.case_openings[idx];
+};
+
 export interface PredialysisRecord {
   SA_ID_FK_PK: string;
   P_ID_FK: string;

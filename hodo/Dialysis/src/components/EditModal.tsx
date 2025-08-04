@@ -35,7 +35,7 @@ interface EditModalProps {
   title?: string;
   submitLabel?: string;
   cancelLabel?: string;
-  editingDataType?: 'patient' | 'appointment' | 'billing' | 'history';
+  editingDataType?: 'patient' | 'appointment' | 'billing' | 'history' | 'case_opening';
 }
 
 const EditModal: React.FC<EditModalProps> = ({

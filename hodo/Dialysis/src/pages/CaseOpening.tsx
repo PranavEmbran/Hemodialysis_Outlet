@@ -4,19 +4,19 @@ import * as Yup from 'yup';
 import { SelectField, RadioGroupField } from '../components/forms';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 
-// import HaemodialysisRecordDetails from '../components/HaemodialysisRecordDetails';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import Table from '../components/Table';
 import Searchbar from '../components/Searchbar';
 import SectionHeading from '../components/SectionHeading';
-// import { Row, Col, Container } from 'react-bootstrap';
+import EditButton from '../components/EditButton';
+import EditModal from '../components/EditModal';
+import { caseOpeningFormConfig } from '../components/forms/formConfigs';
 import { API_URL } from '../config';
-
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import type { CaseOpeningType } from './types';
 
 const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   // Blood group options
@@ -39,6 +39,52 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   const [patientOptions, setPatientOptions] = useState<{ label: string; value: string }[]>([]);
   const [caseOpenings, setCaseOpenings] = useState<any[]>([]);
   const [searchText, setSearchText] = useState('');
+
+  // Edit modal state
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingRow, setEditingRow] = useState<any | null>(null);
+
+  const handleEditClick = (row: any) => {
+    setEditingRow(row);
+    setEditModalVisible(true);
+  };
+
+  const handleEditModalClose = () => {
+    setEditModalVisible(false);
+    setEditingRow(null);
+  };
+
+  const handleEditSubmit = async (values: any) => {
+    try {
+      if (!editingRow || !editingRow.DCO_ID_PK) {
+        toast.error('Missing case opening ID.');
+        return;
+      }
+      const payload = {
+        DCO_Blood_Group: values.DCO_Blood_Group,
+        DCO_Case_Nature: values.DCO_Case_Nature
+      };
+      const response = await fetch(`${API_URL}/data/case_openings/patient/${editingRow.DCO_P_ID_FK}/${editingRow.DCO_ID_PK}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error('Failed to update case opening');
+      // Refresh case openings after update
+      fetch(`${API_URL}/data/case_openings`)
+        .then(res => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setCaseOpenings([...data].reverse());
+          }
+        });
+      toast.success('Case opening updated successfully!');
+    } catch (error) {
+      toast.error('Error updating case opening');
+      console.error(error);
+    }
+    handleEditModalClose();
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/data/patients_derived`)
@@ -77,7 +123,6 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
   const [formKey, setFormKey] = useState(0);
   const regenerateForm = () => setFormKey(prev => prev + 1);
 
-
   // Initial values
   const getInitialValues = () => ({
     DCO_P_ID_FK: '',
@@ -109,6 +154,14 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
               });
+
+              const data: CaseOpeningType | { alreadyExists: boolean; message: string } = await response.json();
+
+              if ('alreadyExists' in data && data.alreadyExists) {
+                toast.error(data.message);  // Show toast
+                return;
+              }
+
               if (!response.ok) {
                 throw new Error('Failed to save case opening');
               }
@@ -147,13 +200,13 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   required
                   placeholder="Select Blood Group"
                 />
-                  <RadioGroupField
-                    label="Case Nature"
-                    name="DCO_Case_Nature"
-                    options={caseNatureOptions}
-                    required
-                    className="horizontal-radio-group"
-                  />
+                <RadioGroupField
+                  label="Case Nature"
+                  name="DCO_Case_Nature"
+                  options={caseNatureOptions}
+                  required
+                  className="horizontal-radio-group"
+                />
               </div>
               {/* <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}> */}
               <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
@@ -193,7 +246,9 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
               { key: 'PatientName', header: 'Patient Name' },
               { key: 'DCO_Blood_Group', header: 'Blood Group' },
               { key: 'DCO_Case_Nature', header: 'Case Nature' },
+
             ]}
+            actions={(row) => <EditButton onClick={() => handleEditClick(row)} />}
             data={caseOpenings
               .map(row => ({
                 ...row,
@@ -213,6 +268,16 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
             }
           />
         </div>
+        {/* Edit Modal for Case Openings */}
+        <EditModal
+          show={editModalVisible}
+          onHide={handleEditModalClose}
+          data={editingRow}
+          formConfig={caseOpeningFormConfig}
+          onSubmit={handleEditSubmit}
+          editingDataType="case_opening"
+          title="Edit Case Opening"
+        />
       </PageContainer>
       <Footer />
     </>

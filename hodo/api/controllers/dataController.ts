@@ -26,6 +26,7 @@ import {
   deleteSchedulingLookup as deleteSchedulingLookupService
 } from '../services/dataFactory.js';
 import * as lowdbService from '../services/lowdbService.js';
+const { updateCaseOpening } = lowdbService;
 import * as mssqlService from '../services/mssqlService.js';
 import db from '../db/lowdb.js';
 import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
@@ -108,6 +109,31 @@ export const getCaseOpeningsHandler = async (req: Request, res: Response) => {
   }
 };
 
+// Handler to update a case opening
+export const updateCaseOpeningHandler = async (req: Request, res: Response) => {
+  try {
+    const { patientId, caseOpeningId } = req.params;
+    let updated;
+    if (useMSSQL) {
+      // Ensure IDs are numbers for MSSQL
+      updated = await mssqlService.updateCaseOpening({
+        DCO_P_ID_FK: Number(patientId),
+        DCO_ID_PK: Number(caseOpeningId),
+        ...req.body
+      });
+    } else {
+      updated = await updateCaseOpening({ ...req.body, DCO_P_ID_FK: patientId, DCO_ID_PK: caseOpeningId });
+    }
+    res.json(updated);
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Case opening not found') {
+      res.status(404).json({ error: 'Case opening not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to update case opening' });
+    }
+  }
+};
+
 export const addCaseOpeningHandler = async (req: Request, res: Response) => {
   try {
     const { DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature } = req.body;
@@ -124,6 +150,12 @@ export const addCaseOpeningHandler = async (req: Request, res: Response) => {
       DCO_Blood_Group,
       DCO_Case_Nature
     });
+
+    // Handle already exists case
+    if ('alreadyExists' in newCaseOpening && newCaseOpening.alreadyExists) {
+      return res.status(200).json(newCaseOpening); // Send with 200 to prevent frontend throwing an error
+    }
+
     res.status(201).json(newCaseOpening);
   } catch (err) {
     if (err instanceof Error && err.message.startsWith('Missing required fields')) {
