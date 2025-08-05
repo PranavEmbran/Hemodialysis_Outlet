@@ -8,6 +8,7 @@ import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
+import { toast } from 'react-toastify';
 import { InputField } from '../components/forms';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -61,31 +62,43 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (values: any, resetForm: any) => {
     if (!validate()) return;
-    if (editId !== null) {
-      // Update
-      const updated = { ...form, VAL_Access_ID_PK: editId };
-      await fetch(`${API_URL}/data/vascular_access`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
+    try {
+      if (editId !== null) {
+        // Update
+        const updated = { ...values, VAL_Access_ID_PK: editId };
+        const res = await fetch(`${API_URL}/data/vascular_access`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        });
+        if (!res.ok) throw new Error('Failed to update');
+        toast.success('Access type updated successfully!');
+        // resetForm();
+        // Reset state
+        resetForm(); // resets Formik's form state
+        setEditId(null); // reset edit mode
+      } else {
+        // Create
+        const res = await fetch(`${API_URL}/data/vascular_access`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+        if (!res.ok) throw new Error('Failed to save');
+        toast.success('Access type saved successfully!');
+      }
+      // Refresh
+      fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setAccesses(data);
       });
-    } else {
-      // Create
-      await fetch(`${API_URL}/data/vascular_access`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+      setEditId(null);
+      setForm({ VAL_Access_Type: '' });
+      setErrors({});
+    } catch (err) {
+      toast.error('Failed to save/update access type!');
     }
-    // Refresh
-    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setAccesses(data);
-    });
-    setEditId(null);
-    setForm({ VAL_Access_Type: '' });
-    setErrors({});
   };
 
   const handleEdit = (access: any) => {
@@ -94,13 +107,19 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`${API_URL}/data/vascular_access/${id}`, { method: 'DELETE' });
-    fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setAccesses(data);
-    });
-    if (editId === id) {
-      setEditId(null);
-      setForm({ VAL_Access_Type: '' });
+    try {
+      const res = await fetch(`${API_URL}/data/vascular_access/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setAccesses(data);
+      });
+      if (editId === id) {
+        setEditId(null);
+        setForm({ VAL_Access_Type: '' });
+      }
+      toast.success('Access type deleted successfully!');
+    } catch (err) {
+      toast.error('Failed to delete access type!');
     }
   };
 
@@ -138,27 +157,35 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
               VAL_Access_Type: Yup.string().required('Access Type is required'),
             })}
             onSubmit={async (values, { resetForm }) => {
-              if (editId !== null) {
-                // Update
-                const updated = { ...values, VAL_Access_ID_PK: editId };
-                await fetch(`${API_URL}/data/vascular_access`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(updated),
+              try {
+                if (editId !== null) {
+                  // Update
+                  const updated = { ...values, VAL_Access_ID_PK: editId };
+                  const res = await fetch(`${API_URL}/data/vascular_access`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updated),
+                  });
+                  if (!res.ok) throw new Error('Failed to update');
+                  toast.success('Access type updated successfully!');
+                } else {
+                  // Create
+                  const res = await fetch(`${API_URL}/data/vascular_access`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(values),
+                  });
+                  if (!res.ok) throw new Error('Failed to save');
+                  toast.success('Access type saved successfully!');
+                }
+                fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
+                  if (Array.isArray(data)) setAccesses(data);
                 });
-              } else {
-                // Create
-                await fetch(`${API_URL}/data/vascular_access`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(values),
-                });
+                setEditId(null);
+                resetForm();
+              } catch (err) {
+                toast.error('Failed to save/update access type!');
               }
-              fetch(`${API_URL}/data/vascular_access`).then(res => res.json()).then(data => {
-                if (Array.isArray(data)) setAccesses(data);
-              });
-              setEditId(null);
-              resetForm();
             }}
           >
             {({ resetForm }) => (
@@ -174,7 +201,7 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
                   />
                 </div>
                 <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
-                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setEditId(null); }}>
+                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm();handleReset(); setEditId(null); }}>
                     Reset
                   </ButtonWithGradient>
                   <ButtonWithGradient type="submit">

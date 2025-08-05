@@ -36,7 +36,6 @@ const App: React.FC = () => {
         <AccessTypesProvider>
           <DialyzerTypeProvider>
             <Router>
-              {/* <ToastContainer position="top-right" autoClose={1500} /> */}
               <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#d9e0e7' }}>
 
                 <TopNavBar />

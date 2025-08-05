@@ -299,7 +299,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="HD Flow Records" subtitle="View all dialysis records by step and schedule" />
+        <SectionHeading title="Dialysis Flow Records" subtitle="View all dialysis records by step and schedule" />
         <StepperNavigation
           selectedSchedule={selectedSchedule}
           onScheduleChange={handleScheduleChange}

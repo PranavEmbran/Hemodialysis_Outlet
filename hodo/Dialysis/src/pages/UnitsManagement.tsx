@@ -8,6 +8,7 @@ import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
+import { toast } from 'react-toastify';
 import { InputField, SelectField, DateField } from '../components/forms';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -76,36 +77,46 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
   };
 
   const handleSave = async () => {
+    toast.info('handleSave started');
     if (!validate()) return;
-    if (editId !== null) {
-      // Update
-      const updated = { ...form, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(form.Unit_Availability_Status) };
-      await fetch(`${API_URL}/data/units`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
+    try {
+      if (editId !== null) {
+        // Update
+        const updated = { ...form, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(form.Unit_Availability_Status) };
+        const res = await fetch(`${API_URL}/data/units`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        });
+        if (!res.ok) throw new Error('Failed to update');
+        handleReset();
+        toast.success('Unit updated successfully!');
+        
+      } else {
+        // Create
+        const res = await fetch(`${API_URL}/data/units`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+        if (!res.ok) throw new Error('Failed to save');
+        toast.success('Unit saved successfully!');
+      }
+      // Refresh
+      fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setUnits(data);
       });
-      handleReset();
-    } else {
-      // Create
-      await fetch(`${API_URL}/data/units`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      setEditId(null);
+      setForm({
+        Unit_Name: '',
+        Unit_Availability_Status: '',
+        Unit_Planned_Maintainance_DT: '',
+        Unit_Technitian_Assigned: '',
       });
+      setErrors({});
+    } catch (err) {
+      toast.error('Failed to save/update unit!');
     }
-    // Refresh
-    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setUnits(data);
-    });
-    setEditId(null);
-    setForm({
-      Unit_Name: '',
-      Unit_Availability_Status: '',
-      Unit_Planned_Maintainance_DT: '',
-      Unit_Technitian_Assigned: '',
-    });
-    setErrors({});
   };
 
   const handleEdit = (unit: any) => {
@@ -121,18 +132,24 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
   const handleDelete = async (id: number) => {
     const confirmed = window.confirm('Are you sure you want to delete this unit? This action cannot be undone.');
     if (!confirmed) return;
-    await fetch(`${API_URL}/data/units/${id}`, { method: 'DELETE' });
-    fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setUnits(data);
-    });
-    if (editId === id) {
-      setEditId(null);
-      setForm({
-        Unit_Name: '',
-        Unit_Availability_Status: '',
-        Unit_Planned_Maintainance_DT: '',
-        Unit_Technitian_Assigned: '',
+    try {
+      const res = await fetch(`${API_URL}/data/units/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setUnits(data);
       });
+      if (editId === id) {
+        setEditId(null);
+        setForm({
+          Unit_Name: '',
+          Unit_Availability_Status: '',
+          Unit_Planned_Maintainance_DT: '',
+          Unit_Technitian_Assigned: '',
+        });
+      }
+      toast.success('Unit deleted successfully!');
+    } catch (err) {
+      toast.error('Failed to delete unit!');
     }
   };
 
@@ -183,28 +200,36 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
               Unit_Technitian_Assigned: Yup.string().required('Technitian Assigned is required'),
             })}
             onSubmit={async (values, { resetForm }) => {
-              if (editId !== null) {
-                // Update
-                const updated = { ...values, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(values.Unit_Availability_Status) };
-                await fetch(`${API_URL}/data/units`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(updated),
+              try {
+                if (editId !== null) {
+                  // Update
+                  const updated = { ...values, Unit_ID_PK: Number(editId), Unit_Availability_Status: String(values.Unit_Availability_Status) };
+                  const res = await fetch(`${API_URL}/data/units`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updated),
+                  });
+                  if (!res.ok) throw new Error('Failed to update');
+                  toast.success('Unit updated successfully!');
+                  handleReset(resetForm);
+                } else {
+                  // Create
+                  const res = await fetch(`${API_URL}/data/units`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(values),
+                  });
+                  if (!res.ok) throw new Error('Failed to save');
+                  toast.success('Unit saved successfully!');
+                  handleReset(resetForm);
+                }
+                fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
+                  if (Array.isArray(data)) setUnits(data);
                 });
-                handleReset(resetForm);
-              } else {
-                // Create
-                await fetch(`${API_URL}/data/units`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(values),
-                });
+                setEditId(null);
+              } catch (err) {
+                toast.error('Failed to save/update unit!');
               }
-              fetch(`${API_URL}/data/units`).then(res => res.json()).then(data => {
-                if (Array.isArray(data)) setUnits(data);
-              });
-              setEditId(null);
-              resetForm();
             }}
           >
             {({ resetForm, setValues, values }) => (

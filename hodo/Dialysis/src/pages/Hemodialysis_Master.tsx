@@ -13,6 +13,7 @@ import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
 import { API_URL } from '../config';
 import { InputField, SelectField } from '../components/forms';
+import { toast } from 'react-toastify';
 
 // Mock data for Scheduling_Lookup
 const initialSchedulingLookup = [
@@ -364,19 +365,25 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
 
   // Handle save
   const handleSave = async (id: number) => {
-    // Always set SL_No_of_units to units.length before saving
-    const updated = { ...editValues, id, SL_No_of_units: units.length };
-    await fetch(`${API_URL}/data/scheduling_lookup`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated),
-    });
-    // Refresh
-    fetch(`${API_URL}/data/scheduling_lookup`).then(res => res.json()).then(arr => {
-      if (Array.isArray(arr) && arr.length > 0) setData(arr);
-    });
-    setEditRowId(null);
-    setEditValues({});
+    try {
+      // Always set SL_No_of_units to units.length before saving
+      const updated = { ...editValues, id, SL_No_of_units: units.length };
+      const res = await fetch(`${API_URL}/data/scheduling_lookup`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      // Refresh
+      fetch(`${API_URL}/data/scheduling_lookup`).then(res => res.json()).then(arr => {
+        if (Array.isArray(arr) && arr.length > 0) setData(arr);
+      });
+      setEditRowId(null);
+      setEditValues({});
+      toast.success('Schedule saved successfully!');
+    } catch (err) {
+      toast.error('Failed to save schedule!');
+    }
   };
 
   // Handle cancel

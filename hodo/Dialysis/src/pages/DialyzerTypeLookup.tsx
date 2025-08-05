@@ -8,6 +8,7 @@ import DeleteButton from '../components/DeleteButton';
 import Table from '../components/Table';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
+import { toast } from 'react-toastify';
 import { InputField } from '../components/forms';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -71,29 +72,37 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
 
   const handleSave = async () => {
     if (!validate()) return;
-    if (editId !== null) {
-      // Update
-      const updated = { ...form, DTL_ID_PK: editId, DTL_Surface_Area: Number(form.DTL_Surface_Area) };
-      await fetch(`${API_URL}/data/dialyzer_types`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
+    try {
+      if (editId !== null) {
+        // Update
+        const updated = { ...form, DTL_ID_PK: editId, DTL_Surface_Area: Number(form.DTL_Surface_Area) };
+        const res = await fetch(`${API_URL}/data/dialyzer_types`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        });
+        if (!res.ok) throw new Error('Failed to update');
+        toast.success('Dialyzer type updated successfully!');
+      } else {
+        // Create
+        const res = await fetch(`${API_URL}/data/dialyzer_types`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...form, DTL_Surface_Area: Number(form.DTL_Surface_Area) }),
+        });
+        if (!res.ok) throw new Error('Failed to save');
+        toast.success('Dialyzer type saved successfully!');
+      }
+      // Refresh
+      fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setDialyzerTypes(data);
       });
-    } else {
-      // Create
-      await fetch(`${API_URL}/data/dialyzer_types`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, DTL_Surface_Area: Number(form.DTL_Surface_Area) }),
-      });
+      setEditId(null);
+      setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
+      setErrors({});
+    } catch (err) {
+      toast.error('Failed to save/update dialyzer type!');
     }
-    // Refresh
-    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setDialyzerTypes(data);
-    });
-    setEditId(null);
-    setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
-    setErrors({});
   };
 
   const handleEdit = (dialyzer: any) => {
@@ -107,13 +116,19 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`${API_URL}/data/dialyzer_types/${id}`, { method: 'DELETE' });
-    fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setDialyzerTypes(data);
-    });
-    if (editId === id) {
-      setEditId(null);
-      setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
+    try {
+      const res = await fetch(`${API_URL}/data/dialyzer_types/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+        if (Array.isArray(data)) setDialyzerTypes(data);
+      });
+      if (editId === id) {
+        setEditId(null);
+        setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
+      }
+      toast.success('Dialyzer type deleted successfully!');
+    } catch (err) {
+      toast.error('Failed to delete dialyzer type!');
     }
   };
 
@@ -157,27 +172,36 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
               DTL_Surface_Area: Yup.number().typeError('Surface Area must be a number').required('Surface Area is required'),
             })}
             onSubmit={async (values, { resetForm }) => {
-              if (editId !== null) {
-                // Update
-                const updated = { ...values, DTL_ID_PK: editId, DTL_Surface_Area: Number(values.DTL_Surface_Area) };
-                await fetch(`${API_URL}/data/dialyzer_types`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(updated),
+              try {
+                if (editId !== null) {
+                  // Update
+                  const updated = { ...values, DTL_ID_PK: editId, DTL_Surface_Area: Number(values.DTL_Surface_Area) };
+                  const res = await fetch(`${API_URL}/data/dialyzer_types`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updated),
+                  });
+                  if (!res.ok) throw new Error('Failed to update');
+                  toast.success('Dialyzer type updated successfully!');
+                  resetForm();
+                } else {
+                  // Create
+                  const res = await fetch(`${API_URL}/data/dialyzer_types`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...values, DTL_Surface_Area: Number(values.DTL_Surface_Area) }),
+                  });
+                  if (!res.ok) throw new Error('Failed to save');
+                  toast.success('Dialyzer type saved successfully!');
+                }
+                fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
+                  if (Array.isArray(data)) setDialyzerTypes(data);
                 });
-              } else {
-                // Create
-                await fetch(`${API_URL}/data/dialyzer_types`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ ...values, DTL_Surface_Area: Number(values.DTL_Surface_Area) }),
-                });
+                setEditId(null);
+                resetForm();
+              } catch (err) {
+                toast.error('Failed to save/update dialyzer type!');
               }
-              fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
-                if (Array.isArray(data)) setDialyzerTypes(data);
-              });
-              setEditId(null);
-              resetForm();
             }}
           >
             {({ resetForm }) => (
@@ -222,7 +246,7 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
                   />
                 </div>
                 <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
-                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm(); setEditId(null); }}>
+                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm();handleReset(); setEditId(null); }}>
                     Reset
                   </ButtonWithGradient>
                   <ButtonWithGradient type="submit">

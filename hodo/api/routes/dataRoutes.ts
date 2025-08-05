@@ -161,6 +161,40 @@ router.get('/case_openings', getCaseOpeningsHandler);
  *               $ref: '#/components/schemas/CaseOpening'
  */
 router.post('/case_openings', addCaseOpeningHandler);
+/**
+ * @swagger
+ * /api/data/case_openings/patient/{patientId}/{caseOpeningId}:
+ *   put:
+ *     summary: Update a case opening
+ *     parameters:
+ *       - in: path
+ *         name: patientId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The patient ID
+ *       - in: path
+ *         name: caseOpeningId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The case opening ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CaseOpeningInput'
+ *     responses:
+ *       200:
+ *         description: Case opening updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CaseOpening'
+ *       404:
+ *         description: Case opening not found
+ */
 router.put('/case_openings/patient/:patientId/:caseOpeningId', updateCaseOpeningHandler);
 /**
  * @swagger
