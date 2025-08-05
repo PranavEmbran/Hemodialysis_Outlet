@@ -13,6 +13,7 @@ import { InputField } from '../components/forms';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
+// 1. Context created to share Dialyzer types globally
 export const DialyzerTypeContext = createContext<{
   dialyzerTypes: any[];
   setDialyzerTypes: React.Dispatch<React.SetStateAction<any[]>>;
@@ -26,11 +27,13 @@ export const useDialyzerTypes = () => {
 
 export const DialyzerTypeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dialyzerTypes, setDialyzerTypes] = useState<any[]>([]);
+  // 2. Provider wraps child components and fetches dialyzer types initially
   useEffect(() => {
     fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setDialyzerTypes(data);
+      if (Array.isArray(data)) setDialyzerTypes(data);  // populating context
     });
   }, []);
+
   return (
     <DialyzerTypeContext.Provider value={{ dialyzerTypes, setDialyzerTypes }}>
       {children}
@@ -38,7 +41,7 @@ export const DialyzerTypeProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 };
 
-const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => {} }) => {
+const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: () => void }> = ({ sidebarCollapsed = false, toggleSidebar = () => { } }) => {
   const { dialyzerTypes, setDialyzerTypes } = useDialyzerTypes();
   const [form, setForm] = useState({
     DTL_Dialyzer_Name: '',
@@ -107,12 +110,12 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
 
   const handleEdit = (dialyzer: any) => {
     setEditId(dialyzer.DTL_ID_PK);
-    setForm({
-      DTL_Dialyzer_Name: dialyzer.DTL_Dialyzer_Name,
-      DTL_Membrane_Type: dialyzer.DTL_Membrane_Type,
-      DTL_Flux_Type: dialyzer.DTL_Flux_Type,
-      DTL_Surface_Area: dialyzer.DTL_Surface_Area.toString(),
-    });
+    // setForm({
+    //   DTL_Dialyzer_Name: dialyzer.DTL_Dialyzer_Name,
+    //   DTL_Membrane_Type: dialyzer.DTL_Membrane_Type,
+    //   DTL_Flux_Type: dialyzer.DTL_Flux_Type,
+    //   DTL_Surface_Area: dialyzer.DTL_Surface_Area.toString(),
+    // });
   };
 
   const handleDelete = async (id: number) => {
@@ -133,7 +136,7 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
   };
 
   const handleReset = () => {
-    setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
+    // setForm({ DTL_Dialyzer_Name: '', DTL_Membrane_Type: '', DTL_Flux_Type: '', DTL_Surface_Area: '' });
     setErrors({});
     setEditId(null);
   };
@@ -156,6 +159,8 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
     ),
   }));
 
+
+  
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
@@ -163,8 +168,14 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
         <SectionHeading title="Dialyzer Type Lookup" subtitle="Dialyzer Type Lookup" />
         <div style={{ minWidth: 350, margin: '0 auto', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginTop: 32 }}>
           <Formik
-            initialValues={form}
+            // initialValues={form}
             enableReinitialize
+            initialValues={{
+              DTL_Dialyzer_Name: editId !== null ? dialyzerTypes.find(d => d.DTL_ID_PK === editId)?.DTL_Dialyzer_Name || '' : '',
+              DTL_Membrane_Type: editId !== null ? dialyzerTypes.find(d => d.DTL_ID_PK === editId)?.DTL_Membrane_Type || '' : '',
+              DTL_Flux_Type: editId !== null ? dialyzerTypes.find(d => d.DTL_ID_PK === editId)?.DTL_Flux_Type || '' : '',
+              DTL_Surface_Area: editId !== null ? dialyzerTypes.find(d => d.DTL_ID_PK === editId)?.DTL_Surface_Area || '' : '',
+            }}
             validationSchema={Yup.object({
               DTL_Dialyzer_Name: Yup.string().required('Dialyzer Name is required'),
               DTL_Membrane_Type: Yup.string().required('Membrane Type is required'),
@@ -174,7 +185,7 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
             onSubmit={async (values, { resetForm }) => {
               try {
                 if (editId !== null) {
-                  // Update
+                  // UPDATE case
                   const updated = { ...values, DTL_ID_PK: editId, DTL_Surface_Area: Number(values.DTL_Surface_Area) };
                   const res = await fetch(`${API_URL}/data/dialyzer_types`, {
                     method: 'PUT',
@@ -183,9 +194,11 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
                   });
                   if (!res.ok) throw new Error('Failed to update');
                   toast.success('Dialyzer type updated successfully!');
-                  resetForm();
+
+                  // ✅ Reset the form after update
+                  resetForm();           // clear Formik state
                 } else {
-                  // Create
+                  // CREATE case
                   const res = await fetch(`${API_URL}/data/dialyzer_types`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -194,15 +207,20 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
                   if (!res.ok) throw new Error('Failed to save');
                   toast.success('Dialyzer type saved successfully!');
                 }
+
+                // ✅ Refresh data after create/update
                 fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()).then(data => {
                   if (Array.isArray(data)) setDialyzerTypes(data);
                 });
-                setEditId(null);
-                resetForm();
+
+                setEditId(null);  // ✅ Clear editing state
+                resetForm();      // ✅ Clear form fields after save/update
+
               } catch (err) {
                 toast.error('Failed to save/update dialyzer type!');
               }
             }}
+
           >
             {({ resetForm }) => (
               <Form>
@@ -246,9 +264,18 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
                   />
                 </div>
                 <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'left', gap: 12 }}>
-                  <ButtonWithGradient type="button" className="btn-outline redButton" onClick={() => { resetForm();handleReset(); setEditId(null); }}>
+                  <ButtonWithGradient
+                    type="button"
+                    className="btn-outline redButton"
+                    onClick={() => {
+                      resetForm();      // ✅ Reset Formik form
+                      handleReset();    // ✅ Reset local form state and editId
+                      setEditId(null);  // ✅ Clear any editing selection
+                    }}
+                  >
                     Reset
                   </ButtonWithGradient>
+
                   <ButtonWithGradient type="submit">
                     {editId !== null ? 'Update' : 'Save'}
                   </ButtonWithGradient>
