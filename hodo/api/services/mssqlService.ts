@@ -587,7 +587,7 @@ export const deleteUnit = async (id: string): Promise<boolean> => {
 export const getVascularAccesses = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
-    const result = await pool.request().query('SELECT * FROM Vascular_Access_Lookup');
+    const result = await pool.request().query('SELECT * FROM Vascular_Access_Lookup where VAL_Status = 10');
     return result.recordset;
   } catch (error) {
     console.error('Error fetching vascular accesses:', error);
@@ -599,12 +599,11 @@ export const addVascularAccess = async (access: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request()
-      .input('VAL_Name', sql.VarChar, access.VAL_Name)
-      .input('VAL_Description', sql.VarChar, access.VAL_Description || '')
+      .input('VAL_Access_Type', sql.VarChar, access.VAL_Access_Type)
       .query(`
-        INSERT INTO Vascular_Access_Lookup (VAL_Name, VAL_Description)
+        INSERT INTO Vascular_Access_Lookup (VAL_Access_Type)
         OUTPUT INSERTED.*
-        VALUES (@VAL_Name, @VAL_Description)
+        VALUES (@VAL_Access_Type)
       `);
     return result.recordset[0];
   } catch (error) {
@@ -616,16 +615,15 @@ export const addVascularAccess = async (access: any): Promise<any> => {
 export const updateVascularAccess = async (accessData: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
-    const { VAL_ID_PK, ...rest } = accessData;
+    const { VAL_Access_ID_PK, ...rest } = accessData;
     const result = await pool.request()
-      .input('VAL_ID_PK', sql.Int, VAL_ID_PK)
-      .input('VAL_Name', sql.VarChar, rest.VAL_Name)
-      .input('VAL_Description', sql.VarChar, rest.VAL_Description || '')
+      .input('VAL_Access_ID_PK', sql.Int, VAL_Access_ID_PK)
+      .input('VAL_Access_Type', sql.VarChar, rest.VAL_Access_Type)
       .query(`
         UPDATE Vascular_Access_Lookup 
-        SET VAL_Name = @VAL_Name, VAL_Description = @VAL_Description
+        SET VAL_Access_Type = @VAL_Access_Type
         OUTPUT INSERTED.*
-        WHERE VAL_ID_PK = @VAL_ID_PK
+        WHERE VAL_Access_ID_PK = @VAL_Access_ID_PK
       `);
     if (result.recordset.length === 0) {
       throw new Error('Vascular access not found');
@@ -637,12 +635,12 @@ export const updateVascularAccess = async (accessData: any): Promise<any> => {
   }
 };
 
-export const deleteVascularAccess = async (id: string): Promise<boolean> => {
+export const deleteVascularAccess = async (id: number): Promise<boolean> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request()
-      .input('VAL_ID_PK', sql.Int, id)
-      .query('DELETE FROM Vascular_Access_Lookup WHERE VAL_ID_PK = @VAL_ID_PK');
+      .input('VAL_Access_ID_PK', sql.Int, id)
+      .query('UPDATE Vascular_Access_Lookup SET VAL_Status = 0 WHERE VAL_Access_ID_PK = @VAL_Access_ID_PK');
     return result.rowsAffected[0] > 0;
   } catch (error) {
     console.error('Error deleting vascular access:', error);
@@ -654,7 +652,7 @@ export const deleteVascularAccess = async (id: string): Promise<boolean> => {
 export const getDialyzerTypes = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
-    const result = await pool.request().query('SELECT * FROM Dialyzer_Type_Lookup');
+    const result = await pool.request().query('SELECT * FROM Dialyzer_Type_Lookup where DTL_Status = 10');
     return result.recordset;
   } catch (error) {
     console.error('Error fetching dialyzer types:', error);
@@ -666,12 +664,14 @@ export const addDialyzerType = async (type: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request()
-      .input('DTL_Name', sql.VarChar, type.DTL_Name)
-      .input('DTL_Description', sql.VarChar, type.DTL_Description || '')
+      .input('DTL_Dialyzer_Name', sql.VarChar, type.DTL_Dialyzer_Name)
+      .input('DTL_Membrane_Type', sql.VarChar, type.DTL_Membrane_Type)
+      .input('DTL_Flux_Type', sql.VarChar, type.DTL_Flux_Type)
+      .input('DTL_Surface_Area', sql.Decimal(4,2), type.DTL_Surface_Area)
       .query(`
-        INSERT INTO Dialyzer_Type_Lookup (DTL_Name, DTL_Description)
+        INSERT INTO Dialyzer_Type_Lookup (DTL_Dialyzer_Name, DTL_Membrane_Type, DTL_Flux_Type, DTL_Surface_Area)
         OUTPUT INSERTED.*
-        VALUES (@DTL_Name, @DTL_Description)
+        VALUES (@DTL_Dialyzer_Name, @DTL_Membrane_Type, @DTL_Flux_Type, @DTL_Surface_Area)
       `);
     return result.recordset[0];
   } catch (error) {
@@ -686,11 +686,17 @@ export const updateDialyzerType = async (typeData: any): Promise<any> => {
     const { DTL_ID_PK, ...rest } = typeData;
     const result = await pool.request()
       .input('DTL_ID_PK', sql.Int, DTL_ID_PK)
-      .input('DTL_Name', sql.VarChar, rest.DTL_Name)
-      .input('DTL_Description', sql.VarChar, rest.DTL_Description || '')
+      .input('DTL_Dialyzer_Name', sql.VarChar, rest.DTL_Dialyzer_Name)
+      .input('DTL_Membrane_Type', sql.VarChar, rest.DTL_Membrane_Type)
+      .input('DTL_Flux_Type', sql.VarChar, rest.DTL_Flux_Type)
+      .input('DTL_Surface_Area', sql.Decimal(4,2), rest.DTL_Surface_Area)
       .query(`
-        UPDATE Dialyzer_Type_Lookup 
-        SET DTL_Name = @DTL_Name, DTL_Description = @DTL_Description
+        UPDATE Dialyzer_Type_Lookup
+        SET 
+          DTL_Dialyzer_Name = @DTL_Dialyzer_Name,
+          DTL_Membrane_Type = @DTL_Membrane_Type,
+          DTL_Flux_Type = @DTL_Flux_Type,
+          DTL_Surface_Area = @DTL_Surface_Area
         OUTPUT INSERTED.*
         WHERE DTL_ID_PK = @DTL_ID_PK
       `);
@@ -709,7 +715,7 @@ export const deleteDialyzerType = async (id: string): Promise<boolean> => {
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('DTL_ID_PK', sql.Int, id)
-      .query('DELETE FROM Dialyzer_Type_Lookup WHERE DTL_ID_PK = @DTL_ID_PK');
+      .query('UPDATE Dialyzer_Type_Lookup SET DTL_Status = 0 WHERE DTL_ID_PK = @DTL_ID_PK');
     return result.rowsAffected[0] > 0;
   } catch (error) {
     console.error('Error deleting dialyzer type:', error);

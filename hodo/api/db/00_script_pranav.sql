@@ -131,3 +131,48 @@ BEGIN
     );
 END
 GO
+
+
+
+-- ========================================
+-- Table: Vascular_Access_Lookup
+-- Purpose: Stores vascular access types
+-- ========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Vascular_Access_Lookup'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Vascular_Access_Lookup (
+        VAL_Access_ID_PK INT IDENTITY(1,1) PRIMARY KEY,
+        VAL_Access_Type VARCHAR(50) NOT NULL,
+        VAL_Status TINYINT NOT NULL DEFAULT 10     -- 10 = active, 0 = soft deleted
+    );
+END
+GO
+    
+
+
+-- ========================================
+-- Table: Dialyzer_Type_Lookup
+-- Purpose: Stores dialyzer specifications
+-- ========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Dialyzer_Type_Lookup'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Dialyzer_Type_Lookup (
+        DTL_ID_PK INT IDENTITY(1,1) PRIMARY KEY,
+        DTL_Dialyzer_Name VARCHAR(100) NOT NULL,
+        DTL_Membrane_Type VARCHAR(50) NOT NULL,
+        DTL_Flux_Type VARCHAR(50) NOT NULL,
+        DTL_Surface_Area DECIMAL(4,2) NOT NULL,
+        DTL_Status TINYINT DEFAULT 10 -- 10 = active, 0 = soft-deleted
+    );
+END
+GO

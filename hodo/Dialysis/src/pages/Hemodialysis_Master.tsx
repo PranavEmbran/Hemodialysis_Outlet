@@ -389,7 +389,7 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
-        <SectionHeading title="Hemodialysis Master" subtitle="Hemodialysis Master" />
+        <SectionHeading title="Dialysis Master" subtitle="Dialysis Master" />
         <div style={{ marginTop: 24 }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-start' }}>
             {/* Scheduling Master Table (left) */}

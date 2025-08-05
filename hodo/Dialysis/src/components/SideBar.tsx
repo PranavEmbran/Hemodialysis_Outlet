@@ -220,12 +220,12 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
                 }
-                title={collapsed ? "Hemodialysis Master" : ""}
+                title={collapsed ? "Dialysis Master" : ""}
               >
                 <span>
                   <FontAwesomeIcon icon={faCaretRight} />
                 </span>
-                {!collapsed && "Hemodialysis Master"}
+                {!collapsed && "Dialysis Master"}
               </NavLink>
             </li>
 
