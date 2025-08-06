@@ -52,7 +52,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
   //     // Set Formik field value if needed
   //     const form = document.querySelector('form');
   //     if (form) {
-  //       const select = form.querySelector('select[name="SA_ID_FK_PK"]') as HTMLSelectElement;
+  //       const select = form.querySelector('select[name="SA_ID_PK_FK"]') as HTMLSelectElement;
   //       if (select && select.value !== selectedSchedule) {
   //         select.value = selectedSchedule;
   //         // Trigger change event
@@ -63,7 +63,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
   // }, [selectedSchedule, scheduleOptions]);
 
   const initialValues = {
-    // SA_ID_FK_PK: '',
+    // SA_ID_PK_FK: '',
     Dialysis_Unit: '',
     SDR_Start_time: '',
     SDR_Vascular_access: '',
@@ -76,7 +76,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
   const accessOptions = accesses.map(a => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type }));
   const dialyzerOptions = dialyzerTypes.map(d => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name }));
 
-  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_PK_FK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
 
   return (
     <>
@@ -108,7 +108,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
             const res = await fetch(`${API_URL}/data/start_dialysis_record`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ SA_ID_FK_PK: selectedSchedule, ...values }),
+              body: JSON.stringify({ SA_ID_PK_FK: selectedSchedule, ...values }),
             });
 
             if (!res.ok) throw new Error('Failed to save');
@@ -167,8 +167,8 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
             )}
             {/* <div style={{ display: 'none' }}>
               <SelectField
-                label="Schedule ID (SA_ID_FK_PK)"
-                name="SA_ID_FK_PK"
+                label="Schedule ID (SA_ID_PK_FK)"
+                name="SA_ID_PK_FK"
                 options={scheduleOptions}
                 required
                 placeholder="Select Schedule"

@@ -176,3 +176,139 @@ BEGIN
     );
 END
 GO
+
+
+
+-- ===========================================
+-- 00_script.sql - Create PreDialysis_Records table
+-- ===========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'PreDialysis_Records'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.PreDialysis_Records (
+        PreDR_ID_PK BIGINT IDENTITY(1,1) PRIMARY KEY,           -- Primary Key
+
+        PreDR_DS_ID_FK BIGINT NOT NULL,                            -- FK to Dialysis_Schedules
+        PreDR_P_ID_FK BIGINT NOT NULL,                                -- FK to patient master
+
+        PreDR_Vitals_BP VARCHAR(10) NULL,                       -- Blood Pressure
+        PreDR_Vitals_HeartRate VARCHAR(10) NULL,                -- Heart Rate
+        PreDR_Vitals_Temperature VARCHAR(10) NULL,              -- Temperature
+        PreDR_Vitals_Weight VARCHAR(10) NULL,                   -- Weight
+        PreDR_Notes VARCHAR(MAX) NULL,                          -- Notes
+
+        PreDR_Status TINYINT DEFAULT 10,                              -- 10 = active, 0 = soft deleted
+
+        PreDR_Added_By BIGINT NULL,
+        PreDR_Added_On DATETIME DEFAULT GETDATE(),
+        PreDR_Modified_By BIGINT NULL,
+        PreDR_Modified_On DATETIME NULL,
+
+        PreDR_Provider_FK BIGINT NULL,
+        PreDR_Outlet_FK BIGINT NULL,
+
+        -- Foreign Keys (no cascading updates to avoid cycles)
+        CONSTRAINT FK_PreDialysis_ScheduleAssigned FOREIGN KEY (PreDR_DS_ID_FK)
+            REFERENCES dbo.Dialysis_Schedules(DS_ID_PK),
+
+        CONSTRAINT FK_PreDialysis_Patient FOREIGN KEY (PreDR_P_ID_FK)
+            REFERENCES dbo.PAT_Patient_Master_1(PM_Card_PK)
+    );
+END;
+GO
+
+
+
+
+
+-- ===========================================
+-- 00_script.sql - Create PostDialysis_Records tablePostDR
+-- ===========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'PostDialysis_Records'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.PostDialysis_Records (
+        PostDR_ID_PK BIGINT IDENTITY(1,1) PRIMARY KEY,           -- Primary Key
+
+        PostDR_DS_ID_FK BIGINT NOT NULL,                            -- FK to Dialysis_Schedules
+        PostDR_P_ID_FK BIGINT NOT NULL,                                -- FK to patient master
+
+        PostDR_Vitals_BP VARCHAR(10) NULL,                       -- Blood Pressure
+        PostDR_Vitals_HeartRate VARCHAR(10) NULL,                -- Heart Rate
+        PostDR_Vitals_Temperature VARCHAR(10) NULL,              -- Temperature
+        PostDR_Vitals_Weight VARCHAR(10) NULL,                   -- Weight
+        PostDR_Notes VARCHAR(MAX) NULL,                          -- Notes
+
+        PostDR_Status TINYINT DEFAULT 10,                              -- 10 = active, 0 = soft deleted
+
+        PostDR_Added_By BIGINT NULL,
+        PostDR_Added_On DATETIME DEFAULT GETDATE(),
+        PostDR_Modified_By BIGINT NULL,
+        PostDR_Modified_On DATETIME NULL,
+
+        PostDR_Provider_FK BIGINT NULL,
+        PostDR_Outlet_FK BIGINT NULL,
+
+        -- Foreign Keys (no cascading updates to avoid cycles)
+        CONSTRAINT FK_PostDialysis_ScheduleAssigned FOREIGN KEY (PostDR_DS_ID_FK)
+            REFERENCES dbo.Dialysis_Schedules(DS_ID_PK),
+
+        CONSTRAINT FK_PostDialysis_Patient FOREIGN KEY (PostDR_P_ID_FK)
+            REFERENCES dbo.PAT_Patient_Master_1(PM_Card_PK)
+    );
+END;
+GO
+
+
+-- ===========================================
+-- 01_script.sql - Create Start_Dialysis_Records table
+-- ===========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Start_Dialysis_Records'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Start_Dialysis_Records (
+        SDR_ID_PK BIGINT IDENTITY(1,1) PRIMARY KEY,              -- Primary Key
+
+        SDR_DS_ID_FK BIGINT NOT NULL,                            -- FK to Dialysis_Schedules
+        SDR_P_ID_FK BIGINT NOT NULL,                             -- FK to patient master
+
+        SDR_Dialysis_Unit VARCHAR(50) NOT NULL,                  -- Dialysis Unit name or ID
+        SDR_Start_Time TIME NULL,                                -- Start time of dialysis
+        SDR_Vascular_Access VARCHAR(50) NULL,                    -- Vascular access type
+        SDR_Dialyzer_Type VARCHAR(50) NULL,                      -- Dialyzer type
+        SDR_Notes VARCHAR(MAX) NULL,                             -- Additional notes
+
+        SDR_Status TINYINT DEFAULT 10,                           -- 10 = active, 0 = soft deleted
+
+        SDR_Added_By BIGINT NULL,
+        SDR_Added_On DATETIME DEFAULT GETDATE(),
+        SDR_Modified_By BIGINT NULL,
+        SDR_Modified_On DATETIME NULL,
+
+        SDR_Provider_FK BIGINT NULL,
+        SDR_Outlet_FK BIGINT NULL,
+
+        -- Foreign Keys
+        CONSTRAINT FK_SDR_ScheduleAssigned FOREIGN KEY (SDR_DS_ID_FK)
+            REFERENCES dbo.Dialysis_Schedules(DS_ID_PK),
+
+        CONSTRAINT FK_SDR_Patient FOREIGN KEY (SDR_P_ID_FK)
+            REFERENCES dbo.PAT_Patient_Master_1(PM_Card_PK)
+    );
+END;
+GO
+
+
+

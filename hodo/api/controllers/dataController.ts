@@ -172,6 +172,7 @@ export const savePredialysisRecord = async (req: Request, res: Response) => {
     if (!record.DS_ID_FK_PK || !record.P_ID_FK) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    // PreDR_ID_PK will be generated in the service if not provided
     const saved = await addPredialysisRecord(record);
     res.status(201).json(saved);
   } catch (err) {
@@ -182,7 +183,7 @@ export const savePredialysisRecord = async (req: Request, res: Response) => {
 export const saveStartDialysisRecord = async (req: Request, res: Response) => {
   try {
     const record = req.body;
-    if (!record.SA_ID_FK_PK) {
+    if (!record.SA_ID_PK_FK) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     const saved = await addStartDialysisRecord(record);
@@ -288,11 +289,11 @@ export const getPostDialysisRecords = async (req: Request, res: Response) => {
 
 export const updatePredialysisRecord = async (req: Request, res: Response) => {
   try {
-    const { id, ...rest } = req.body;
+    const { PreDR_ID_PK, ...rest } = req.body;
     await db.read();
-    const idx = db.data.predialysis_records.findIndex((r: any) => r.id === id);
+    const idx = db.data.predialysis_records.findIndex((r: any) => r.PreDR_ID_PK === PreDR_ID_PK);
     if (idx === -1) return res.status(404).json({ error: 'Record not found' });
-    db.data.predialysis_records[idx] = { ...db.data.predialysis_records[idx], ...rest };
+    db.data.predialysis_records[idx] = { ...db.data.predialysis_records[idx], ...rest, PreDR_ID_PK };
     await db.write();
     res.json(db.data.predialysis_records[idx]);
   } catch (err) {

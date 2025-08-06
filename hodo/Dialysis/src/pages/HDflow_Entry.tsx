@@ -42,14 +42,22 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
       fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
       fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
     ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
-      setPatients(patientsData.map((p: any) => ({ id: p.id, name: (p['Name'] || p.name) })));
-      const options = schedules.filter((a: any) => a.Status === 10).map((sch: any) => {
-        const patient = patientsData.find((p: any) => p.id === sch.P_ID_FK);
-        const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
+      // setPatients(patientsData.map((p: any) => ({ id: p.PM_Card_PK, name: (p['Name'] || p.PatientName || "Unnamed") })));
+      setPatients(
+        patientsData
+          .filter((p: any) => !!p.PM_Card_PK)
+          .map((p: any) => ({
+            id: p.PM_Card_PK,
+            name: p.PatientName || "Unnamed"
+          }))
+      );
+      const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
+        const patient = patientsData.find((pd: any) => pd.PM_Card_PK === sch.DS_P_ID_FK);
+        const patientLabel = patient ? (patient['Name'] || patient.PatientName || "Unnamed") : sch.PatientName;
         return {
           value: sch.DS_ID_PK,
-          label: `${sch.DS_ID_PK} - ${patientLabel}`,
-          patientId: sch.P_ID_FK,
+          label: `SID: ${sch.DS_ID_PK} - ${patientLabel}`,
+          patientId: sch.DS_P_ID_FK,
           date: sch.DS_Date
         };
       });

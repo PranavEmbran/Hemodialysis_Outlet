@@ -14,7 +14,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [form, setForm] = useState({
-    SA_ID_FK_PK: '',
+    SA_ID_PK_FK: '',
     P_ID_FK: '',
     PreDR_Vitals_BP: '',
     PreDR_Vitals_HeartRate: '',
@@ -40,27 +40,27 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
   useEffect(() => {
     if (selectedSchedule && appointments.length > 0) {
       setForm(prev => {
-        if (prev.SA_ID_FK_PK !== selectedSchedule) {
+        if (prev.SA_ID_PK_FK !== selectedSchedule) {
           // Find the appointment and patient
           const selected = appointments.find(a => a.DS_ID_PK === selectedSchedule);
           let patientName = '';
           if (selected) {
-            const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+            const patient = patients.find((p: any) => p.PreDR_ID_PK === selected.P_ID_FK);
             patientName = patient ? patient.Name : '';
           }
-          return { ...prev, SA_ID_FK_PK: selectedSchedule, P_ID_FK: patientName };
+          return { ...prev, SA_ID_PK_FK: selectedSchedule, P_ID_FK: patientName };
         }
         return prev;
       });
     }
     // If no schedule selected, clear
     if (!selectedSchedule) {
-      setForm(prev => ({ ...prev, SA_ID_FK_PK: '', P_ID_FK: '' }));
+      setForm(prev => ({ ...prev, SA_ID_PK_FK: '', P_ID_FK: '' }));
     }
   }, [selectedSchedule, appointments, patients]);
 
   // Disable logic: check if selectedSchedule exists in records
-  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule));
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_PK_FK === selectedSchedule));
 
   // Get only active appointments
   const availableSchedules = appointments.filter(a => a.Status === 10);
@@ -68,10 +68,10 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
   // When schedule is selected, auto-fill patient
   const handleScheduleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const scheduleId = e.target.value;
-    setForm(prev => ({ ...prev, SA_ID_FK_PK: scheduleId }));
+    setForm(prev => ({ ...prev, SA_ID_PK_FK: scheduleId }));
     const selected = appointments.find(a => a.DS_ID_PK === scheduleId);
     if (selected) {
-      const patient = patients.find((p: any) => p.id === selected.P_ID_FK);
+      const patient = patients.find((p: any) => p.PreDR_ID_PK === selected.P_ID_FK);
       setForm(prev => ({ ...prev, P_ID_FK: patient ? patient.Name : '' }));
     } else {
       setForm(prev => ({ ...prev, P_ID_FK: '' }));
@@ -85,7 +85,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
-    if (!form.SA_ID_FK_PK) errs.SA_ID_FK_PK = 'Required';
+    if (!form.SA_ID_PK_FK) errs.SA_ID_PK_FK = 'Required';
     if (!form.PreDR_Vitals_BP) errs.PreDR_Vitals_BP = 'Required';
     if (!form.PreDR_Vitals_HeartRate) errs.PreDR_Vitals_HeartRate = 'Required';
     if (!form.PreDR_Vitals_Temperature) errs.PreDR_Vitals_Temperature = 'Required';
@@ -105,7 +105,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       return;
     }
     try {
-      const payload = { ...form, SA_ID_FK_PK: selectedSchedule };
+      const payload = { ...form, SA_ID_PK_FK: selectedSchedule };
       const res = await fetch(`${API_URL}/data/predialysis_record`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +114,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       if (!res.ok) throw new Error('Failed to save');
       setSuccessMsg('Predialysis record saved successfully!');
       setForm({
-        SA_ID_FK_PK: '',
+        SA_ID_PK_FK: '',
         P_ID_FK: '',
         PreDR_Vitals_BP: '',
         PreDR_Vitals_HeartRate: '',
@@ -131,7 +131,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
 
   const handleReset = () => {
     setForm({
-      SA_ID_FK_PK: '',
+      SA_ID_PK_FK: '',
       P_ID_FK: '',
       PreDR_Vitals_BP: '',
       PreDR_Vitals_HeartRate: '',
@@ -158,7 +158,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
         initialValues={form}
         enableReinitialize
         validationSchema={Yup.object({
-          SA_ID_FK_PK: Yup.string().required('Schedule is required'),
+          SA_ID_PK_FK: Yup.string().required('Schedule is required'),
           PreDR_Vitals_BP: Yup.string().required('Blood Pressure is required'),
           PreDR_Vitals_HeartRate: Yup.string().required('Heart Rate is required'),
           PreDR_Vitals_Temperature: Yup.string().required('Temperature is required'),
@@ -179,7 +179,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
             return;
           }
           try {
-            const payload = { ...values, SA_ID_FK_PK: selectedSchedule };
+            const payload = { ...values, SA_ID_PK_FK: selectedSchedule };
             const res = await fetch(`${API_URL}/data/predialysis_record`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -215,8 +215,8 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
             {/* <div className="form-group mb-0"> */}
             <div className="form-group mb-0" >
               {(() => {
-                const selectedScheduleObj = appointments.find(sch => sch.DS_ID_PK === values.SA_ID_FK_PK);
-                const patient = selectedScheduleObj ? patients.find((p: any) => p.id === selectedScheduleObj.P_ID_FK) : null;
+                const selectedScheduleObj = appointments.find(sch => sch.DS_ID_PK === values.SA_ID_PK_FK);
+                const patient = selectedScheduleObj ? patients.find((p: any) => p.PreDR_ID_PK === selectedScheduleObj.P_ID_FK) : null;
                 const labelText = selectedScheduleObj
                   ? `${selectedScheduleObj.DS_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
                   : 'No schedule selected';

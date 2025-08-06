@@ -204,7 +204,7 @@ export const predialysisFormConfig: FormConfig = {
   fields: [
     { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
     { name: 'time', label: 'Time', type: 'text', required: true, colSize: 6 },
-    { name: 'SA_ID_FK_PK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'SA_ID_PK_FK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
     { name: 'patientName', label: 'Patient Name', type: 'text', required: false, colSize: 6, disabled: true },
     { name: 'PreDR_Vitals_BP', label: 'BP', type: 'text', required: false, colSize: 6 },
     { name: 'PreDR_Vitals_HeartRate', label: 'Heart Rate', type: 'text', required: false, colSize: 6 },
@@ -215,7 +215,7 @@ export const predialysisFormConfig: FormConfig = {
   validationSchema: Yup.object({
     date: Yup.string().required('Date is required'),
     time: Yup.string().required('Time is required'),
-    SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+    SA_ID_PK_FK: Yup.string().required('Schedule ID is required'),
     patientName: Yup.string(),
     PreDR_Vitals_BP: Yup.string(),
     PreDR_Vitals_HeartRate: Yup.string(),
@@ -226,7 +226,7 @@ export const predialysisFormConfig: FormConfig = {
   initialValues: (data: any) => ({
     date: data.date || '',
     time: data.time || '',
-    SA_ID_FK_PK: data.SA_ID_FK_PK || '',
+    SA_ID_PK_FK: data.SA_ID_PK_FK || '',
     patientName: data.patientName || '',
     PreDR_Vitals_BP: data.PreDR_Vitals_BP || '',
     PreDR_Vitals_HeartRate: data.PreDR_Vitals_HeartRate || '',
@@ -241,7 +241,7 @@ export const startDialysisFormConfig: FormConfig = {
   fields: [
     { name: 'date', label: 'Date', type: 'date', required: true, colSize: 6 },
     { name: 'time', label: 'Time', type: 'text', required: true, colSize: 6 },
-    { name: 'SA_ID_FK_PK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
+    { name: 'SA_ID_PK_FK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
     { name: 'name', label: 'Name', type: 'text', required: true, colSize: 6, disabled: true },
     { name: 'Dialysis_Unit', label: 'Unit', type: 'text', required: false, colSize: 6 },
     { name: 'SDR_Start_time', label: 'Start Time', type: 'text', required: false, colSize: 6 },
@@ -252,7 +252,7 @@ export const startDialysisFormConfig: FormConfig = {
   validationSchema: Yup.object({
     date: Yup.string().required('Date is required'),
     time: Yup.string().required('Time is required'),
-    SA_ID_FK_PK: Yup.string().required('Schedule ID is required'),
+    SA_ID_PK_FK: Yup.string().required('Schedule ID is required'),
     name: Yup.string().required('Name is required'),
     Dialysis_Unit: Yup.string(),
     SDR_Start_time: Yup.string(),
@@ -263,7 +263,7 @@ export const startDialysisFormConfig: FormConfig = {
   initialValues: (data: any) => ({
     date: data.date || '',
     time: data.time || '',
-    SA_ID_FK_PK: data.SA_ID_FK_PK || '',
+    SA_ID_PK_FK: data.SA_ID_PK_FK || '',
     name: data.name || '',
     Dialysis_Unit: data.Dialysis_Unit || '',
     SDR_Start_time: data.SDR_Start_time || '',

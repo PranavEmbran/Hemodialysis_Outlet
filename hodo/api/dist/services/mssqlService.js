@@ -56,8 +56,8 @@ export const getPredialysisRecords = async () => {
       SELECT * FROM PreDialysis_Records;
     `);
         return result.recordset.map((row) => ({
-            id: row.id || row.ID || row.SA_ID_FK_PK,
-            SA_ID_FK_PK: row.SA_ID_FK_PK,
+            id: row.id || row.ID || row.SA_ID_PK_FK,
+            SA_ID_PK_FK: row.SA_ID_PK_FK,
             P_ID_FK: row.P_ID_FK,
             PreDR_Vitals_BP: row.PreDR_Vitals_BP,
             PreDR_Vitals_HeartRate: row.PreDR_Vitals_HeartRate,
@@ -79,8 +79,8 @@ export const getStartDialysisRecords = async () => {
       SELECT * FROM StartDialysis_Records;
     `);
         return result.recordset.map((row) => ({
-            id: row.id || row.ID || row.SA_ID_FK_PK,
-            SA_ID_FK_PK: row.SA_ID_FK_PK,
+            id: row.id || row.ID || row.SA_ID_PK_FK,
+            SA_ID_PK_FK: row.SA_ID_PK_FK,
             Dialysis_Unit: row.Dialysis_Unit,
             SDR_Start_time: row.SDR_Start_time,
             SDR_Vascular_access: row.SDR_Vascular_access,
@@ -125,8 +125,8 @@ export const getInProcessRecords = async () => {
       SELECT * FROM InProcess_Records;
     `);
         return result.recordset.map((row) => ({
-            id: row.id || row.ID || row.SA_ID_FK_PK,
-            SA_ID_FK_PK: row.SA_ID_FK_PK,
+            id: row.id || row.ID || row.SA_ID_PK_FK,
+            SA_ID_PK_FK: row.SA_ID_PK_FK,
             // Example: adapt fields as per your schema
             rows: row.rows,
             // Add any other fields as needed

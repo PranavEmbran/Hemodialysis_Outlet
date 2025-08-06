@@ -61,17 +61,32 @@ export const getPredialysisRecords = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT * FROM PreDialysis_Records;
+      SELECT
+  pr.*,
+  ds.DS_Date,
+  ds.DS_Time
+FROM dbo.PreDialysis_Records pr
+LEFT JOIN dbo.Dialysis_Schedules ds
+  ON pr.PreDR_DS_ID_FK = ds.DS_ID_PK;
+
     `);
+    // console.log(result.recordset);
     return result.recordset.map((row: any) => ({
-      id: row.id || row.ID || row.SA_ID_FK_PK,
-      SA_ID_FK_PK: row.SA_ID_FK_PK,
-      P_ID_FK: row.P_ID_FK,
+      
+      PreDR_ID_PK: row.PreDR_ID_PK || row.ID || row.SA_ID_PK_FK,
+      PreDR_DS_ID_FK: row.PreDR_DS_ID_FK,
+      PreDR_P_ID_FK: row.PreDR_P_ID_FK,
       PreDR_Vitals_BP: row.PreDR_Vitals_BP,
       PreDR_Vitals_HeartRate: row.PreDR_Vitals_HeartRate,
       PreDR_Vitals_Temperature: row.PreDR_Vitals_Temperature,
       PreDR_Vitals_Weight: row.PreDR_Vitals_Weight,
       PreDR_Notes: row.PreDR_Notes,
+      date: row.DS_Date
+      ? row.DS_Date.toISOString().split('T')[0]
+      : null,
+    time: row.DS_Time
+      ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
+      : null,
     }));
   } catch (err) {
     console.error('MSSQL getPredialysisRecords error:', err);
@@ -84,40 +99,80 @@ export const getStartDialysisRecords = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT * FROM StartDialysis_Records;
+   SELECT
+  sdr.SDR_ID_PK,
+  sdr.SDR_DS_ID_FK,
+  sdr.SDR_Dialysis_Unit,
+  sdr.SDR_Start_Time,
+  sdr.SDR_Vascular_Access,
+  sdr.SDR_Dialyzer_Type,
+  sdr.SDR_Notes,
+  ds.DS_Date,
+  ds.DS_Time,
+  p.PM_FirstName + ISNULL(' ' + p.PM_MiddleName, '') + ISNULL(' ' + p.PM_LastName, '') AS P_Name
+FROM dbo.Start_Dialysis_Records sdr
+LEFT JOIN dbo.Dialysis_Schedules ds
+  ON sdr.SDR_DS_ID_FK = ds.DS_ID_PK
+LEFT JOIN dbo.PAT_Patient_Master_1 p
+  ON sdr.SDR_P_ID_FK = p.PM_Card_PK
+WHERE sdr.SDR_Status = 10;
+
+
     `);
+
+    console.log('getStartDialysisRecords_Record:', result.recordset);
     return result.recordset.map((row: any) => ({
-      id: row.id || row.ID || row.SA_ID_FK_PK,
-      SA_ID_FK_PK: row.SA_ID_FK_PK,
-      Dialysis_Unit: row.Dialysis_Unit,
-      SDR_Start_time: row.SDR_Start_time,
-      SDR_Vascular_access: row.SDR_Vascular_access,
-      Dialyzer_Type: row.Dialyzer_Type,
+      SDR_ID_PK: row.SDR_ID_PK,
+      SA_ID_PK_FK: row.SDR_DS_ID_FK,
+      name: row.PatientName,
+      SDR_Dialysis_Unit: row.SDR_Dialysis_Unit,
+      SDR_Start_Time: row.SDR_Start_Time,
+      SDR_Vascular_Access: row.SDR_Vascular_Access,
+      SDR_Dialyzer_Type: row.SDR_Dialyzer_Type,
       SDR_Notes: row.SDR_Notes,
-      // Add any other fields as needed
+      // date: row.DS_Date ? row.DS_Date.toISOString().split('T')[0] : null,
+      // time: row.DS_Time ? row.DS_Time.toISOString().substring(11, 16) : null,
     }));
-  } catch (err) {
-    console.error('MSSQL getStartDialysisRecords error:', err);
+  } catch (err: any) {
+    console.error('MSSQL getStartDialysisRecords error:', err.message || err);
     throw new Error('Failed to fetch start dialysis records from MSSQL');
   }
 };
+
 
 // Fetch post dialysis records from MSSQL
 export const getPostDialysisRecords = async (): Promise<any[]> => {
   try {
     const pool = await sql.connect(config);
+    // const result = await pool.request().query(`
+    //   SELECT * FROM PostDialysis_Records;
+    // `);
     const result = await pool.request().query(`
-      SELECT * FROM PostDialysis_Records;
-    `);
+
+      SELECT
+      pr.*,
+      ds.DS_Date,
+      ds.DS_Time
+    FROM dbo.PostDialysis_Records pr
+    LEFT JOIN dbo.Dialysis_Schedules ds
+      ON pr.PostDR_DS_ID_FK = ds.DS_ID_PK;
+
+      `);
     return result.recordset.map((row: any) => ({
-      id: row.id || row.ID || row.SA_ID_FK,
-      SA_ID_FK: row.SA_ID_FK,
-      P_ID_FK: row.P_ID_FK,
-      PreDR_Vitals_BP: row.PreDR_Vitals_BP,
-      PreDR_Vitals_HeartRate: row.PreDR_Vitals_HeartRate,
-      PreDR_Vitals_Temperature: row.PreDR_Vitals_Temperature,
-      PreDR_Vitals_Weight: row.PreDR_Vitals_Weight,
+      PostDR_ID_PK: row.id || row.ID || row.SA_ID_FK,
+      PostDR_DS_ID_FK: row.PostDR_DS_ID_FK,
+      PostDR_P_ID_FK: row.PostDR_P_ID_FK,
+      PostDR_Vitals_BP: row.PostDR_Vitals_BP,
+      PostDR_Vitals_HeartRate: row.PostDR_Vitals_HeartRate,
+      PostDR_Vitals_Temperature: row.PostDR_Vitals_Temperature,
+      PostDR_Vitals_Weight: row.PostDR_Vitals_Weight,
       PostDR_Notes: row.PostDR_Notes,
+      date: row.DS_Date
+      ? row.DS_Date.toISOString().split('T')[0]
+      : null,
+    time: row.DS_Time
+      ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
+      : null,
     }));
   } catch (err) {
     console.error('MSSQL getPostDialysisRecords error:', err);
@@ -133,8 +188,8 @@ export const getInProcessRecords = async (): Promise<any[]> => {
       SELECT * FROM InProcess_Records;
     `);
     return result.recordset.map((row: any) => ({
-      id: row.id || row.ID || row.SA_ID_FK_PK,
-      SA_ID_FK_PK: row.SA_ID_FK_PK,
+      id: row.id || row.ID || row.SA_ID_PK_FK,
+      SA_ID_PK_FK: row.SA_ID_PK_FK,
       // Example: adapt fields as per your schema
       rows: row.rows,
       // Add any other fields as needed

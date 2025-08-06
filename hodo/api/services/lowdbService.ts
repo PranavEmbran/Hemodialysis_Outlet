@@ -165,7 +165,8 @@ export const updateCaseOpening = async (caseOpening: Partial<CaseOpening> & { DC
 };
 
 export interface PredialysisRecord {
-  SA_ID_FK_PK: string;
+  PreDR_ID_PK: string; // primary key
+  SA_ID_PK_FK: string;
   P_ID_FK: string;
   PreDR_Vitals_BP: string;
   PreDR_Vitals_HeartRate: string;
@@ -174,19 +175,22 @@ export interface PredialysisRecord {
   PreDR_Notes: string;
 }
 
-export const addPredialysisRecord = async (record: PredialysisRecord): Promise<PredialysisRecord> => {
+export const addPredialysisRecord = async (record: Omit<PredialysisRecord, 'PreDR_ID_PK'> & { PreDR_ID_PK?: string }): Promise<PredialysisRecord> => {
   await initDB();
   await db.read();
   if (!db.data!.predialysis_records) db.data!.predialysis_records = [];
-  // Optionally add an id
-  const newRecord = { id: nanoid(), ...record };
+  // Generate PreDR_ID_PK if not provided
+  const newRecord: PredialysisRecord = { PreDR_ID_PK: record.PreDR_ID_PK || nanoid(), ...record };
+  // Remove id field if present
+  // @ts-ignore
+  delete newRecord.id;
   db.data!.predialysis_records.push(newRecord);
   await db.write();
   return newRecord;
 };
 
 export interface StartDialysisRecord {
-  SA_ID_FK_PK: string;
+  SA_ID_PK_FK: string;
   Dialysis_Unit: string;
   SDR_Start_time: string;
   SDR_Vascular_access: string;
@@ -205,7 +209,7 @@ export const addStartDialysisRecord = async (record: StartDialysisRecord): Promi
 };
 
 export interface InProcessRecord {
-  SA_ID_FK_PK: string;
+  SA_ID_PK_FK: string;
   rows: any[];
 }
 

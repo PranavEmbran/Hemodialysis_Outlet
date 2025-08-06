@@ -126,6 +126,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     ]).then(([patientsData, caseOpenings]) => {
       if (Array.isArray(patientsData) && Array.isArray(caseOpenings)) {
         const allowedIds = new Set(caseOpenings.map((c: any) => c.DCO_P_ID_FK));
+        // setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
         setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
       }
     });

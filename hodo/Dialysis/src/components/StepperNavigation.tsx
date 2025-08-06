@@ -58,7 +58,12 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
     };
     fetchCaseOpenings();
   }, []);
-  const allowedPatientIds = new Set(caseOpenings.map((c) => c.P_ID_FK));
+  // const allowedPatientIds = new Set(caseOpenings.map((c) => c.P_ID_FK));
+  const allowedPatientIds = new Set(
+    caseOpenings
+      .map(c => c.P_ID_FK)
+      .filter(pid => !!pid)
+  );
   const filteredPatients = patients.filter(p => allowedPatientIds.has(p.id));
 
   // Filter schedules by patient and date
@@ -70,6 +75,9 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
       return patientMatch && dateMatch;
     })
     .sort((a, b) => b.date.localeCompare(a.date));
+
+  console.log('scheduleOptions:', scheduleOptions);
+  console.log('filteredSchedules:', filteredSchedules);
 
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>

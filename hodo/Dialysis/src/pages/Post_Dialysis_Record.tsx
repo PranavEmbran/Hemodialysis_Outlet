@@ -39,7 +39,7 @@ const Post_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[
     });
   }, []);
 
-  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_FK_PK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_PK_FK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
 
   useEffect(() => {
     if (selectedSchedule && appointments.length > 0) {
