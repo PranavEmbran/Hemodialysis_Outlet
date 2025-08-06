@@ -428,8 +428,6 @@ export const getCaseOpenings = async (): Promise<CaseOpening[]> => {
         PAT_Patient_Master_1 PM ON PM.PM_Card_PK = DCO.DCO_P_ID_FK
       ORDER BY 
         DCO.DCO_Added_On ASC;
-
-
     `);
     // const result = await pool.request().query(`
     //   SELECT 

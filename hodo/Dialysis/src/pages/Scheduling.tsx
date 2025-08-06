@@ -128,6 +128,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         const allowedIds = new Set(caseOpenings.map((c: any) => c.DCO_P_ID_FK));
         // setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
         setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
+
+        // console.log("All Patient IDs:", patientsData.map(p => p.id));
+        // console.log("Case Opening IDs:", Array.from(allowedIds));
+        // console.log("Filtered Patients:", patientsData.filter((p: any) => allowedIds.has(p.id)));
       }
     });
   }, []);
