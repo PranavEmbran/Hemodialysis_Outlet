@@ -23,13 +23,16 @@ import {
   getSchedulingLookup as getSchedulingLookupService,
   addSchedulingLookup as addSchedulingLookupService,
   updateSchedulingLookup as updateSchedulingLookupService,
-  deleteSchedulingLookup as deleteSchedulingLookupService
+  deleteSchedulingLookup as deleteSchedulingLookupService,
+  addPredialysisRecord,
+  addStartDialysisRecord,
+  addPostDialysisRecord
 } from '../services/dataFactory.js';
 import * as lowdbService from '../services/lowdbService.js';
 const { updateCaseOpening } = lowdbService;
 import * as mssqlService from '../services/mssqlService.js';
 import db from '../db/lowdb.js';
-import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
+// import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
 
 const useMSSQL = process.env.USE_MSSQL === 'true';
 
@@ -168,10 +171,18 @@ export const addCaseOpeningHandler = async (req: Request, res: Response) => {
 export const savePredialysisRecord = async (req: Request, res: Response) => {
   try {
     const record = req.body;
+
+    console.log('POST /api/data/predialysis_record called, body:', req.body);
+
     // Basic validation
-    if (!record.DS_ID_FK_PK || !record.P_ID_FK) {
+    // if (!record.DS_ID_FK_PK || !record.P_ID_FK) {
+    //   return res.status(400).json({ error: 'Missing required fields' });
+    // }
+
+    if (!record.SA_ID_PK_FK) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+
     // PreDR_ID_PK will be generated in the service if not provided
     const saved = await addPredialysisRecord(record);
     res.status(201).json(saved);

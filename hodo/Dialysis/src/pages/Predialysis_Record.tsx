@@ -9,6 +9,7 @@ import { InputField, SelectField, TextareaField } from '../components/forms';
 import { API_URL } from '../config';
 import * as Yup from 'yup';
 
+
 // const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
 const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[]; onSaveSuccess?: () => void }> = ({ selectedSchedule, records = [], onSaveSuccess }) => {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -19,7 +20,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
     PreDR_Vitals_BP: '',
     PreDR_Vitals_HeartRate: '',
     PreDR_Vitals_Temperature: '',
-    PreDR_Vitals_Weight: '',
+    PreDR_Vitals_Weight: '',  
     PreDR_Notes: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -155,8 +156,11 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       {/* <PageContainer> */}
       {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
       <Formik
-        key={form.SA_ID_PK_FK}
-        initialValues={form}
+        key={selectedSchedule} // force remount when schedule changes
+        initialValues={{
+          ...form,
+          SA_ID_PK_FK: selectedSchedule || '', // always use parent's value
+        }}
         enableReinitialize
         validationSchema={Yup.object({
           SA_ID_PK_FK: Yup.string().required('Schedule is required'),
@@ -181,6 +185,15 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
           }
           try {
             const payload = { ...values, SA_ID_PK_FK: selectedSchedule };
+            // Always use selectedSchedule as SA_ID_PK_FK for backend
+            // Remove possible P_ID_FK from payload if not required by backend
+            // if ('P_ID_FK' in payload) delete payload.P_ID_FK;
+            delete (payload as any).P_ID_FK;
+
+
+            console.log("Form values:", values);
+            console.log("Payload to backend:", payload);
+
             const res = await fetch(`${API_URL}/data/predialysis_record`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

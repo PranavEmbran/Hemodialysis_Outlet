@@ -19,6 +19,11 @@ export const getStartDialysisRecords = (service as any).getStartDialysisRecords;
 export const getInProcessRecords = (service as any).getInProcessRecords;
 export const getPostDialysisRecords = (service as any).getPostDialysisRecords;
 
+export const addPredialysisRecord = (service as any).addPredialysisRecord;
+export const addStartDialysisRecord = (service as any).addStartDialysisRecord;
+// export const addInProcessRecord = (service as any).addInProcessRecord;
+export const addPostDialysisRecord = (service as any).addPostDialysisRecord;
+
 // Lookup table functions
 export const getUnits = (service as any).getUnits;
 export const addUnit = (service as any).addUnit;

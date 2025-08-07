@@ -1,5 +1,8 @@
 import type { CaseOpening, Item, Patient, DialysisSchedules } from '../db/lowdb.js';
 import sql from 'mssql';
+import { pool } from 'mssql';
+// import config from '../config'; // adjust path as needed
+
 
 function getEnv(name: string): string {
   const value = process.env[name];
@@ -37,6 +40,8 @@ export const deleteData = async (id: string): Promise<boolean> => {
 };
 
 export const getPatientsDerived = async (): Promise<Patient[]> => {
+  console.log('getPatientsDerived called');
+
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
@@ -94,6 +99,98 @@ LEFT JOIN dbo.Dialysis_Schedules ds
   }
 };
 
+
+export const addPredialysisRecord = async (record: any) => {
+  console.log('addPredialysisRecord called, record:', record);
+  try {
+    const pool = await sql.connect(config);
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+    try {
+      const PreDR_DS_ID_FK = record.SA_ID_PK_FK;
+
+      // Step 1: Get Patient ID (since frontend gives patient name, not ID)
+      let PreDR_P_ID_FK = null;
+      if (PreDR_DS_ID_FK) {
+        console.log('About to run patient lookup, PreDR_DS_ID_FK:', PreDR_DS_ID_FK);
+        const result = await pool
+          .request()
+          // .input('DS_ID_PK', sql.BigInt, PreDR_DS_ID_FK)
+          .input('DS_ID_PK', sql.BigInt, Number(PreDR_DS_ID_FK))
+          .query(`
+            SELECT DS_P_ID_FK FROM Dialysis_Schedules WHERE DS_ID_PK = @DS_ID_PK
+          `);
+
+        if (result.recordset.length > 0) {
+          PreDR_P_ID_FK = result.recordset[0].DS_P_ID_FK;
+        }
+      }
+
+      console.log('Received SA_ID_PK_FK:', PreDR_DS_ID_FK);
+      console.log('Lookup result for DS_P_ID_FK:', PreDR_P_ID_FK);
+
+      if (!PreDR_DS_ID_FK || !PreDR_P_ID_FK) {
+        throw new Error('Missing required fields: Schedule ID or Patient ID');
+      }
+
+      const PreDR_Vitals_BP = Number(record.PreDR_Vitals_BP) || 0;
+      const PreDR_Vitals_HeartRate = Number(record.PreDR_Vitals_HeartRate) || 0;
+      const PreDR_Vitals_Temperature = Number(record.PreDR_Vitals_Temperature) || 0;
+      const PreDR_Vitals_Weight = Number(record.PreDR_Vitals_Weight) || 0;
+      const PreDR_Notes = record.PreDR_Notes ?? '';
+
+      const request = transaction.request();
+
+      console.log('About to query for DS_ID_PK:', PreDR_DS_ID_FK, 'as number:', Number(PreDR_DS_ID_FK));
+
+      await request
+        .input('PreDR_DS_ID_FK', sql.BigInt, Number(PreDR_DS_ID_FK))
+        .input('PreDR_P_ID_FK', sql.BigInt, Number(PreDR_P_ID_FK))
+        .input('PreDR_Vitals_BP', sql.Int, PreDR_Vitals_BP)
+        .input('PreDR_Vitals_HeartRate', sql.Int, PreDR_Vitals_HeartRate)
+        .input('PreDR_Vitals_Temperature', sql.Int, PreDR_Vitals_Temperature)
+        .input('PreDR_Vitals_Weight', sql.Int, PreDR_Vitals_Weight)
+        .input('PreDR_Notes', sql.VarChar, PreDR_Notes)
+        .query(`
+          INSERT INTO PreDialysis_Records (
+            PreDR_DS_ID_FK,
+            PreDR_P_ID_FK,
+            PreDR_Vitals_BP,
+            PreDR_Vitals_HeartRate,
+            PreDR_Vitals_Temperature,
+            PreDR_Vitals_Weight,
+            PreDR_Notes
+          )
+          VALUES (
+            @PreDR_DS_ID_FK,
+            @PreDR_P_ID_FK,
+            @PreDR_Vitals_BP,
+            @PreDR_Vitals_HeartRate,
+            @PreDR_Vitals_Temperature,
+            @PreDR_Vitals_Weight,
+            @PreDR_Notes
+          );
+        `);
+
+      await transaction.commit();
+      return { success: true };
+    } catch (err) {
+      await transaction.rollback();
+      console.error('MSSQL addPredialysisRecord transaction error:', err);
+      throw err;
+    }
+  } catch (err) {
+    console.error('MSSQL addPredialysisRecord connection error:', err);
+    throw new Error('Failed to add predialysis record');
+  }
+};
+
+
+
+
+
+
 // Fetch start dialysis records from MSSQL
 export const getStartDialysisRecords = async (): Promise<any[]> => {
   try {
@@ -120,7 +217,7 @@ WHERE sdr.SDR_Status = 10;
 
     `);
 
-    console.log('getStartDialysisRecords_Record:', result.recordset);
+    // console.log('getStartDialysisRecords_Record:', result.recordset);
     return result.recordset.map((row: any) => ({
       SDR_ID_PK: row.SDR_ID_PK,
       SA_ID_PK_FK: row.SDR_DS_ID_FK,
@@ -327,7 +424,7 @@ export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promi
         } else {
           throw new Error(`DS_Time must be a Date or string, got: ${typeof DS_Time}`);
         }
-        console.log('DS_Time formatted value:', formattedTime, 'Original:', DS_Time);
+        // console.log('DS_Time formatted value:', formattedTime, 'Original:', DS_Time);
         try {
           const result = await transaction.request()
             .input('DS_P_ID_FK', sql.BigInt, DS_P_ID_FK)
@@ -592,7 +689,7 @@ export const updateUnit = async (unitData: any): Promise<any> => {
   try {
     const pool = await sql.connect(config);
     const { Unit_ID_PK, ...rest } = unitData;
-    console.log('Updating Unit_ID_PK:', Unit_ID_PK);
+    // console.log('Updating Unit_ID_PK:', Unit_ID_PK);
     const result = await pool.request()
       .input('Unit_ID_PK', sql.BigInt, Unit_ID_PK)
       .input('Unit_Name', sql.VarChar, rest.Unit_Name)

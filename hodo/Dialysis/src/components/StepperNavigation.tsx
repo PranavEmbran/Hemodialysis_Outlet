@@ -130,6 +130,13 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
         enableReinitialize
       >
         {({ values, setFieldValue }) => {
+          // Defensive sync: if parent's selectedSchedule changes, update Formik
+          React.useEffect(() => {
+            if (selectedSchedule !== values.selectedSchedule) {
+              setFieldValue('selectedSchedule', selectedSchedule || '');
+            }
+          }, [selectedSchedule]);
+
           useEffect(() => {
             if (values.selectedPatient !== selectedPatient) {
               onPatientChange({ target: { value: values.selectedPatient } } as React.ChangeEvent<HTMLSelectElement>);
@@ -173,6 +180,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
               <SelectField
                 label="Select Schedule"
                 name="selectedSchedule"
+                // value={values.selectedSchedule}
                 options={filteredSchedules.map(opt => ({ value: opt.value, label: opt.label }))}
                 placeholder="Select Schedule"
                 className="form-group"
