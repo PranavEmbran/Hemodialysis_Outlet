@@ -41,7 +41,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   onDateChange,
 }) => {
   // --- FILTER PATIENTS BASED ON CASE OPENINGS (DYNAMIC FETCH) ---
-  const [caseOpenings, setCaseOpenings] = React.useState<{ P_ID_FK: string }[]>([]);
+  const [caseOpenings, setCaseOpenings] = React.useState<{ DCO_P_ID_FK: string }[]>([]);
   React.useEffect(() => {
     const fetchCaseOpenings = async () => {
       try {
@@ -61,7 +61,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   // const allowedPatientIds = new Set(caseOpenings.map((c) => c.P_ID_FK));
   const allowedPatientIds = new Set(
     caseOpenings
-      .map(c => c.P_ID_FK)
+      .map(c => c.DCO_P_ID_FK)
       .filter(pid => !!pid)
   );
   const filteredPatients = patients.filter(p => allowedPatientIds.has(p.id));
@@ -76,8 +76,8 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
     })
     .sort((a, b) => b.date.localeCompare(a.date));
 
-  console.log('scheduleOptions:', scheduleOptions);
-  console.log('filteredSchedules:', filteredSchedules);
+  // console.log('scheduleOptions:', scheduleOptions);
+  // console.log('filteredSchedules:', filteredSchedules);
 
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>

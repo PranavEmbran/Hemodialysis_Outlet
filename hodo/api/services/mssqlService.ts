@@ -40,7 +40,7 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-      SELECT TOP 25
+      SELECT TOP 50
         PM_Card_PK,
         PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
       FROM PAT_Patient_Master_1

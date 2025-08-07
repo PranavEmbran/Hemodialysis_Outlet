@@ -144,17 +144,33 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       const safePostDialysis = Array.isArray(postDialysis) ? postDialysis : [];
       setSchedules(safeSchedules);
       setPatients(safePatients.map((p: any) => ({ PreDR_ID_PK: p.PreDR_ID_PK, name: p.Name || p.name })));
-      const options = safeSchedules.filter((a: any) => a.Status === 10).map((sch: any) => {
-        const patient = safePatients.find((p: any) => p.PreDR_ID_PK === sch.P_ID_FK);
-        const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
+
+      // const options = safeSchedules.filter((a: any) => a.Status === 10).map((sch: any) => {
+      //   const patient = safePatients.find((p: any) => p.PreDR_ID_PK === sch.P_ID_FK);
+      //   const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
+      //   return {
+      //     value: sch.DS_ID_PK,
+      //     label: `${sch.DS_ID_PK} - ${patientLabel}`,
+      //     patientId: sch.P_ID_FK,
+      //     date: sch.DS_Date,
+      //     time: sch.DS_Time
+      //   };
+      // });
+      const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
+        const patient = patientsData.find((pd: any) => pd.id === sch.DS_P_ID_FK);
+        // console.log("&&&patient:", patient);
+        // console.log("&&&sch:", sch);
+        // console.log("&&&patientsData:", patientsData);
+
+        const patientLabel = patient ? (patient['Name'] || patient.Name || "Unnamed") : sch.PatientName;
         return {
           value: sch.DS_ID_PK,
-          label: `${sch.DS_ID_PK} - ${patientLabel}`,
-          patientId: sch.P_ID_FK,
-          date: sch.DS_Date,
-          time: sch.DS_Time
+          label: `SID: ${sch.DS_ID_PK} - ${patientLabel}`,
+          patientId: sch.DS_P_ID_FK,
+          date: sch.DS_Date
         };
       });
+      
       setScheduleOptions(options);
       setPredialysisRecords(safePredialysis);
       setStartDialysisRecords(safeStartDialysis);

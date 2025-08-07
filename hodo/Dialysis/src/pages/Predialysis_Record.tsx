@@ -155,6 +155,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       {/* <PageContainer> */}
       {/* <SectionHeading title="Predialysis Record" subtitle="Predialysis Record" /> */}
       <Formik
+        key={form.SA_ID_PK_FK}
         initialValues={form}
         enableReinitialize
         validationSchema={Yup.object({

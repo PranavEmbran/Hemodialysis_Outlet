@@ -22,6 +22,8 @@ const stepComponents = [
   Post_Dialysis_Record,
 ];
 
+
+
 const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [selectedSchedule, setSelectedSchedule] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
@@ -42,18 +44,26 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
       fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
       fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
     ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
+
+      // console.log("Fetched patientsData:", patientsData);
+
       // setPatients(patientsData.map((p: any) => ({ id: p.PM_Card_PK, name: (p['Name'] || p.PatientName || "Unnamed") })));
       setPatients(
         patientsData
-          .filter((p: any) => !!p.PM_Card_PK)
+          .filter((p: any) => !!p.id)
           .map((p: any) => ({
-            id: p.PM_Card_PK,
-            name: p.PatientName || "Unnamed"
+            id: p.id || p.PM_Card_PK,
+            name: p.Name || p.PatientName || "Unnamed"
           }))
       );
+
       const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
-        const patient = patientsData.find((pd: any) => pd.PM_Card_PK === sch.DS_P_ID_FK);
-        const patientLabel = patient ? (patient['Name'] || patient.PatientName || "Unnamed") : sch.PatientName;
+        const patient = patientsData.find((pd: any) => pd.id === sch.DS_P_ID_FK);
+        // console.log("&&&patient:", patient);
+        // console.log("&&&sch:", sch);
+        // console.log("&&&patientsData:", patientsData);
+
+        const patientLabel = patient ? (patient['Name'] || patient.Name || "Unnamed") : sch.PatientName;
         return {
           value: sch.DS_ID_PK,
           label: `SID: ${sch.DS_ID_PK} - ${patientLabel}`,
@@ -61,6 +71,7 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
           date: sch.DS_Date
         };
       });
+
       setScheduleOptions(options);
       setPredialysisRecords(predialysis);
       setStartDialysisRecords(startDialysis);
@@ -108,6 +119,12 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     }
   }
   console.log('Current step:', currentStep, 'StepComponent:', StepComponent.name, 'selectedSchedule:', selectedSchedule);
+
+  const dummyPatients = [
+    { id: "1008821811000060", name: "Patient A" },
+    { id: "1008821811000056", name: "Patient B" },
+  ];
+
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
@@ -121,6 +138,7 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
             currentStep={currentStep}
             onStepChange={handleStepChange}
             patients={patients}
+            // patients={dummyPatients}
             selectedPatient={selectedPatient}
             onPatientChange={handlePatientChange}
             selectedDate={selectedDate}

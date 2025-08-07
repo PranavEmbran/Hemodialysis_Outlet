@@ -30,6 +30,15 @@ function getMonthName(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'long' });
 }
 
+// const normalizeDate = (dateString: string) => {
+//   return new Date(dateString).toISOString().slice(0, 10); // "2025-08-07"
+// };
+
+// const normalizeTime = (timeString: string) => {
+//   return timeString?.slice(0, 5); // "08:00"
+// };
+
+
 const steps = [
   { label: 'Assign Schedule' },
   { label: 'View Assigned Schedules' }
@@ -161,7 +170,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
     let startDate = fromDate ? new Date(fromDate) : new Date();
     let endDate = tillDate ? new Date(tillDate) : null;
-    const rows = [];
+let rows: ScheduleRow[] = [];
     let i = 0;
     let count = 0;
 
@@ -196,13 +205,26 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         setAssignedSessions(assigned);
         // Check for conflicts
         // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
-        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))));
 
+        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))));
+        // conflicts = rows.filter(row =>
+        //   assigned.some((a: any) =>
+        //     normalizeDate(a.DS_Date) === row.date &&
+        //     normalizeTime(a.DS_Time || '') === row.time
+        //   )
+        // );
+        
 
 
         // Mark isConflicting flag
         rows.forEach(row => {
-          row.isConflicting = conflicts.some(c => c.date === row.date && c.time === row.time);
+          // row.isConflicting = conflicts.some(c => c.date === row.date && c.time === row.time);
+          rows.forEach(row => {
+            row.isConflicting = conflicts.some(c =>
+              c.date === row.date && c.time === row.time
+            );
+          });
+          
         });
         if (conflicts.length > 0) {
           setConflictInfo({
@@ -366,9 +388,14 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                         ]}
                         data={scheduleRows.map(row => {
                           // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
+                          
                           const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
 
-
+                          // const bookedCount = assignedSessions.filter(a =>
+                          //   normalizeDate(a.DS_Date) === row.date &&
+                          //   normalizeTime(a.DS_Time || '') === row.time
+                          // ).length;
+                          
 
                           const atCapacity = bookedCount >= unitsCount;
                           console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
