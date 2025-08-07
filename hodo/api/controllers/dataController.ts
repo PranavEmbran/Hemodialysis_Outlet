@@ -243,9 +243,16 @@ export const saveInProcessRecord = async (req: Request, res: Response) => {
 export const savePostDialysisRecord = async (req: Request, res: Response) => {
   try {
     const record = req.body;
-    if (!record.SA_ID_FK) {
+    console.log('savePostDialysisRecord called, body:', req.body);
+
+    // if (!record.SA_ID_FK) {
+    //   return res.status(400).json({ error: 'Missing required fields' });
+    // }
+
+    if (!record.SA_ID_PK_FK) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+
     const saved = await addPostDialysisRecord(record);
     res.status(201).json(saved);
   } catch (err) {
