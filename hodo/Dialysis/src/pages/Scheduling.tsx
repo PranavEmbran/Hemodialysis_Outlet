@@ -203,6 +203,7 @@ let rows: ScheduleRow[] = [];
         const res = await fetch(`${API_URL}/data/Dialysis_Schedules?patientId=${values.patient}`);
         const assigned = await res.json();
         setAssignedSessions(assigned);
+        console.log("&&&assigned:", assigned);
         // Check for conflicts
         // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
 
@@ -390,12 +391,18 @@ let rows: ScheduleRow[] = [];
                           // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
                           
                           const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
+                          console.log("### row.date:", row.date);
+                          console.log("### row.time:", row.time);
+                          console.log("### assignedSessions:", assignedSessions);
+
+
 
                           // const bookedCount = assignedSessions.filter(a =>
                           //   normalizeDate(a.DS_Date) === row.date &&
                           //   normalizeTime(a.DS_Time || '') === row.time
                           // ).length;
                           
+
 
                           const atCapacity = bookedCount >= unitsCount;
                           console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);

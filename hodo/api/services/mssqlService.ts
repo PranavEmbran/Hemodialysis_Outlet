@@ -219,13 +219,23 @@ export const addStartDialysisRecord = async (record: any) => {
       }
 
       // 2. Prepare fields for insert
-      const SDR_Dialysis_Unit = record.SDR_Dialysis_Unit ?? '';
+      const SDR_Dialysis_Unit = record.Dialysis_Unit ?? '';
       const SDR_Start_Time = record.SDR_Start_Time ? new Date(record.SDR_Start_Time) : new Date();
-      const SDR_Vascular_Access = record.SDR_Vascular_Access ?? '';
-      const SDR_Dialyzer_Type = record.SDR_Dialyzer_Type ?? '';
+      const SDR_Vascular_Access = record.SDR_Vascular_access ?? '';
+      const SDR_Dialyzer_Type = record.Dialyzer_Type ?? '';
       const SDR_Notes = record.SDR_Notes ?? '';
 
       // 3. Insert into Start_Dialysis_Records
+console.log('#################### Inserting into Start_Dialysis_Records:', {
+  SDR_DS_ID_FK,
+  SDR_P_ID_FK,
+  SDR_Dialysis_Unit,
+  SDR_Start_Time,
+  SDR_Vascular_Access,
+  SDR_Dialyzer_Type,
+  SDR_Notes,
+});
+
       const request = transaction.request();
       await request
         .input('SDR_DS_ID_FK', sql.BigInt, Number(SDR_DS_ID_FK))
@@ -672,14 +682,32 @@ export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promi
           const result = await transaction.request()
             .input('DS_P_ID_FK', sql.BigInt, DS_P_ID_FK)
             .input('DS_Date', sql.Date, DS_Date)
-            // .input('DS_Time', sql.Time, new Date('1970-01-01T08:00:00'))
+
+            
+            // .input(
+            //   'DS_Time',
+            //   sql.Time,
+            //   Object.prototype.toString.call(DS_Time) === '[object Date]'
+            //     ? DS_Time
+            //     : new Date(`1970-01-01T${formattedTime}`)
+            // )
             .input(
               'DS_Time',
               sql.Time,
-              Object.prototype.toString.call(DS_Time) === '[object Date]'
-                ? DS_Time
-                : new Date(`1970-01-01T${formattedTime}`)
+              (() => {
+                const baseTime =
+                  Object.prototype.toString.call(DS_Time) === '[object Date]'
+                    ? new Date(DS_Time)
+                    : new Date(`1970-01-01T${formattedTime}`);
+            
+                // Add 5 hours and 30 minutes
+                baseTime.setHours(baseTime.getHours() + 5);
+                baseTime.setMinutes(baseTime.getMinutes() + 30);
+            
+                return baseTime;
+              })()
             )
+            
 
 
 
@@ -916,10 +944,23 @@ export const addUnit = async (unit: any): Promise<any> => {
       .input('Unit_Technitian_Assigned', sql.VarChar, unit.Unit_Technitian_Assigned)
       // .input('Unit_Status', sql.TinyInt, 10) // Always active
       .query(`
-        INSERT INTO Units_Master
-        (Unit_Name, Unit_Availability_Status, Unit_Planned_Maintainance_DT, Unit_Technitian_Assigned)
-        OUTPUT INSERTED.*
-        VALUES (@Unit_Name, @Unit_Availability_Status, @Unit_Planned_Maintainance_DT, @Unit_Technitian_Assigned)
+        BEGIN
+
+          -- Insert new unit
+          INSERT INTO Units_Master
+          (Unit_Name, Unit_Availability_Status, Unit_Planned_Maintainance_DT, Unit_Technitian_Assigned)
+          OUTPUT INSERTED.*
+          VALUES (@Unit_Name, @Unit_Availability_Status, @Unit_Planned_Maintainance_DT, @Unit_Technitian_Assigned)
+
+          -- Update the lookup table count
+          UPDATE Scheduling_Lookup
+          SET SL_No_of_units = (
+              SELECT COUNT(*)
+              FROM Units_Master
+              WHERE Unit_Status = 10
+          );
+
+      END;
       `);
     return result.recordset[0];
   } catch (error) {
@@ -965,9 +1006,20 @@ export const deleteUnit = async (id: string): Promise<boolean> => {
       .input('Unit_ID_PK', sql.Int, id)
       // .query('DELETE FROM Units_Master WHERE Unit_ID_PK = @Unit_ID_PK');
       .query(`
+        BEGIN
+    -- Update the unit status
         UPDATE Units_Master
         SET Unit_Status = 0
-        WHERE Unit_ID_PK = @Unit_ID_PK
+        WHERE Unit_ID_PK = @Unit_ID_PK;
+
+    -- Update the lookup table count
+        UPDATE Scheduling_Lookup
+        SET SL_No_of_units = (
+            SELECT COUNT(*)
+            FROM Units_Master
+            WHERE Unit_Status = 10
+        );
+    END;
       `);
     return result.rowsAffected[0] > 0;
   } catch (error) {
