@@ -277,49 +277,109 @@ export const addPostDialysisRecord = async (record: any) => {
     await transaction.begin();
 
     try {
-      const PostDR_DS_ID_FK = record.SA_ID_PK_FK;
+      const PostDR_DS_ID_FK = Number(record.SA_ID_PK_FK);
 
       // Step 1: Lookup Patient ID
       let PostDR_P_ID_FK = null;
       if (PostDR_DS_ID_FK) {
         const result = await pool
           .request()
-          .input('DS_ID_PK', sql.BigInt, Number(PostDR_DS_ID_FK))
+          .input('DS_ID_PK', sql.BigInt, PostDR_DS_ID_FK)
           .query(`
             SELECT DS_P_ID_FK FROM Dialysis_Schedules WHERE DS_ID_PK = @DS_ID_PK
           `);
 
         if (result.recordset.length > 0) {
-          PostDR_P_ID_FK = result.recordset[0].DS_P_ID_FK;
+          PostDR_P_ID_FK = Number(result.recordset[0].DS_P_ID_FK);
         }
       }
 
       console.log('Schedule ID:', PostDR_DS_ID_FK);
       console.log('Resolved Patient ID:', PostDR_P_ID_FK);
 
-      if (!PostDR_DS_ID_FK || !PostDR_P_ID_FK) {
-        throw new Error('Missing required fields: Schedule ID or Patient ID');
-      }
-
-      // Step 2: Prepare inputs
-      const PostDR_Vitals_BP = Number(record.PreDR_Vitals_BP) || 0;
-      const PostDR_Vitals_HeartRate = Number(record.PreDR_Vitals_HeartRate) || 0;
-      const PostDR_Vitals_Temperature = Number(record.PreDR_Vitals_Temperature) || 0;
-      const PostDR_Vitals_Weight = Number(record.PreDR_Vitals_Weight) || 0;
+      const PostDR_Vitals_BP = Number(record.PostDR_Vitals_BP) || 0;
+      const PostDR_Vitals_HeartRate = Number(record.PostDR_Vitals_HeartRate) || 0;
+      const PostDR_Vitals_Temperature = Number(record.PostDR_Vitals_Temperature) || 0;
+      const PostDR_Vitals_Weight = Number(record.PostDR_Vitals_Weight) || 0;
       const PostDR_Notes = record.PostDR_Notes ?? '';
-
-      // System/Metadata
       const PostDR_Status = 1;
       const PostDR_Added_By = record.PostDR_Added_By ?? 'system';
       const PostDR_Added_On = new Date();
       const PostDR_Modified_By = record.PostDR_Modified_By ?? 'system';
       const PostDR_Modified_On = new Date();
-      const PostDR_Provider_FK = Number(record.PostDR_Provider_FK) || null;
-      const PostDR_Outlet_FK = Number(record.PostDR_Outlet_FK) || null;
+      const PostDR_Provider_FK = record.PostDR_Provider_FK ? Number(record.PostDR_Provider_FK) : null;
+      const PostDR_Outlet_FK = record.PostDR_Outlet_FK ? Number(record.PostDR_Outlet_FK) : null;
+
+      console.log('Insert values:', {
+        PostDR_DS_ID_FK,
+        PostDR_P_ID_FK,
+        PostDR_Vitals_BP,
+        PostDR_Vitals_HeartRate,
+        PostDR_Vitals_Temperature,
+        PostDR_Vitals_Weight,
+        PostDR_Notes,
+        PostDR_Status,
+        PostDR_Added_By,
+        PostDR_Added_On,
+        PostDR_Modified_By,
+        PostDR_Modified_On,
+        PostDR_Provider_FK,
+        PostDR_Outlet_FK
+      });
 
       // Step 3: Insert
       const request = transaction.request();
 
+      try {
+        // await request
+        //   .input('PostDR_DS_ID_FK', sql.BigInt, Number(PostDR_DS_ID_FK))
+        //   .input('PostDR_P_ID_FK', sql.BigInt, Number(PostDR_P_ID_FK))
+        //   .input('PostDR_Vitals_BP', sql.Int, PostDR_Vitals_BP)
+        //   .input('PostDR_Vitals_HeartRate', sql.Int, PostDR_Vitals_HeartRate)
+        //   .input('PostDR_Vitals_Temperature', sql.Decimal(6, 3), PostDR_Vitals_Temperature)
+        //   .input('PostDR_Vitals_Weight', sql.Int, PostDR_Vitals_Weight)
+        //   .input('PostDR_Notes', sql.VarChar(sql.MAX), PostDR_Notes)
+        //   .input('PostDR_Status', sql.Int, PostDR_Status)
+        //   .input('PostDR_Added_By', sql.VarChar(100), PostDR_Added_By)
+        //   .input('PostDR_Added_On', sql.DateTime, PostDR_Added_On)
+        //   .input('PostDR_Modified_By', sql.VarChar(100), PostDR_Modified_By)
+        //   .input('PostDR_Modified_On', sql.DateTime, PostDR_Modified_On)
+        //   .input('PostDR_Provider_FK', sql.BigInt, PostDR_Provider_FK)
+        //   .input('PostDR_Outlet_FK', sql.BigInt, PostDR_Outlet_FK)
+        //   .query(`
+        //     INSERT INTO PostDialysis_Records (
+        //       PostDR_DS_ID_FK,
+        //       PostDR_P_ID_FK,
+        //       PostDR_Vitals_BP,
+        //       PostDR_Vitals_HeartRate,
+        //       PostDR_Vitals_Temperature,
+        //       PostDR_Vitals_Weight,
+        //       PostDR_Notes,
+        //       PostDR_Status,
+        //       PostDR_Added_By,
+        //       PostDR_Added_On,
+        //       PostDR_Modified_By,
+        //       PostDR_Modified_On,
+        //       PostDR_Provider_FK,
+        //       PostDR_Outlet_FK
+        //     )
+        //     VALUES (
+        //       @PostDR_DS_ID_FK,
+        //       @PostDR_P_ID_FK,
+        //       @PostDR_Vitals_BP,
+        //       @PostDR_Vitals_HeartRate,
+        //       @PostDR_Vitals_Temperature,
+        //       @PostDR_Vitals_Weight,
+        //       @PostDR_Notes,
+        //       @PostDR_Status,
+        //       @PostDR_Added_By,
+        //       @PostDR_Added_On,
+        //       @PostDR_Modified_By,
+        //       @PostDR_Modified_On,
+        //       @PostDR_Provider_FK,
+        //       @PostDR_Outlet_FK
+        //     );
+        //   `);
       await request
         .input('PostDR_DS_ID_FK', sql.BigInt, Number(PostDR_DS_ID_FK))
         .input('PostDR_P_ID_FK', sql.BigInt, Number(PostDR_P_ID_FK))
@@ -328,13 +388,13 @@ export const addPostDialysisRecord = async (record: any) => {
         .input('PostDR_Vitals_Temperature', sql.Decimal(6, 3), PostDR_Vitals_Temperature)
         .input('PostDR_Vitals_Weight', sql.Int, PostDR_Vitals_Weight)
         .input('PostDR_Notes', sql.VarChar(sql.MAX), PostDR_Notes)
-        .input('PostDR_Status', sql.Int, PostDR_Status)
-        .input('PostDR_Added_By', sql.VarChar(100), PostDR_Added_By)
-        .input('PostDR_Added_On', sql.DateTime, PostDR_Added_On)
-        .input('PostDR_Modified_By', sql.VarChar(100), PostDR_Modified_By)
-        .input('PostDR_Modified_On', sql.DateTime, PostDR_Modified_On)
-        .input('PostDR_Provider_FK', sql.BigInt, PostDR_Provider_FK)
-        .input('PostDR_Outlet_FK', sql.BigInt, PostDR_Outlet_FK)
+        // .input('PostDR_Status', sql.Int, PostDR_Status)
+        // .input('PostDR_Added_By', sql.VarChar(100), PostDR_Added_By)
+        // .input('PostDR_Added_On', sql.DateTime, PostDR_Added_On)
+        // .input('PostDR_Modified_By', sql.VarChar(100), PostDR_Modified_By)
+        // .input('PostDR_Modified_On', sql.DateTime, PostDR_Modified_On)
+        // .input('PostDR_Provider_FK', sql.BigInt, PostDR_Provider_FK)
+        // .input('PostDR_Outlet_FK', sql.BigInt, PostDR_Outlet_FK)
         .query(`
           INSERT INTO PostDialysis_Records (
             PostDR_DS_ID_FK,
@@ -343,15 +403,8 @@ export const addPostDialysisRecord = async (record: any) => {
             PostDR_Vitals_HeartRate,
             PostDR_Vitals_Temperature,
             PostDR_Vitals_Weight,
-            PostDR_Notes,
-            PostDR_Status,
-            PostDR_Added_By,
-            PostDR_Added_On,
-            PostDR_Modified_By,
-            PostDR_Modified_On,
-            PostDR_Provider_FK,
-            PostDR_Outlet_FK
-          )
+            PostDR_Notes
+            )
           VALUES (
             @PostDR_DS_ID_FK,
             @PostDR_P_ID_FK,
@@ -359,16 +412,13 @@ export const addPostDialysisRecord = async (record: any) => {
             @PostDR_Vitals_HeartRate,
             @PostDR_Vitals_Temperature,
             @PostDR_Vitals_Weight,
-            @PostDR_Notes,
-            @PostDR_Status,
-            @PostDR_Added_By,
-            @PostDR_Added_On,
-            @PostDR_Modified_By,
-            @PostDR_Modified_On,
-            @PostDR_Provider_FK,
-            @PostDR_Outlet_FK
+            @PostDR_Notes
           );
         `);
+      } catch (queryError) {
+        console.error('❌ Insert query failed:', queryError);
+        throw queryError; // Let outer try/catch handle rollback
+      }
 
       await transaction.commit();
       return { success: true };
