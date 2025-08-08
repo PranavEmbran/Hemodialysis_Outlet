@@ -14,6 +14,7 @@ import { useUnits } from './UnitsManagement';
 import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
 import { API_URL } from '../config';
+import { toast } from 'react-toastify';
 
 // const Start_Dialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
 const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[]; onSaveSuccess?: () => void }> = ({ selectedSchedule, records = [], onSaveSuccess }) => {
@@ -114,6 +115,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
             if (!res.ok) throw new Error('Failed to save');
 
             setSuccessMsg('Start Dialysis record saved successfully!');
+            toast.success('Start Dialysis record saved successfully!');
 
             // ✅ Explicitly reset the form with initial values
             // This ensures both Formik state and custom field values are cleared
@@ -139,6 +141,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
 
           } catch (err) {
             setErrorMsg('Error saving start dialysis record.');
+            toast.error('Error saving start dialysis record.');
           }
         }}
 

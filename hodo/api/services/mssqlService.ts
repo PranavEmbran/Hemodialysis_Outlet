@@ -67,12 +67,13 @@ export const getPredialysisRecords = async (): Promise<any[]> => {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
       SELECT
-  pr.*,
-  ds.DS_Date,
-  ds.DS_Time
-FROM dbo.PreDialysis_Records pr
-LEFT JOIN dbo.Dialysis_Schedules ds
-  ON pr.PreDR_DS_ID_FK = ds.DS_ID_PK;
+        pr.*,
+        ds.DS_Date,
+        ds.DS_Time
+      FROM dbo.PreDialysis_Records pr
+      LEFT JOIN dbo.Dialysis_Schedules ds
+        ON pr.PreDR_DS_ID_FK = ds.DS_ID_PK
+        ORDER BY pr.PreDR_Added_On DESC;
 
     `);
     // console.log(result.recordset);
@@ -465,7 +466,8 @@ export const getStartDialysisRecords = async (): Promise<any[]> => {
     ON sdr.SDR_DS_ID_FK = ds.DS_ID_PK
   LEFT JOIN dbo.PAT_Patient_Master_1 p
     ON sdr.SDR_P_ID_FK = p.PM_Card_PK
-  WHERE sdr.SDR_Status = 10;
+  WHERE sdr.SDR_Status = 10
+  ORDER BY sdr.SDR_Added_On DESC;
 
 
     `);
@@ -505,7 +507,8 @@ export const getPostDialysisRecords = async (): Promise<any[]> => {
       ds.DS_Time
     FROM dbo.PostDialysis_Records pr
     LEFT JOIN dbo.Dialysis_Schedules ds
-      ON pr.PostDR_DS_ID_FK = ds.DS_ID_PK;
+      ON pr.PostDR_DS_ID_FK = ds.DS_ID_PK
+      ORDER BY pr.PostDR_Added_On DESC;
 
       `);
     return result.recordset.map((row: any) => ({

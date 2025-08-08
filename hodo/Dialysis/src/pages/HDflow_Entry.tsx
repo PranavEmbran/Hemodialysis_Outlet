@@ -124,6 +124,9 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     { id: "1008821811000060", name: "Patient A" },
     { id: "1008821811000056", name: "Patient B" },
   ];
+  
+console.log("&&##&StepComponent:", StepComponent.name);
+console.log("&&##&stepProps:", stepProps);
 
   return (
     <>
@@ -145,6 +148,8 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
             onDateChange={handleDateChange}
           />
           <div style={{ maxWidth: 2000, margin: '0 auto' }}>
+
+
             <StepComponent {...stepProps} />
           </div>
         </div>

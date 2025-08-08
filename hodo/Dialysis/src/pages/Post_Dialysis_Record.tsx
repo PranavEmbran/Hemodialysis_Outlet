@@ -4,6 +4,7 @@ import { InputField, TextareaField } from '../components/forms';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import { API_URL } from '../config';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 
 const Post_Dialysis_Record: React.FC<{
   selectedSchedule?: string;
@@ -103,10 +104,12 @@ const Post_Dialysis_Record: React.FC<{
 
             if (!res.ok) throw new Error('Failed to save');
             setSuccessMsg('Postdialysis record saved successfully!');
+            toast.success('Postdialysis record saved successfully!');
             resetForm();
             if (onSaveSuccess) onSaveSuccess();
           } catch (err) {
             setErrorMsg('Error saving postdialysis record.');
+            toast.error('Error saving postdialysis record.');
           }
           setSubmitting(false);
         }}

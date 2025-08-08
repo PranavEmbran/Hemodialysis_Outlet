@@ -8,6 +8,7 @@ import { Formik, Form } from 'formik';
 import { InputField, SelectField, TextareaField } from '../components/forms';
 import { API_URL } from '../config';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 
 
 // const Predialysis_Record: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
@@ -20,7 +21,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
     PreDR_Vitals_BP: '',
     PreDR_Vitals_HeartRate: '',
     PreDR_Vitals_Temperature: '',
-    PreDR_Vitals_Weight: '',  
+    PreDR_Vitals_Weight: '',
     PreDR_Notes: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -114,6 +115,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       });
       if (!res.ok) throw new Error('Failed to save');
       setSuccessMsg('Predialysis record saved successfully!');
+      toast.success('Predialysis record saved successfully!');
       setForm({
         SA_ID_PK_FK: '',
         P_ID_FK: '',
@@ -127,6 +129,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       if (onSaveSuccess) onSaveSuccess();
     } catch (err) {
       setErrorMsg('Error saving predialysis record.');
+      toast.error('Error saving predialysis record.');
     }
   };
 
@@ -144,6 +147,15 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
     setSuccessMsg('');
     setErrorMsg('');
   };
+
+
+
+  records.forEach((rec: any) => {
+    console.log("@@@Comparing", rec.PreDR_ID_PK, "===", selectedSchedule);
+  });
+
+
+
 
   return (
     <>
@@ -201,6 +213,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
             });
             if (!res.ok) throw new Error('Failed to save');
             setSuccessMsg('Predialysis record saved successfully!');
+            toast.success('Predialysis record saved successfully!');
             resetForm();
           } catch (err) {
             setErrorMsg('Error saving predialysis record.');
@@ -214,7 +227,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
             {Object.keys(errors).length > 0 && submitCount > 0 && (
               <div style={{ color: 'red', background: '#fff2f2', border: '1px solid #ffcccc', padding: 10, borderRadius: 5, marginBottom: 16, textAlign: 'center' }}>
                 Please fill in the following required fields:<br />
-                <ul style={{color: 'red', textAlign: 'left', maxWidth: 400, margin: '8px auto'}}>
+                <ul style={{ color: 'red', textAlign: 'left', maxWidth: 400, margin: '8px auto' }}>
                   {Object.entries(errors).map(([field, msg]) => (
                     <li key={field}>{msg}</li>
                   ))}
@@ -227,20 +240,60 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
               </div>
             )}
             {/* <div className="form-group mb-0"> */}
-            <div className="form-group mb-0" >
+
+
+            {/* <div className="form-group mb-0" >
               {(() => {
                 const selectedScheduleObj = appointments.find(sch => sch.DS_ID_PK === values.SA_ID_PK_FK);
                 const patient = selectedScheduleObj ? patients.find((p: any) => p.PreDR_ID_PK === selectedScheduleObj.P_ID_FK) : null;
+                
                 const labelText = selectedScheduleObj
                   ? `${selectedScheduleObj.DS_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
                   : 'No schedule selected';
+ 
+                // const labelText = `${selectedSchedule}`;
+
+
                 return (
                   <label className="blueBar">
                     {labelText}
                   </label>
                 );
               })()}
+            </div> */}
+            <div className="form-group mb-0">
+              {(() => {
+                if (!appointments.length || !patients.length) {
+                  return (
+                    <label className="blueBar">
+                      Loading schedule...
+                    </label>
+                  );
+                }
+
+                {(() => {
+                  const selectedScheduleObj =
+                    appointments.find((sch) => sch.DS_ID_PK === selectedSchedule);
+                
+                  const patient =
+                    selectedScheduleObj &&
+                    patients.find((p: any) => p.PreDR_ID_PK === selectedScheduleObj.P_ID_FK);
+                
+                  const labelText =
+                    selectedScheduleObj
+                      ? `${selectedScheduleObj.DS_ID_PK} - ${patient ? patient.Name : selectedScheduleObj.P_ID_FK}`
+                      : (selectedSchedule ? "Loading schedule..." : "No schedule selected");
+                
+                  return <label className="blueBar">{labelText}</label>;
+                })()}
+                
+              })()}
             </div>
+
+
+
+
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <label style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 18 }}>Vitals</label><br />
               <InputField
