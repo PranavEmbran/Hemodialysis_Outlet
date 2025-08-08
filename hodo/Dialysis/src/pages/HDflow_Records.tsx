@@ -288,12 +288,12 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       predialysisRecords.filter(r => {
         const patient = patients.find(p => p.id === r.PreDR_P_ID_FK);
         return (
-          (selectedSchedule ? r.SA_ID_PK_FK === selectedSchedule : true) &&
+          (selectedSchedule ? r.PreDR_DS_ID_FK === selectedSchedule : true) &&
            (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.SA_ID_PK_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
+           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.PreDR_DS_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
-      r => r.SA_ID_PK_FK
+      r => r.PreDR_DS_ID_FK
     );
   } else if (currentStep === 1) {
     columns = startDialysisColumns;
@@ -305,7 +305,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         return (
           
           (selectedSchedule ? r.SA_ID_PK_FK === selectedSchedule : true) &&
-           (selectedPatient ? (schedule && schedule.SDR_P_ID_FK === selectedPatient) : true) &&
+          //  (selectedPatient ? (schedule && schedule.SDR_P_ID_FK === selectedPatient) : true) &&
            (selectedDate ? ((schedule && schedule.DS_Date === selectedDate) || r.date === selectedDate) : true)
         );
       }),
@@ -324,13 +324,17 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     filteredRecords = addDateTimeToRecords(
       postDialysisRecords.filter(r => {
         const patient = patients.find(p => p.id === r.PostDR_P_ID_FK);
+
+        console.log("&&&PostDR_DS_ID_FK:", r.PostDR_DS_ID_FK);
+
+
         return (
-          (selectedSchedule ? r.SA_ID_FK === selectedSchedule : true) &&
+          (selectedSchedule ? r.PostDR_DS_ID_FK === selectedSchedule : true) &&
            (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.SA_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
+           (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.PostDR_DS_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
         );
       }),
-      r => r.SA_ID_FK
+      r => r.PostDR_DS_ID_FK
     );
   }
 
@@ -341,7 +345,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   ];
 
   console.log('patients:', patients);
-  console.log('first record:', predialysisRecords[0]);
+  console.log('first record:', startDialysisRecords[0]);
 
   return (
     <>

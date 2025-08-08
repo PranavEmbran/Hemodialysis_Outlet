@@ -440,22 +440,22 @@ export const getStartDialysisRecords = async (): Promise<any[]> => {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
    SELECT
-  sdr.SDR_ID_PK,
-  sdr.SDR_DS_ID_FK,
-  sdr.SDR_Dialysis_Unit,
-  sdr.SDR_Start_Time,
-  sdr.SDR_Vascular_Access,
-  sdr.SDR_Dialyzer_Type,
-  sdr.SDR_Notes,
-  ds.DS_Date,
-  ds.DS_Time,
-  p.PM_FirstName + ISNULL(' ' + p.PM_MiddleName, '') + ISNULL(' ' + p.PM_LastName, '') AS P_Name
-FROM dbo.Start_Dialysis_Records sdr
-LEFT JOIN dbo.Dialysis_Schedules ds
-  ON sdr.SDR_DS_ID_FK = ds.DS_ID_PK
-LEFT JOIN dbo.PAT_Patient_Master_1 p
-  ON sdr.SDR_P_ID_FK = p.PM_Card_PK
-WHERE sdr.SDR_Status = 10;
+    sdr.SDR_ID_PK,
+    sdr.SDR_DS_ID_FK,
+    sdr.SDR_Dialysis_Unit,
+    sdr.SDR_Start_Time,
+    sdr.SDR_Vascular_Access,
+    sdr.SDR_Dialyzer_Type,
+    sdr.SDR_Notes,
+    ds.DS_Date,
+    ds.DS_Time,
+    p.PM_FirstName + ISNULL(' ' + p.PM_MiddleName, '') + ISNULL(' ' + p.PM_LastName, '') AS P_Name
+  FROM dbo.Start_Dialysis_Records sdr
+  LEFT JOIN dbo.Dialysis_Schedules ds
+    ON sdr.SDR_DS_ID_FK = ds.DS_ID_PK
+  LEFT JOIN dbo.PAT_Patient_Master_1 p
+    ON sdr.SDR_P_ID_FK = p.PM_Card_PK
+  WHERE sdr.SDR_Status = 10;
 
 
     `);
