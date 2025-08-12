@@ -885,10 +885,29 @@ export const updateStartDialysisRecord = async (record: any) => {
           setClause.push('SDR_Dialysis_Unit = @SDR_Dialysis_Unit');
           request.input('SDR_Dialysis_Unit', sql.VarChar, updateFields.SDR_Dialysis_Unit || '');
         }
+        // if (updateFields.SDR_Start_Time !== undefined) {
+        //   setClause.push('SDR_Start_Time = @SDR_Start_Time');
+        //   request.input('SDR_Start_Time', sql.DateTime, new Date(updateFields.SDR_Start_Time));
+        // }
         if (updateFields.SDR_Start_Time !== undefined) {
+          let timeValue = updateFields.SDR_Start_Time;
+        
+          // Ensure full HH:mm:ss format
+          if (/^\d{2}:\d{2}$/.test(timeValue)) {
+            timeValue = `${timeValue}:00`;
+          }
+        
+          // Use VARCHAR to avoid driver parse issues
+          request.input('SDR_Start_Time', sql.VarChar, timeValue);
           setClause.push('SDR_Start_Time = @SDR_Start_Time');
-          request.input('SDR_Start_Time', sql.DateTime, new Date(updateFields.SDR_Start_Time));
         }
+        
+        
+        
+        
+
+
+
         if (updateFields.SDR_Vascular_Access !== undefined) {
           setClause.push('SDR_Vascular_Access = @SDR_Vascular_Access');
           request.input('SDR_Vascular_Access', sql.VarChar, updateFields.SDR_Vascular_Access || '');
@@ -923,6 +942,8 @@ export const updateStartDialysisRecord = async (record: any) => {
     }
   } catch (err) {
     console.error('MSSQL updateStartDialysisRecord connection error:', err);
+    console.error('❌ SQL Update Error:', err);
+    throw err; // Don't mask the error yet
     throw new Error('Failed to update start dialysis record');
   }
 };
