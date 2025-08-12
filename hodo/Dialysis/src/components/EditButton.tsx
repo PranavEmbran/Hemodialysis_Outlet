@@ -7,19 +7,21 @@ interface EditButtonProps {
   onClick: (e: React.MouseEvent) => void;
   size?: number;
   className?: string;
+  tooltip?: string;
 }
 
 const EditButton: React.FC<EditButtonProps> = ({ 
   onClick, 
   size = 14,
-  className = '' 
+  className = '',
+  tooltip = 'Update Record'
 }) => {
   return (
     <button
       onClick={onClick}
       className={`${styles.editButton} ${className}`}
       aria-label="Edit"
-      title="Edit"
+      title={tooltip}
     >
      <FontAwesomeIcon icon={faPenToSquare} />
     </button>

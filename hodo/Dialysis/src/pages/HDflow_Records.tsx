@@ -6,9 +6,11 @@ import SectionHeading from '../components/SectionHeading';
 import StepperNavigation from '../components/StepperNavigation';
 import Table from '../components/Table';
 import EditButton from '../components/EditButton';
+import DeleteButton from '../components/DeleteButton';
 import EditModal from '../components/EditModal';
 import { predialysisFormConfig, startDialysisFormConfig, postDialysisFormConfig } from '../components/forms/formConfigs';
 import { API_URL } from '../config';
+import { toast } from 'react-toastify';
 
 const predialysisColumns = [
   { key: 'date', header: 'Date' },
@@ -47,9 +49,25 @@ const postDialysisColumns = [
   { key: 'PostDR_Notes', header: 'Notes' },
 ];
 
-const getFormConfigForStep = (step: number) => {
+const getFormConfigForStep = (step: number, options?: any) => {
   if (step === 0) return predialysisFormConfig;
-  if (step === 1) return startDialysisFormConfig;
+  if (step === 1) {
+    // Create a copy of the config with dynamic options
+    const config = { ...startDialysisFormConfig };
+    config.fields = config.fields.map(field => {
+      if (field.name === 'SDR_Dialysis_Unit') {
+        return { ...field, options: options?.units || [] };
+      }
+      if (field.name === 'SDR_Vascular_Access') {
+        return { ...field, options: options?.accessTypes || [] };
+      }
+      if (field.name === 'SDR_Dialyzer_Type') {
+        return { ...field, options: options?.dialyzerTypes || [] };
+      }
+      return field;
+    });
+    return config;
+  }
   if (step === 2) return postDialysisFormConfig;
   return predialysisFormConfig;
 };
@@ -131,6 +149,32 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<any>(null);
   const [editLoading, setEditLoading] = useState(false);
+  const [formOptions, setFormOptions] = useState<{
+    units: Array<{ value: string; label: string }>;
+    accessTypes: Array<{ value: string; label: string }>;
+    dialyzerTypes: Array<{ value: string; label: string }>;
+  }>({
+    units: [],
+    accessTypes: [],
+    dialyzerTypes: []
+  });
+
+  // Fetch form options for dropdowns
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API_URL}/data/units_management`).then(res => res.json()),
+      fetch(`${API_URL}/data/vascular_access_lookup`).then(res => res.json()),
+      fetch(`${API_URL}/data/dialyzer_type_lookup`).then(res => res.json()),
+    ]).then(([units, accessTypes, dialyzerTypes]) => {
+      setFormOptions({
+        units: Array.isArray(units) ? units.map((u: any) => ({ value: u.Unit_Name, label: u.Unit_Name })) : [],
+        accessTypes: Array.isArray(accessTypes) ? accessTypes.map((a: any) => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type })) : [],
+        dialyzerTypes: Array.isArray(dialyzerTypes) ? dialyzerTypes.map((d: any) => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name })) : []
+      });
+    }).catch(error => {
+      console.error('Error fetching form options:', error);
+    });
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -213,21 +257,113 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     setEditModalOpen(true);
   };
 
+  const handleDelete = async (row: any) => {
+    if (!window.confirm('Are you sure you want to soft delete this record?')) {
+      return;
+    }
+
+    try {
+      const endpoint = getEditEndpointForStep(currentStep);
+      let deletePayload: any = {};
+
+      // Set the appropriate ID field and soft delete flag based on the step
+      if (currentStep === 0) {
+        deletePayload = { PreDR_ID_PK: row.PreDR_ID_PK, deleted: true };
+      } else if (currentStep === 1) {
+        deletePayload = { SDR_ID_PK: row.SDR_ID_PK, deleted: true };
+      } else if (currentStep === 2) {
+        deletePayload = { PostDR_ID_PK: row.PostDR_ID_PK, deleted: true };
+      }
+
+      const response = await fetch(`${API_URL}/data/${endpoint}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(deletePayload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast.success('Record soft deleted successfully!');
+
+      // Refresh the data
+      setLoading(true);
+      Promise.all([
+        fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
+        fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+        fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
+        fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
+        fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
+      ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
+        setSchedules(schedules);
+        setPatients(
+          patientsData
+            .filter((p: any) => !!p.id)
+            .map((p: any) => ({
+              id: p.id || p.PM_Card_PK,
+              name: p.Name || p.PatientName || "Unnamed"
+            }))
+        );
+
+        const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
+          const patient = patientsData.find((pd: any) => pd.id === sch.DS_P_ID_FK);
+          const patientLabel = patient ? (patient['Name'] || patient.Name || "Unnamed") : sch.PatientName;
+          return {
+            value: sch.DS_ID_PK,
+            label: `SID: ${sch.DS_ID_PK} - ${patientLabel}`,
+            patientId: sch.DS_P_ID_FK,
+            date: sch.DS_Date
+          };
+        });
+
+        setScheduleOptions(options);
+        setPredialysisRecords(predialysis);
+        setStartDialysisRecords(startDialysis);
+        setPostDialysisRecords(postDialysis);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      toast.error('Failed to delete record. Please try again.');
+    }
+  };
+
   const handleEditSubmit = async (values: any) => {
     setEditLoading(true);
     try {
       const endpoint = getEditEndpointForStep(currentStep);
-      // Debug log to verify payload
       console.log('Submitting values to backend:', values);
-      // Remove any Patient* fields from the payload
-      const { P_ID_FK, ...cleanedValues } = values;
-      // Ensure PreDR_ID_PK is included in cleanedValues
-      if (values.PreDR_ID_PK) cleanedValues.PreDR_ID_PK = values.PreDR_ID_PK;
-      await fetch(`${API_URL}/data/${endpoint}`, {
+
+      // Prepare payload based on step
+      let cleanedValues: any = { ...values };
+
+      // Remove read-only fields and ensure proper ID field is included
+      delete cleanedValues.patientId;
+      delete cleanedValues.patientName;
+      delete cleanedValues.date;
+      delete cleanedValues.time;
+
+      // Ensure the correct ID field is included for each step
+      if (currentStep === 0 && editRow?.PreDR_ID_PK) {
+        cleanedValues.PreDR_ID_PK = editRow.PreDR_ID_PK;
+      } else if (currentStep === 1 && editRow?.SDR_ID_PK) {
+        cleanedValues.SDR_ID_PK = editRow.SDR_ID_PK;
+      } else if (currentStep === 2 && editRow?.PostDR_ID_PK) {
+        cleanedValues.PostDR_ID_PK = editRow.PostDR_ID_PK;
+      }
+
+      const response = await fetch(`${API_URL}/data/${endpoint}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cleanedValues),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      toast.success('Record updated successfully!');
       setEditModalOpen(false);
       setEditRow(null);
       setLoading(true);
@@ -267,6 +403,9 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         setPostDialysisRecords(postDialysis);
         setLoading(false);
       });
+    } catch (error) {
+      console.error('Error updating record:', error);
+      toast.error('Failed to update record. Please try again.');
     } finally {
       setEditLoading(false);
     }
@@ -412,9 +551,21 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
             <Table
               columns={columns}
               data={filteredRecords}
-            // actions={(row) => (
-            //   <EditButton onClick={() => handleEdit(row)} />
-            // )}
+              actions={(row) => {
+                const stepName = currentStep === 0 ? 'Predialysis' : currentStep === 1 ? 'Start Dialysis' : 'Post Dialysis';
+                return (
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <EditButton
+                      onClick={() => handleEdit(row)}
+                      tooltip={`Update ${stepName} Record`}
+                    />
+                    <DeleteButton
+                      onClick={() => handleDelete(row)}
+                      tooltip={`Soft Delete ${stepName} Record`}
+                    />
+                  </div>
+                );
+              }}
             />
           )}
         </div>
@@ -422,7 +573,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
           show={editModalOpen}
           onHide={() => setEditModalOpen(false)}
           data={editRow}
-          formConfig={getFormConfigForStep(currentStep)}
+          formConfig={getFormConfigForStep(currentStep, formOptions)}
           onSubmit={handleEditSubmit}
           loading={editLoading}
         />

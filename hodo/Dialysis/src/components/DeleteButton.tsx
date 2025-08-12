@@ -9,18 +9,21 @@ interface DeleteButtonProps {
   onClick: (e: React.MouseEvent) => void;
   size?: number;
   className?: string;
+  tooltip?: string;
 }
 
 const DeleteButton: React.FC<DeleteButtonProps> = ({ 
   onClick, 
   size = 14,
-  className = '' 
+  className = '',
+  tooltip = 'Soft Delete Record'
 }) => {
   return (
     <button
       onClick={onClick}
       className={`${styles.deleteButton} ${className}`}
-      aria-label="Delete"
+      aria-label="Soft Delete"
+      title={tooltip}
     >
      <FontAwesomeIcon icon={faTrash} style={{color: "#ffffff",}} />
     </button>
