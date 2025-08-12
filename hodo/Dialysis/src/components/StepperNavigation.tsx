@@ -82,6 +82,18 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>
 
+      {/* Blue Bar showing selected schedule */}
+      {/* {selectedSchedule && (
+        <div>
+          <label className="blueBar">
+            {(() => {
+              const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
+              return selected?.label || `Schedule ID: ${selectedSchedule}`;
+            })()}
+          </label>
+        </div>
+      )} */}
+
       {/* Stepper */}
       {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         {steps.map((step, idx) => (
@@ -191,7 +203,21 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
           );
         }}
       </Formik>
+     {/* Blue Bar showing selected schedule */}
+     {
+    //  selectedSchedule && (
+        <div>
+          <label className="blueBar">
+            {(() => {
+              const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
+              // return selected?.label || `Schedule ID: ${selectedSchedule}`;
+              return selected?.label ?? (`${selectedSchedule ?? ''}` || '  |');
 
+            })()}
+          </label>
+        </div>
+      // )
+      }
     </div>
   );
 };

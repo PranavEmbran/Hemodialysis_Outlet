@@ -178,14 +178,14 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
                 disabled
               />
             </div> */}
-            <div>
+            {/* <div>
               <label className="blueBar">
                 {(() => {
                   const selected = scheduleOptions.find(sch => sch.value === selectedSchedule);
                   return selected?.label || 'No schedule selected';
                 })()}
               </label>
-            </div>
+            </div> */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <SelectField
                 label="Dialysis Unit"

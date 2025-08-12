@@ -131,7 +131,7 @@ const Post_Dialysis_Record: React.FC<{
                 Please select a schedule to enable this form.
               </div>
             )}
-            <div className="form-group mb-0">
+            {/* <div className="form-group mb-0">
               {(() => {
                 const selectedScheduleObj = appointments.find(sch => sch.DS_ID_PK === values.SA_ID_PK_FK);
                 const patient = selectedScheduleObj ? patients.find((p: any) => p.id === selectedScheduleObj.P_ID_FK) : null;
@@ -140,7 +140,7 @@ const Post_Dialysis_Record: React.FC<{
                   : 'No schedule selected';
                 return <label className="blueBar">{labelText}</label>;
               })()}
-            </div>
+            </div> */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <label style={{ margin: '24px 0 8px', fontWeight: 600, fontSize: 18 }}>Vitals</label><br />
               <InputField

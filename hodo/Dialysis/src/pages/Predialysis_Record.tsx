@@ -261,7 +261,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
                 );
               })()}
             </div> */}
-            <div className="form-group mb-0">
+            {/* <div className="form-group mb-0">
               {(() => {
                 if (!appointments.length || !patients.length) {
                   return (
@@ -288,7 +288,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
                 })()}
                 
               })()}
-            </div>
+            </div> */}
 
 
 
