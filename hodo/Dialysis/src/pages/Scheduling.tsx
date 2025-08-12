@@ -136,7 +136,28 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       if (Array.isArray(patientsData) && Array.isArray(caseOpenings)) {
         const allowedIds = new Set(caseOpenings.map((c: any) => c.DCO_P_ID_FK));
         // setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
-        setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
+
+
+        // Filter only patients with case openings
+        // setPatients(patientsData.filter((p: any) => allowedIds.has(p.id)));
+        const filtered = patientsData.filter((p: any) => allowedIds.has(p.id));
+
+
+        // Sort by latest case opening date
+        const sorted = filtered.sort((a: any, b: any) => {
+          const latestCaseA = caseOpenings
+            .filter((c: any) => c.DCO_P_ID_FK === a.id)
+            .sort((c1: any, c2: any) => new Date(c2.DCO_Added_On).getTime() - new Date(c1.DCO_Added_On).getTime())[0];
+          const latestCaseB = caseOpenings
+            .filter((c: any) => c.DCO_P_ID_FK === b.id)
+            .sort((c1: any, c2: any) => new Date(c2.DCO_Added_On).getTime() - new Date(c1.DCO_Added_On).getTime())[0];
+
+          return new Date(latestCaseB?.DCO_Added_On || 0).getTime() - new Date(latestCaseA?.DCO_Added_On || 0).getTime();
+        });
+
+        setPatients(sorted);
+
+
 
         // console.log("All Patient IDs:", patientsData.map(p => p.id));
         // console.log("Case Opening IDs:", Array.from(allowedIds));

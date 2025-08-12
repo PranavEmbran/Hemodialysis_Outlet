@@ -31,7 +31,7 @@ const startDialysisColumns = [
   { key: 'patientId', header: 'Patient ID' },
   { key: 'patientName', header: 'Patient Name' },
   { key: 'SDR_Dialysis_Unit', header: 'Unit' },
-  { key: 'formattedStartTime', header: 'Start Time' },
+  { key: 'SDR_Start_Time', header: 'Start Time' },
   { key: 'SDR_Vascular_Access', header: 'Vascular Access' },
   { key: 'SDR_Dialyzer_Type', header: 'Dialyzer Type' },
   { key: 'SDR_Notes', header: 'Notes' },
@@ -79,6 +79,31 @@ const getEditEndpointForStep = (step: number) => {
   return '';
 };
 
+// Helper to format time as HH:mm
+// const formatTimeHHMM = (val: string) => {
+//   if (!val) return '';
+//   // Handles both 'HH:mm:ss.fff...' and 'HH:mm:ss' and 'HH:mm'
+//   const match = val.match(/^(\d{2}:\d{2})/);
+//   return match ? match[1] : val;
+// };
+
+const formatTimeHHMM = (val: string) => {
+  if (!val) return '';
+
+  // Try parsing as date/time
+  const dateObj = new Date(val);
+  if (!isNaN(dateObj.getTime())) {
+    return dateObj.toISOString().substring(11, 16); // HH:mm
+  }
+
+  // Fallback: match HH:mm anywhere
+  const match = val.match(/(\d{2}:\d{2})/);
+  return match ? match[1] : val;
+};
+
+
+
+
 const mapRowToFormData = (row: any, step: number, patients: any[], schedules: any[]) => {
   if (step === 0) {
     const patient = patients.find(p => p.id === row.PreDR_P_ID_FK);
@@ -106,7 +131,7 @@ const mapRowToFormData = (row: any, step: number, patients: any[], schedules: an
       date: schedule ? schedule.DS_Date : row.date,
       time: schedule ? schedule.DS_Time : row.time,
       SDR_Dialysis_Unit: row.SDR_Dialysis_Unit,
-      SDR_Start_Time: row.SDR_Start_Time ? (typeof row.SDR_Start_Time === 'string' ? row.SDR_Start_Time : new Date(row.SDR_Start_Time).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })) : '',
+      SDR_Start_Time: formatTimeHHMM(row.SDR_Start_Time),
       SDR_Vascular_Access: row.SDR_Vascular_Access,
       SDR_Dialyzer_Type: row.SDR_Dialyzer_Type,
       SDR_Notes: row.SDR_Notes,
@@ -386,7 +411,6 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
       ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
         setSchedules(schedules);
-        // setPatients(patientsData.map((p: any) => ({ PreDR_ID_PK: p.PreDR_ID_PK, name: p.Name || p.name })));
         setPatients(
           patientsData
             .filter((p: any) => !!p.id)
@@ -395,7 +419,6 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
               name: p.Name || p.PatientName || "Unnamed"
             }))
         );
-
 
         const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
           const patient = patientsData.find((pd: any) => pd.id === sch.DS_P_ID_FK);
@@ -475,26 +498,24 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
       const schedule = schedules.find((s: any) => s.DS_ID_PK === r.SA_ID_PK_FK);
       const patient = schedule ? patients.find(p => p.id === schedule.DS_P_ID_FK) : undefined;
 
-      // Format start time from timestamp to readable format
-      const formatStartTime = (timestamp: string) => {
-        if (!timestamp) return '';
-        try {
-          const date = new Date(timestamp);
-          return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-          });
-        } catch (error) {
-          return timestamp; // Return original if parsing fails
-        }
-      };
+      // Format SDR_Start_Time to HH:mm
+      // const formatTimeHHMM = (val: string) => {
+      //   if (!val) return '';
+      //   // Handles both 'HH:mm:ss.fff...' and 'HH:mm:ss' and 'HH:mm'
+      //   const match = val.match(/^(\d{2}:\d{2})/);
+      //   return match ? match[1] : val;
+      // };
 
+
+
+
+
+      
       return {
         ...r,
         patientId: patient ? patient.id : (schedule ? schedule.DS_P_ID_FK : ''),
         patientName: patient ? patient.name : '',
-        formattedStartTime: formatStartTime(r.SDR_Start_Time),
+        SDR_Start_Time: formatTimeHHMM(r.SDR_Start_Time || ''),
       };
     });
   } else if (currentStep === 2) {
