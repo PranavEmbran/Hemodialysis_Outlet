@@ -106,7 +106,7 @@ const mapRowToFormData = (row: any, step: number, patients: any[], schedules: an
       date: schedule ? schedule.DS_Date : row.date,
       time: schedule ? schedule.DS_Time : row.time,
       SDR_Dialysis_Unit: row.SDR_Dialysis_Unit,
-      SDR_Start_Time: row.SDR_Start_Time,
+      SDR_Start_Time: row.SDR_Start_Time ? (typeof row.SDR_Start_Time === 'string' ? row.SDR_Start_Time : new Date(row.SDR_Start_Time).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })) : '',
       SDR_Vascular_Access: row.SDR_Vascular_Access,
       SDR_Dialyzer_Type: row.SDR_Dialyzer_Type,
       SDR_Notes: row.SDR_Notes,
@@ -162,15 +162,26 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   // Fetch form options for dropdowns
   useEffect(() => {
     Promise.all([
-      fetch(`${API_URL}/data/units_management`).then(res => res.json()),
-      fetch(`${API_URL}/data/vascular_access_lookup`).then(res => res.json()),
-      fetch(`${API_URL}/data/dialyzer_type_lookup`).then(res => res.json()),
+      fetch(`${API_URL}/data/units`).then(res => res.json()),
+      fetch(`${API_URL}/data/vascular_access`).then(res => res.json()),
+      fetch(`${API_URL}/data/dialyzer_types`).then(res => res.json()),
     ]).then(([units, accessTypes, dialyzerTypes]) => {
-      setFormOptions({
-        units: Array.isArray(units) ? units.map((u: any) => ({ value: u.Unit_Name, label: u.Unit_Name })) : [],
-        accessTypes: Array.isArray(accessTypes) ? accessTypes.map((a: any) => ({ value: a.VAL_Access_Type, label: a.VAL_Access_Type })) : [],
-        dialyzerTypes: Array.isArray(dialyzerTypes) ? dialyzerTypes.map((d: any) => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name })) : []
-      });
+      const formOptionsData = {
+        units: Array.isArray(units) ? units.map((u: any) => ({ 
+          value: u.Unit_Name || u.name, 
+          label: u.Unit_Name || u.name 
+        })) : [],
+        accessTypes: Array.isArray(accessTypes) ? accessTypes.map((a: any) => ({ 
+          value: a.VAL_Access_Type || a.type, 
+          label: a.VAL_Access_Type || a.type 
+        })) : [],
+        dialyzerTypes: Array.isArray(dialyzerTypes) ? dialyzerTypes.map((d: any) => ({ 
+          value: d.DTL_Dialyzer_Name || d.name, 
+          label: d.DTL_Dialyzer_Name || d.name 
+        })) : []
+      };
+      
+      setFormOptions(formOptionsData);
     }).catch(error => {
       console.error('Error fetching form options:', error);
     });

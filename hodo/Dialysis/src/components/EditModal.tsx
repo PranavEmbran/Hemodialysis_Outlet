@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Row, Col } from 'react-bootstrap';
 import { Formik, Form as FormikForm } from 'formik';
-import { InputField, SelectField, DateField } from './forms';
+import { InputField, SelectField, DateField, TextareaField, TimeField } from './forms';
 import ButtonWithGradient from './ButtonWithGradient';
 import type { FormConfig, FormField } from './forms/formConfigs';
 import '../styles/EditModal.css';
@@ -61,16 +61,17 @@ const EditModal: React.FC<EditModalProps> = ({
 
   const renderField = (field: FormField) => {
     const colSize = field.colSize || 6;
-    
+
     // Check if this is a patient name field and should be read-only
     const isPatientNameField = field.name === 'patientName';
     const shouldBeReadOnly = isPatientNameField && editingDataType !== 'patient';
     const isDisabled = shouldBeReadOnly || field.disabled;
-    
+
     switch (field.type) {
       case 'text':
       case 'email':
       case 'tel':
+      case 'number':
         return (
           <Col md={colSize} key={field.name}>
             <InputField
@@ -94,6 +95,17 @@ const EditModal: React.FC<EditModalProps> = ({
             />
           </Col>
         );
+      case 'time':
+        return (
+          <Col md={colSize} key={field.name}>
+            <TimeField
+              label={field.label}
+              name={field.name}
+              required={field.required}
+              disabled={isDisabled}
+            />
+          </Col>
+        );
       case 'select':
         return (
           <Col md={colSize} key={field.name}>
@@ -109,13 +121,13 @@ const EditModal: React.FC<EditModalProps> = ({
       case 'textarea':
         return (
           <Col md={colSize} key={field.name}>
-            <InputField
+            <TextareaField
               label={field.label}
               name={field.name}
-              type="text"
               placeholder={field.placeholder}
               required={field.required}
               disabled={isDisabled}
+              rows={3}
             />
           </Col>
         );

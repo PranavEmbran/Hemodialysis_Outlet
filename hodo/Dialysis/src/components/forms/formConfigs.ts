@@ -4,7 +4,7 @@ import type { Patient, ScheduleEntry, Billing, History } from '../../types';
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea' | 'number';
+  type: 'text' | 'email' | 'tel' | 'date' | 'time' | 'select' | 'textarea' | 'number';
   required?: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -239,8 +239,10 @@ export const startDialysisFormConfig: FormConfig = {
     { name: 'SA_ID_PK_FK', label: 'Schedule ID', type: 'text', required: true, colSize: 6, disabled: true },
     { name: 'patientId', label: 'Patient ID', type: 'text', required: false, colSize: 6, disabled: true },
     { name: 'patientName', label: 'Patient Name', type: 'text', required: false, colSize: 6, disabled: true },
+    { name: 'date', label: 'Date', type: 'text', required: false, colSize: 6, disabled: true },
+    { name: 'time', label: 'Time', type: 'text', required: false, colSize: 6, disabled: true },
     { name: 'SDR_Dialysis_Unit', label: 'Dialysis Unit', type: 'select', required: true, colSize: 6, placeholder: 'Select Dialysis Unit', options: [] },
-    { name: 'SDR_Start_Time', label: 'Start Time', type: 'text', required: true, colSize: 6, placeholder: 'HH:MM' },
+    { name: 'SDR_Start_Time', label: 'Start Time', type: 'time', required: true, colSize: 6, placeholder: 'HH:MM' },
     { name: 'SDR_Vascular_Access', label: 'Vascular Access', type: 'select', required: true, colSize: 6, placeholder: 'Select Vascular Access', options: [] },
     { name: 'SDR_Dialyzer_Type', label: 'Dialyzer Type', type: 'select', required: true, colSize: 6, placeholder: 'Select Dialyzer Type', options: [] },
     { name: 'SDR_Notes', label: 'Notes', type: 'textarea', required: false, colSize: 12, placeholder: 'Enter any notes (optional)' },
@@ -249,6 +251,8 @@ export const startDialysisFormConfig: FormConfig = {
     SA_ID_PK_FK: Yup.string().required('Schedule ID is required'),
     patientId: Yup.string(),
     patientName: Yup.string(),
+    date: Yup.string(),
+    time: Yup.string(),
     SDR_Dialysis_Unit: Yup.string().required('Dialysis Unit is required'),
     SDR_Start_Time: Yup.string().required('Start Time is required'),
     SDR_Vascular_Access: Yup.string().required('Vascular Access is required'),
@@ -259,6 +263,8 @@ export const startDialysisFormConfig: FormConfig = {
     SA_ID_PK_FK: data.SA_ID_PK_FK || '',
     patientId: data.patientId || '',
     patientName: data.patientName || '',
+    date: data.date || '',
+    time: data.time || '',
     SDR_Dialysis_Unit: data.SDR_Dialysis_Unit || '',
     SDR_Start_Time: data.SDR_Start_Time || '',
     SDR_Vascular_Access: data.SDR_Vascular_Access || '',
