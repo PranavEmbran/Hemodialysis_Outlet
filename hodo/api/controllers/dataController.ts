@@ -26,7 +26,10 @@ import {
   deleteSchedulingLookup as deleteSchedulingLookupService,
   addPredialysisRecord,
   addStartDialysisRecord,
-  addPostDialysisRecord
+  addPostDialysisRecord,
+  updatePredialysisRecord as updatePredialysisRecordService,
+  updateStartDialysisRecord as updateStartDialysisRecordService,
+  updatePostDialysisRecord as updatePostDialysisRecordService
 } from '../services/dataFactory.js';
 import * as lowdbService from '../services/lowdbService.js';
 const { updateCaseOpening } = lowdbService;
@@ -307,43 +310,31 @@ export const getPostDialysisRecords = async (req: Request, res: Response) => {
 
 export const updatePredialysisRecord = async (req: Request, res: Response) => {
   try {
-    const { PreDR_ID_PK, ...rest } = req.body;
-    await db.read();
-    const idx = db.data.predialysis_records.findIndex((r: any) => r.PreDR_ID_PK === PreDR_ID_PK);
-    if (idx === -1) return res.status(404).json({ error: 'Record not found' });
-    db.data.predialysis_records[idx] = { ...db.data.predialysis_records[idx], ...rest, PreDR_ID_PK };
-    await db.write();
-    res.json(db.data.predialysis_records[idx]);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update predialysis record' });
+    const result = await updatePredialysisRecordService(req.body);
+    res.json(result);
+  } catch (err: any) {
+    console.error('Error updating predialysis record:', err);
+    res.status(500).json({ error: err.message || 'Failed to update predialysis record' });
   }
 };
 
 export const updateStartDialysisRecord = async (req: Request, res: Response) => {
   try {
-    const { id, ...rest } = req.body;
-    await db.read();
-    const idx = db.data.start_dialysis_records.findIndex((r: any) => r.id === id);
-    if (idx === -1) return res.status(404).json({ error: 'Record not found' });
-    db.data.start_dialysis_records[idx] = { ...db.data.start_dialysis_records[idx], ...rest };
-    await db.write();
-    res.json(db.data.start_dialysis_records[idx]);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update start dialysis record' });
+    const result = await updateStartDialysisRecordService(req.body);
+    res.json(result);
+  } catch (err: any) {
+    console.error('Error updating start dialysis record:', err);
+    res.status(500).json({ error: err.message || 'Failed to update start dialysis record' });
   }
 };
 
 export const updatePostDialysisRecord = async (req: Request, res: Response) => {
   try {
-    const { id, ...rest } = req.body;
-    await db.read();
-    const idx = db.data.post_dialysis_records.findIndex((r: any) => r.id === id);
-    if (idx === -1) return res.status(404).json({ error: 'Record not found' });
-    db.data.post_dialysis_records[idx] = { ...db.data.post_dialysis_records[idx], ...rest };
-    await db.write();
-    res.json(db.data.post_dialysis_records[idx]);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update post dialysis record' });
+    const result = await updatePostDialysisRecordService(req.body);
+    res.json(result);
+  } catch (err: any) {
+    console.error('Error updating post dialysis record:', err);
+    res.status(500).json({ error: err.message || 'Failed to update post dialysis record' });
   }
 };
 

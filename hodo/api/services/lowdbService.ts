@@ -173,6 +173,7 @@ export interface PredialysisRecord {
   PreDR_Vitals_Temperature: string;
   PreDR_Vitals_Weight: string;
   PreDR_Notes: string;
+  PreDR_Status?: number;
 }
 
 export const addPredialysisRecord = async (record: Omit<PredialysisRecord, 'PreDR_ID_PK'> & { PreDR_ID_PK?: string }): Promise<PredialysisRecord> => {
@@ -196,6 +197,8 @@ export interface StartDialysisRecord {
   SDR_Vascular_access: string;
   Dialyzer_Type: string;
   SDR_Notes: string;
+  SDR_Status?: number;
+  SDR_ID_PK?: string;
 }
 
 export const addStartDialysisRecord = async (record: StartDialysisRecord): Promise<StartDialysisRecord> => {
@@ -231,6 +234,8 @@ export interface PostDialysisRecord {
   PreDR_Vitals_Temperature: string;
   PreDR_Vitals_Weight: string;
   PostDR_Notes: string;
+  PostDR_Status?: number;
+  PostDR_ID_PK?: string;
 }
 
 export const addPostDialysisRecord = async (record: PostDialysisRecord): Promise<PostDialysisRecord> => {
@@ -240,6 +245,125 @@ export const addPostDialysisRecord = async (record: PostDialysisRecord): Promise
   db.data.post_dialysis_records.push(record);
   await db.write();
   return record;
+};
+
+// Get functions for records
+export const getPredialysisRecords = async (): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  return db.data?.predialysis_records?.filter((r: any) => r.PreDR_Status !== 0) || [];
+};
+
+export const getStartDialysisRecords = async (): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  return db.data?.start_dialysis_records?.filter((r: any) => r.SDR_Status !== 0) || [];
+};
+
+export const getPostDialysisRecords = async (): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  return db.data?.post_dialysis_records?.filter((r: any) => r.PostDR_Status !== 0) || [];
+};
+
+export const getInProcessRecords = async (): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  return db.data?.InProcess_records || [];
+};
+
+// Update functions for lowdb
+export const updatePredialysisRecord = async (record: any) => {
+  await initDB();
+  await db.read();
+  const { PreDR_ID_PK, deleted, ...rest } = record;
+  
+  if (!db.data.predialysis_records) db.data.predialysis_records = [];
+  const idx = db.data.predialysis_records.findIndex((r: any) => r.PreDR_ID_PK === PreDR_ID_PK);
+  
+  if (idx === -1) {
+    throw new Error('Record not found');
+  }
+
+  if (deleted === true) {
+    // Soft delete by setting status to 0
+    db.data.predialysis_records[idx] = { 
+      ...db.data.predialysis_records[idx], 
+      PreDR_Status: 0 
+    };
+  } else {
+    // Update other fields
+    db.data.predialysis_records[idx] = { 
+      ...db.data.predialysis_records[idx], 
+      ...rest, 
+      PreDR_ID_PK 
+    };
+  }
+  
+  await db.write();
+  return { success: true };
+};
+
+export const updateStartDialysisRecord = async (record: any) => {
+  await initDB();
+  await db.read();
+  const { SDR_ID_PK, deleted, ...rest } = record;
+  
+  if (!db.data.start_dialysis_records) db.data.start_dialysis_records = [];
+  const idx = db.data.start_dialysis_records.findIndex((r: any) => r.SDR_ID_PK === SDR_ID_PK);
+  
+  if (idx === -1) {
+    throw new Error('Record not found');
+  }
+
+  if (deleted === true) {
+    // Soft delete by setting status to 0
+    db.data.start_dialysis_records[idx] = { 
+      ...db.data.start_dialysis_records[idx], 
+      SDR_Status: 0 
+    };
+  } else {
+    // Update other fields
+    db.data.start_dialysis_records[idx] = { 
+      ...db.data.start_dialysis_records[idx], 
+      ...rest, 
+      SDR_ID_PK 
+    };
+  }
+  
+  await db.write();
+  return { success: true };
+};
+
+export const updatePostDialysisRecord = async (record: any) => {
+  await initDB();
+  await db.read();
+  const { PostDR_ID_PK, deleted, ...rest } = record;
+  
+  if (!db.data.post_dialysis_records) db.data.post_dialysis_records = [];
+  const idx = db.data.post_dialysis_records.findIndex((r: any) => r.PostDR_ID_PK === PostDR_ID_PK);
+  
+  if (idx === -1) {
+    throw new Error('Record not found');
+  }
+
+  if (deleted === true) {
+    // Soft delete by setting status to 0
+    db.data.post_dialysis_records[idx] = { 
+      ...db.data.post_dialysis_records[idx], 
+      PostDR_Status: 0 
+    };
+  } else {
+    // Update other fields
+    db.data.post_dialysis_records[idx] = { 
+      ...db.data.post_dialysis_records[idx], 
+      ...rest, 
+      PostDR_ID_PK 
+    };
+  }
+  
+  await db.write();
+  return { success: true };
 };
 
 // --- Units Lookup Functions ---

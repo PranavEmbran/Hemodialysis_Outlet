@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
@@ -386,15 +386,14 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
         );
 
 
-        const options = schedules.filter((a: any) => a.Status === 10).map((sch: any) => {
-          const patient = patientsData.find((p: any) => p.PreDR_ID_PK === sch.P_ID_FK);
-          const patientLabel = patient ? (patient['Name'] || patient.name) : sch.P_ID_FK;
+        const options = schedules.filter((a: any) => a.DS_Status === 10).map((sch: any) => {
+          const patient = patientsData.find((pd: any) => pd.id === sch.DS_P_ID_FK);
+          const patientLabel = patient ? (patient['Name'] || patient.Name || "Unnamed") : sch.PatientName;
           return {
             value: sch.DS_ID_PK,
-            label: `${sch.DS_ID_PK} - ${patientLabel}`,
-            patientId: sch.P_ID_FK,
-            date: sch.DS_Date,
-            time: sch.DS_Time
+            label: `SID: ${sch.DS_ID_PK} - ${patientLabel}`,
+            patientId: sch.DS_P_ID_FK,
+            date: sch.DS_Date
           };
         });
         setScheduleOptions(options);
@@ -514,10 +513,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   }
 
 
-  const dummyPatients = [
-    { id: "1008821811000060", name: "Patient A" },
-    { id: "1008821811000056", name: "Patient B" },
-  ];
+
 
   console.log('patients:', patients);
   console.log('schedules:', schedules);
@@ -535,9 +531,7 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
           scheduleOptions={scheduleOptions}
           currentStep={currentStep}
           onStepChange={handleStepChange}
-          // patients={patients.map(p => ({ id: p.PreDR_ID_PK, name: p.name }))}
           patients={patients}
-          // patients={dummyPatients}
           selectedPatient={selectedPatient}
           onPatientChange={handlePatientChange}
           selectedDate={selectedDate}

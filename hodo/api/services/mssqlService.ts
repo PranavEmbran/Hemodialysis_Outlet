@@ -73,7 +73,8 @@ export const getPredialysisRecords = async (): Promise<any[]> => {
       FROM dbo.PreDialysis_Records pr
       LEFT JOIN dbo.Dialysis_Schedules ds
         ON pr.PreDR_DS_ID_FK = ds.DS_ID_PK
-        ORDER BY pr.PreDR_Added_On DESC;
+      WHERE pr.PreDR_Status = 10
+      ORDER BY pr.PreDR_Added_On DESC;
 
     `);
     // console.log(result.recordset);
@@ -508,11 +509,12 @@ export const getPostDialysisRecords = async (): Promise<any[]> => {
     FROM dbo.PostDialysis_Records pr
     LEFT JOIN dbo.Dialysis_Schedules ds
       ON pr.PostDR_DS_ID_FK = ds.DS_ID_PK
-      ORDER BY pr.PostDR_Added_On DESC;
+    WHERE pr.PostDR_Status = 10
+    ORDER BY pr.PostDR_Added_On DESC;
 
       `);
     return result.recordset.map((row: any) => ({
-      PostDR_ID_PK: row.id || row.ID || row.SA_ID_FK,
+      PostDR_ID_PK: row.PostDR_ID_PK,
       PostDR_DS_ID_FK: row.PostDR_DS_ID_FK,
       PostDR_P_ID_FK: row.PostDR_P_ID_FK,
       PostDR_Vitals_BP: row.PostDR_Vitals_BP,
@@ -780,6 +782,219 @@ export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promi
   } catch (err) {
     console.error('MSSQL addSchedulesAssigned error:', err);
     throw new Error('Failed to add schedules to MSSQL');
+  }
+};
+
+// Update predialysis record in MSSQL
+export const updatePredialysisRecord = async (record: any) => {
+  console.log('updatePredialysisRecord called, record:', record);
+  try {
+    const pool = await sql.connect(config);
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+    try {
+      const { PreDR_ID_PK, deleted, ...updateFields } = record;
+
+      if (!PreDR_ID_PK) {
+        throw new Error('PreDR_ID_PK is required for update');
+      }
+
+      // Build dynamic SET clause based on provided fields
+      const setClause = [];
+      const request = transaction.request();
+      request.input('PreDR_ID_PK', sql.BigInt, Number(PreDR_ID_PK));
+
+      if (deleted === true) {
+        setClause.push('PreDR_Status = @PreDR_Status');
+        request.input('PreDR_Status', sql.Int, 0); // 0 for soft deleted
+      } else {
+        // Update other fields
+        if (updateFields.PreDR_Vitals_BP !== undefined) {
+          setClause.push('PreDR_Vitals_BP = @PreDR_Vitals_BP');
+          request.input('PreDR_Vitals_BP', sql.Int, Number(updateFields.PreDR_Vitals_BP) || 0);
+        }
+        if (updateFields.PreDR_Vitals_HeartRate !== undefined) {
+          setClause.push('PreDR_Vitals_HeartRate = @PreDR_Vitals_HeartRate');
+          request.input('PreDR_Vitals_HeartRate', sql.Int, Number(updateFields.PreDR_Vitals_HeartRate) || 0);
+        }
+        if (updateFields.PreDR_Vitals_Temperature !== undefined) {
+          setClause.push('PreDR_Vitals_Temperature = @PreDR_Vitals_Temperature');
+          request.input('PreDR_Vitals_Temperature', sql.Int, Number(updateFields.PreDR_Vitals_Temperature) || 0);
+        }
+        if (updateFields.PreDR_Vitals_Weight !== undefined) {
+          setClause.push('PreDR_Vitals_Weight = @PreDR_Vitals_Weight');
+          request.input('PreDR_Vitals_Weight', sql.Int, Number(updateFields.PreDR_Vitals_Weight) || 0);
+        }
+        if (updateFields.PreDR_Notes !== undefined) {
+          setClause.push('PreDR_Notes = @PreDR_Notes');
+          request.input('PreDR_Notes', sql.VarChar, updateFields.PreDR_Notes || '');
+        }
+      }
+
+      if (setClause.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      const query = `
+        UPDATE PreDialysis_Records 
+        SET ${setClause.join(', ')}, PreDR_Modified_On = GETDATE()
+        WHERE PreDR_ID_PK = @PreDR_ID_PK;
+      `;
+
+      await request.query(query);
+      await transaction.commit();
+      return { success: true };
+    } catch (err) {
+      await transaction.rollback();
+      console.error('MSSQL updatePredialysisRecord transaction error:', err);
+      throw err;
+    }
+  } catch (err) {
+    console.error('MSSQL updatePredialysisRecord connection error:', err);
+    throw new Error('Failed to update predialysis record');
+  }
+};
+
+// Update start dialysis record in MSSQL
+export const updateStartDialysisRecord = async (record: any) => {
+  console.log('updateStartDialysisRecord called, record:', record);
+  try {
+    const pool = await sql.connect(config);
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+    try {
+      const { SDR_ID_PK, deleted, ...updateFields } = record;
+
+      if (!SDR_ID_PK) {
+        throw new Error('SDR_ID_PK is required for update');
+      }
+
+      // Build dynamic SET clause based on provided fields
+      const setClause = [];
+      const request = transaction.request();
+      request.input('SDR_ID_PK', sql.BigInt, Number(SDR_ID_PK));
+
+      if (deleted === true) {
+        setClause.push('SDR_Status = @SDR_Status');
+        request.input('SDR_Status', sql.Int, 0); // 0 for soft deleted
+      } else {
+        // Update other fields
+        if (updateFields.SDR_Dialysis_Unit !== undefined) {
+          setClause.push('SDR_Dialysis_Unit = @SDR_Dialysis_Unit');
+          request.input('SDR_Dialysis_Unit', sql.VarChar, updateFields.SDR_Dialysis_Unit || '');
+        }
+        if (updateFields.SDR_Start_Time !== undefined) {
+          setClause.push('SDR_Start_Time = @SDR_Start_Time');
+          request.input('SDR_Start_Time', sql.DateTime, new Date(updateFields.SDR_Start_Time));
+        }
+        if (updateFields.SDR_Vascular_Access !== undefined) {
+          setClause.push('SDR_Vascular_Access = @SDR_Vascular_Access');
+          request.input('SDR_Vascular_Access', sql.VarChar, updateFields.SDR_Vascular_Access || '');
+        }
+        if (updateFields.SDR_Dialyzer_Type !== undefined) {
+          setClause.push('SDR_Dialyzer_Type = @SDR_Dialyzer_Type');
+          request.input('SDR_Dialyzer_Type', sql.VarChar, updateFields.SDR_Dialyzer_Type || '');
+        }
+        if (updateFields.SDR_Notes !== undefined) {
+          setClause.push('SDR_Notes = @SDR_Notes');
+          request.input('SDR_Notes', sql.VarChar, updateFields.SDR_Notes || '');
+        }
+      }
+
+      if (setClause.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      const query = `
+        UPDATE Start_Dialysis_Records 
+        SET ${setClause.join(', ')}, SDR_Modified_On = GETDATE()
+        WHERE SDR_ID_PK = @SDR_ID_PK;
+      `;
+
+      await request.query(query);
+      await transaction.commit();
+      return { success: true };
+    } catch (err) {
+      await transaction.rollback();
+      console.error('MSSQL updateStartDialysisRecord transaction error:', err);
+      throw err;
+    }
+  } catch (err) {
+    console.error('MSSQL updateStartDialysisRecord connection error:', err);
+    throw new Error('Failed to update start dialysis record');
+  }
+};
+
+// Update post dialysis record in MSSQL
+export const updatePostDialysisRecord = async (record: any) => {
+  console.log('updatePostDialysisRecord called, record:', record);
+  try {
+    const pool = await sql.connect(config);
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+    try {
+      const { PostDR_ID_PK, deleted, ...updateFields } = record;
+
+      if (!PostDR_ID_PK) {
+        throw new Error('PostDR_ID_PK is required for update');
+      }
+
+      // Build dynamic SET clause based on provided fields
+      const setClause = [];
+      const request = transaction.request();
+      request.input('PostDR_ID_PK', sql.BigInt, Number(PostDR_ID_PK));
+
+      if (deleted === true) {
+        setClause.push('PostDR_Status = @PostDR_Status');
+        request.input('PostDR_Status', sql.Int, 0); // 0 for soft deleted
+      } else {
+        // Update other fields
+        if (updateFields.PostDR_Vitals_BP !== undefined) {
+          setClause.push('PostDR_Vitals_BP = @PostDR_Vitals_BP');
+          request.input('PostDR_Vitals_BP', sql.Int, Number(updateFields.PostDR_Vitals_BP) || 0);
+        }
+        if (updateFields.PostDR_Vitals_HeartRate !== undefined) {
+          setClause.push('PostDR_Vitals_HeartRate = @PostDR_Vitals_HeartRate');
+          request.input('PostDR_Vitals_HeartRate', sql.Int, Number(updateFields.PostDR_Vitals_HeartRate) || 0);
+        }
+        if (updateFields.PostDR_Vitals_Temperature !== undefined) {
+          setClause.push('PostDR_Vitals_Temperature = @PostDR_Vitals_Temperature');
+          request.input('PostDR_Vitals_Temperature', sql.Decimal(6, 3), Number(updateFields.PostDR_Vitals_Temperature) || 0);
+        }
+        if (updateFields.PostDR_Vitals_Weight !== undefined) {
+          setClause.push('PostDR_Vitals_Weight = @PostDR_Vitals_Weight');
+          request.input('PostDR_Vitals_Weight', sql.Int, Number(updateFields.PostDR_Vitals_Weight) || 0);
+        }
+        if (updateFields.PostDR_Notes !== undefined) {
+          setClause.push('PostDR_Notes = @PostDR_Notes');
+          request.input('PostDR_Notes', sql.VarChar, updateFields.PostDR_Notes || '');
+        }
+      }
+
+      if (setClause.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      const query = `
+        UPDATE PostDialysis_Records 
+        SET ${setClause.join(', ')}, PostDR_Modified_On = GETDATE()
+        WHERE PostDR_ID_PK = @PostDR_ID_PK;
+      `;
+
+      await request.query(query);
+      await transaction.commit();
+      return { success: true };
+    } catch (err) {
+      await transaction.rollback();
+      console.error('MSSQL updatePostDialysisRecord transaction error:', err);
+      throw err;
+    }
+  } catch (err) {
+    console.error('MSSQL updatePostDialysisRecord connection error:', err);
+    throw new Error('Failed to update post dialysis record');
   }
 };
 
