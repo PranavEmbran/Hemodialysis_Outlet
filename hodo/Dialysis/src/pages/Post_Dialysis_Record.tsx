@@ -113,7 +113,10 @@ const Post_Dialysis_Record: React.FC<{
             setSuccessMsg('Postdialysis record saved successfully!');
             toast.success('Postdialysis record saved successfully!');
             resetForm();
-            if (onSaveSuccess) onSaveSuccess();
+            if (onSaveSuccess) {
+              console.log("🚀 Post Dialysis calling onSaveSuccess");
+              onSaveSuccess();
+            }
           } catch (err) {
             setErrorMsg('Error saving postdialysis record.');
             toast.error('Error saving postdialysis record.');

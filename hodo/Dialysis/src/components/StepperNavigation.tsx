@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ButtonWithGradient from './ButtonWithGradient';
 import { API_URL } from '../config';
 import Breadcrumb from './Breadcrumb';
@@ -27,6 +27,7 @@ const steps = [
   // 'Haemodialysis Details',
   'Post Dialysis',
 ];
+
 
 const StepperNavigation: React.FC<StepperNavigationProps> = ({
   selectedSchedule,
@@ -78,7 +79,12 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
 
   // console.log('scheduleOptions:', scheduleOptions);
   // console.log('filteredSchedules:', filteredSchedules);
+  
 
+
+
+  
+  
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>
 

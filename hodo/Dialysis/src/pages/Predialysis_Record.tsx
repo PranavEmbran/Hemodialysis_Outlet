@@ -220,6 +220,12 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
             setSuccessMsg('Predialysis record saved successfully!');
             toast.success('Predialysis record saved successfully!');
             resetForm();
+            
+            // Call the parent's onSaveSuccess to refresh data
+            if (onSaveSuccess) {
+              console.log("🚀 Predialysis calling onSaveSuccess");
+              onSaveSuccess();
+            }
           } catch (err) {
             setErrorMsg('Error saving predialysis record.');
           }

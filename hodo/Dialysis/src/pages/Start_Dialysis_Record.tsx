@@ -147,6 +147,12 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
             // Helps custom components fully refresh their UI
             setFormKey(prev => prev + 1);
 
+            // Call the parent's onSaveSuccess to refresh data
+            if (onSaveSuccess) {
+              console.log("🚀 Start Dialysis calling onSaveSuccess");
+              onSaveSuccess();
+            }
+
           } catch (err) {
             setErrorMsg('Error saving start dialysis record.');
             toast.error('Error saving start dialysis record.');

@@ -36,14 +36,16 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
   const [postDialysisRecords, setPostDialysisRecords] = useState<any[]>([]);
 
   // Fetch schedules, patients, and all records
-  const refetchRecords = () => {
-    Promise.all([
-      fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
-      fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
-      fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
-      fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
-      fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
-    ]).then(([schedules, patientsData, predialysis, startDialysis, postDialysis]) => {
+  const refetchRecords = async () => {
+    console.log("🔄 Refetching records...");
+    try {
+      const [schedules, patientsData, predialysis, startDialysis, postDialysis] = await Promise.all([
+        fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
+        fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+        fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
+        fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
+        fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),
+      ]);
 
       // console.log("Fetched patientsData:", patientsData);
 
@@ -76,7 +78,15 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
       setPredialysisRecords(predialysis);
       setStartDialysisRecords(startDialysis);
       setPostDialysisRecords(postDialysis);
-    });
+      console.log("✅ Records refetched successfully", {
+        schedules: schedules.length,
+        predialysis: predialysis.length,
+        startDialysis: startDialysis.length,
+        postDialysis: postDialysis.length
+      });
+    } catch (error) {
+      console.error("❌ Error refetching records:", error);
+    }
   };
 
   useEffect(() => {
@@ -100,6 +110,11 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     setSelectedSchedule(''); // Reset schedule when date changes
   };
 
+  const handleChildSave = async () => {
+    console.log("🎯 handleChildSave called");
+    await refetchRecords();
+  };
+
   const StepComponent = stepComponents[currentStep];
   // Always pass selectedSchedule to all step components
   let stepProps: any = { sidebarCollapsed, toggleSidebar };
@@ -109,7 +124,7 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     StepComponent === Post_Dialysis_Record
   ) {
     stepProps.selectedSchedule = selectedSchedule;
-    stepProps.onSaveSuccess = refetchRecords;
+    stepProps.onSaveSuccess = handleChildSave;
     if (StepComponent === Predialysis_Record) {
       stepProps.records = predialysisRecords;
     } else if (StepComponent === Start_Dialysis_Record) {
@@ -124,9 +139,9 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     { id: "1008821811000060", name: "Patient A" },
     { id: "1008821811000056", name: "Patient B" },
   ];
-  
-console.log("&&##&StepComponent:", StepComponent.name);
-console.log("&&##&stepProps:", stepProps);
+
+  console.log("&&##&StepComponent:", StepComponent.name);
+  console.log("&&##&stepProps:", stepProps);
 
   return (
     <>
