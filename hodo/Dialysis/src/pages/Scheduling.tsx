@@ -170,7 +170,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
     let startDate = fromDate ? new Date(fromDate) : new Date();
     let endDate = tillDate ? new Date(tillDate) : null;
-let rows: ScheduleRow[] = [];
+    let rows: ScheduleRow[] = [];
     let i = 0;
     let count = 0;
 
@@ -207,31 +207,27 @@ let rows: ScheduleRow[] = [];
         // Check for conflicts
         // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
 
-        conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))));
-        // conflicts = rows.filter(row =>
-        //   assigned.some((a: any) =>
-        //     normalizeDate(a.DS_Date) === row.date &&
-        //     normalizeTime(a.DS_Time || '') === row.time
-        //   )
-        // );
-        
+        // Check for conflicts - sessions already booked by THIS patient
+        conflicts = rows.filter(row =>
+          assigned.some((a: any) =>
+            a.DS_P_ID_FK === values.patient && // Only check sessions booked by THIS patient
+            a.DS_Date === row.date &&
+            (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))
+          )
+        );
 
-
-        // Mark isConflicting flag
+        // Mark isConflicting flag for sessions already booked by this patient
         rows.forEach(row => {
-          // row.isConflicting = conflicts.some(c => c.date === row.date && c.time === row.time);
-          rows.forEach(row => {
-            row.isConflicting = conflicts.some(c =>
-              c.date === row.date && c.time === row.time
-            );
-          });
-          
+          row.isConflicting = assigned.some((a: any) =>
+            a.DS_P_ID_FK === values.patient && // Only mark as conflicting if booked by THIS patient
+            a.DS_Date === row.date &&
+            (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))
+          );
         });
         if (conflicts.length > 0) {
           setConflictInfo({
             conflictingRows: conflicts,
-            // message: `The following ${conflicts.length} sessions conflict with existing schedules and cannot be selected or saved.`
-            message: `The sessions already booked cannot be selected or saved.`
+            message: `${conflicts.length} session(s) are already booked by this patient and cannot be selected again.`
           });
         } else {
           setConflictInfo({ conflictingRows: [], message: '' });
@@ -245,8 +241,8 @@ let rows: ScheduleRow[] = [];
   };
 
   const handleRowSelect = (row: any) => {
-    // if (row.isConflicting) return; // Prevent selection if conflicting
-    if (row.isConflicting && row.atCapacity) return; // Prevent selection if conflicting
+    // Prevent selection if the session is already booked by this patient OR at capacity
+    if (row.isConflicting || row.atCapacity) return;
     setSelectedRows(prev =>
       prev.some(r => r.id === row.id)
         ? prev.filter(r => r.id !== row.id)
@@ -375,8 +371,22 @@ let rows: ScheduleRow[] = [];
                     <>
                       <h4 className="blueBar">Schedule Table</h4>
                       {conflictInfo.message && (
-                        <div style={{ color: '#5a5a5a', marginBottom: 8 }}>{conflictInfo.message}</div>
+                        <div style={{ color: '#d32f2f', marginBottom: 8, fontWeight: 'bold' }}>{conflictInfo.message}</div>
                       )}
+                      <div style={{ display: 'flex', gap: '20px', marginBottom: '12px', fontSize: '14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ width: '16px', height: '16px', backgroundColor: '#ffebee', border: '1px solid #d32f2f' }}></div>
+                          <span>Already booked by this patient</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ width: '16px', height: '16px', backgroundColor: '#fff3e0', border: '1px solid #f57c00' }}></div>
+                          <span>At full capacity</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ width: '16px', height: '16px', backgroundColor: '#ffffff', border: '1px solid #ccc' }}></div>
+                          <span>Available</span>
+                        </div>
+                      </div>
                       <Table
                         columns={[
                           { key: 'date', header: 'Date' },
@@ -388,41 +398,40 @@ let rows: ScheduleRow[] = [];
                           { key: 'select', header: 'Select' },
                         ]}
                         data={scheduleRows.map(row => {
-                          // const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && a.DS_Time === row.time).length;
-                          
-                          const bookedCount = assignedSessions.filter(a => a.DS_Date === row.date && (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))).length;
-                          console.log("### row.date:", row.date);
-                          console.log("### row.time:", row.time);
-                          console.log("### assignedSessions:", assignedSessions);
-
-
-
-                          // const bookedCount = assignedSessions.filter(a =>
-                          //   normalizeDate(a.DS_Date) === row.date &&
-                          //   normalizeTime(a.DS_Time || '') === row.time
-                          // ).length;
-                          
-
+                          // Count total bookings for this date/time slot
+                          const bookedCount = assignedSessions.filter(a =>
+                            a.DS_Date === row.date &&
+                            (a.DS_Time === row.time || a.DS_Time?.startsWith(row.time))
+                          ).length;
 
                           const atCapacity = bookedCount >= unitsCount;
-                          console.log(`Row ID: ${row.id}, nthSession: ${row.nthSession}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
+
+                          console.log(`Row ID: ${row.id}, Date: ${row.date}, Time: ${row.time}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
+
                           return {
                             ...row,
                             booked: `${bookedCount} / ${unitsCount}`,
                             atCapacity,
                             select: (
-                              <input
-                                type="checkbox"
-                                checked={selectedRows.some(r => r.id === row.id)}
-                                onChange={() => handleRowSelect(row)}
-                                // disabled={row.isConflicting || atCapacity}
-                                disabled={row.isConflicting && atCapacity}
-                              />
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRows.some(r => r.id === row.id)}
+                                  onChange={() => handleRowSelect(row)}
+                                  disabled={row.isConflicting || atCapacity}
+                                />
+                                {row.isConflicting && (
+                                  <span style={{ color: '#d32f2f', fontSize: '12px' }}>Already booked</span>
+                                )}
+                                {!row.isConflicting && atCapacity && (
+                                  <span style={{ color: '#f57c00', fontSize: '12px' }}>Full capacity</span>
+                                )}
+                              </div>
                             ),
                             _rowStyle: row.isConflicting
-                              ? { backgroundColor: '#ffd6d6' }
+                              ? { backgroundColor: '#ffebee', color: '#d32f2f' } // Light red for already booked by patient
                               : atCapacity
-                                ? { backgroundColor: '#ffe7ba' }
+                                ? { backgroundColor: '#fff3e0', color: '#f57c00' } // Light orange for at capacity
                                 : {},
                           };
                         })}
@@ -477,9 +486,9 @@ let rows: ScheduleRow[] = [];
               data={assignedSessions
                 .map(row => ({
                   ...row,
-                //Uncomment to show patient name when USE_MSSQL=false
-                // PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
-                  
+                  //Uncomment to show patient name when USE_MSSQL=false
+                  // PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
+
                   DS_Added_on: new Date(row.DS_Added_on).toLocaleString('en-US', {
                     year: 'numeric',
                     month: '2-digit',
