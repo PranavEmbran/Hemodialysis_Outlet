@@ -62,7 +62,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
   }, [selectedSchedule, appointments, patients]);
 
   // Disable logic: check if selectedSchedule exists in records
-  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_PK_FK === selectedSchedule));
+  const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.PreDR_DS_ID_FK === selectedSchedule));
 
   // Get only active appointments
   const availableSchedules = appointments.filter(a => a.Status === 10);
@@ -150,11 +150,16 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
 
 
 
-  records.forEach((rec: any) => {
-    console.log("@@@Comparing", rec.PreDR_ID_PK, "===", selectedSchedule);
-  });
+  // Debug: Check disabled state
+  console.log("PREDIALYSIS - selectedSchedule:", selectedSchedule, "isDisabled:", isDisabled);
+  if (selectedSchedule && records.length > 0) {
+    const matchingRecords = records.filter(rec => rec.PreDR_DS_ID_FK === selectedSchedule);
+    console.log("Matching predialysis records:", matchingRecords.length);
+  }
 
-
+  // function refreshPage() {
+  //   window.location.reload();
+  // }
 
 
   return (
@@ -396,6 +401,7 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
               </ButtonWithGradient>
               <ButtonWithGradient type="submit" disabled={!selectedSchedule || isSubmitting}>Save</ButtonWithGradient>
             </div>
+
             {successMsg && <div style={{ color: 'green', marginTop: 16, textAlign: 'center' }}>{successMsg}</div>}
             {errorMsg && <div style={{ color: 'red', marginTop: 16, textAlign: 'center' }}>{errorMsg}</div>}
           </Form>
@@ -403,6 +409,8 @@ const Predialysis_Record: React.FC<{ selectedSchedule?: string; records?: any[];
       </Formik>
       {/* </PageContainer> */}
       {/* <Footer /> */}
+
+
     </>
   );
 };

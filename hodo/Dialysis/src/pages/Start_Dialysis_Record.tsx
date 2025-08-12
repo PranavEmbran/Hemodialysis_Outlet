@@ -28,6 +28,7 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
 
   const [formKey, setFormKey] = useState(0);
 
+  
 
   useEffect(() => {
     Promise.all([
@@ -78,6 +79,13 @@ const Start_Dialysis_Record: React.FC<{ selectedSchedule?: string; records?: any
   const dialyzerOptions = dialyzerTypes.map(d => ({ value: d.DTL_Dialyzer_Name, label: d.DTL_Dialyzer_Name }));
 
   const isDisabled = !!(selectedSchedule && records.some((rec: any) => rec.SA_ID_PK_FK === selectedSchedule || rec.SA_ID_FK === selectedSchedule));
+
+  // Debug: Check disabled state
+  console.log("START DIALYSIS - selectedSchedule:", selectedSchedule, "isDisabled:", isDisabled);
+  if (selectedSchedule && records.length > 0) {
+    const matchingRecords = records.filter(rec => rec.SA_ID_PK_FK === selectedSchedule || rec.SA_ID_FK === selectedSchedule);
+    console.log("Matching start dialysis records:", matchingRecords.length);
+  }
 
   return (
     <>

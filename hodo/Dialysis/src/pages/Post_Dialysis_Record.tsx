@@ -59,8 +59,15 @@ const Post_Dialysis_Record: React.FC<{
   }, [selectedSchedule, appointments, patients]);
 
   const isDisabled = !!(selectedSchedule && records.some((rec: any) =>
-    rec.SA_ID_PK_FK === selectedSchedule || rec.SA_ID_FK === selectedSchedule
+    rec.PostDR_DS_ID_FK === selectedSchedule
   ));
+
+  // Debug: Check disabled state
+  console.log("POST DIALYSIS - selectedSchedule:", selectedSchedule, "isDisabled:", isDisabled);
+  if (selectedSchedule && records.length > 0) {
+    const matchingRecords = records.filter(rec => rec.PostDR_DS_ID_FK === selectedSchedule);
+    console.log("Matching post dialysis records:", matchingRecords.length);
+  }
 
   return (
     <>

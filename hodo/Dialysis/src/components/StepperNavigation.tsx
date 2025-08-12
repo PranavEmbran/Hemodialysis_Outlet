@@ -138,7 +138,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
           selectedDate: selectedDate || '',
           selectedSchedule: selectedSchedule || '',
         }}
-        onSubmit={() => {}}
+        onSubmit={() => { }}
         enableReinitialize
       >
         {({ values, setFieldValue }) => {
@@ -168,44 +168,44 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             // eslint-disable-next-line
           }, [values.selectedSchedule]);
           return (
-            <Form style={{width: '50%', display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
+            <Form style={{ width: '50%', display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
               <div className="flex-grow">
-              <SelectField
-                label="Select Patient"
-                name="selectedPatient"
-                options={filteredPatients.map(p => ({ value: p.id, label: `${p.name} (${p.id})` }))}
-                placeholder="All Patients"
-                className="form-group"
-                required={false}                
-              />
+                <SelectField
+                  label="Select Patient"
+                  name="selectedPatient"
+                  options={filteredPatients.map(p => ({ value: p.id, label: `${p.name} (${p.id})` }))}
+                  placeholder="All Patients"
+                  className="form-group"
+                  required={false}
+                />
               </div>
               <div className="flex-grow">
-              <InputField
-                label="Select Date"
-                name="selectedDate"
-                type="date"
-                className="form-group"
-                required={false}
-              />
+                <InputField
+                  label="Select Date"
+                  name="selectedDate"
+                  type="date"
+                  className="form-group"
+                  required={false}
+                />
               </div>
               <div className="flex-grow">
-              <SelectField
-                label="Select Schedule"
-                name="selectedSchedule"
-                // value={values.selectedSchedule}
-                options={filteredSchedules.map(opt => ({ value: opt.value, label: opt.label }))}
-                placeholder="Select Schedule"
-                className="form-group"
-                required={true}
-              />
+                <SelectField
+                  label="Select Schedule"
+                  name="selectedSchedule"
+                  // value={values.selectedSchedule}
+                  options={filteredSchedules.map(opt => ({ value: opt.value, label: opt.label }))}
+                  placeholder="Select Schedule"
+                  className="form-group"
+                  required={true}
+                />
               </div>
             </Form>
           );
         }}
       </Formik>
-     {/* Blue Bar showing selected schedule */}
-     {
-    //  selectedSchedule && (
+      {/* Blue Bar showing selected schedule */}
+      {
+        //  selectedSchedule && (
         <div>
           <label className="blueBar">
             {(() => {
@@ -216,7 +216,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             })()}
           </label>
         </div>
-      // )
+        // )
       }
     </div>
   );
