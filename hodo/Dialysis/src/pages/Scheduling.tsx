@@ -13,6 +13,7 @@ import { API_URL } from '../config';
 import { useSessionTimes } from './SessionTimesLookup';
 import CancelButton from '../components/CancelButton';
 import ReassignButton from '../components/ReassignButton';
+import Select from 'react-select';
 
 // const sessionOptions = [
 //   { label: '1st', value: '1st' },
@@ -117,6 +118,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   const [assignedSessions, setAssignedSessions] = useState<any[]>([]);
   const [conflictInfo, setConflictInfo] = useState<{ conflictingRows: any[], message: string }>({ conflictingRows: [], message: '' });
 
+  // Filter states for step 2
+  const [selectedPatientFilter, setSelectedPatientFilter] = useState<string>('');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('');
+
   const today = new Date().toISOString().split('T')[0];
 
   const isMSSQL = React.useMemo(() => {
@@ -212,7 +217,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       // Find the selected session time from lookup table
       const selectedSessionTime = sessionTimes.find(st => st.ST_Session_Name === sessionPreferred);
       const timeToUse = selectedSessionTime ? selectedSessionTime.ST_Start_Time : '08:00';
-      
+
       rows.push({
         id: count + 1,
         date: date.toISOString().slice(0, 10),
@@ -291,7 +296,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 0 }) // 0 = Cancelled
       });
-      
+
       if (res.ok) {
         toast.success('Session cancelled successfully!');
         // Small delay to ensure database is updated
@@ -346,7 +351,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         `${API_URL}/data/dialysis_schedules/check-conflict?date=${schedule.DS_Date}&time=${schedule.DS_Time}`
       );
       const conflictData = await conflictRes.json();
-      
+
       if (conflictData.hasConflict) {
         toast.error('Cannot reassign: Another patient is already scheduled for this time slot');
         return;
@@ -357,7 +362,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 10 }) // 10 = Scheduled
       });
-      
+
       if (res.ok) {
         toast.success('Session reassigned successfully!');
         // Small delay to ensure database is updated
@@ -401,14 +406,14 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
 
     // Function to get current date in IST in YYYY-MM-DD format
-function getTodayInIST() {
-  const now = new Date();
-  // IST offset = +5:30 hours = 330 minutes
-  const istOffset = 330; 
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  const istTime = new Date(utc + istOffset * 60000);
-  return istTime.toISOString().slice(0, 10);
-}
+    function getTodayInIST() {
+      const now = new Date();
+      // IST offset = +5:30 hours = 330 minutes
+      const istOffset = 330;
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const istTime = new Date(utc + istOffset * 60000);
+      return istTime.toISOString().slice(0, 10);
+    }
 
     // const today = new Date().toISOString().slice(0, 10);
     const today = getTodayInIST();
@@ -487,17 +492,17 @@ function getTodayInIST() {
                       name="sessionPreferred"
                       // options={sessionOptions}
 
-                      options={sessionTimes.map(st => ({ 
-                        label: `${st.ST_Session_Name} (${st.ST_Start_Time})`, 
-                        value: st.ST_Session_Name 
+                      options={sessionTimes.map(st => ({
+                        label: `${st.ST_Session_Name} (${st.ST_Start_Time})`,
+                        value: st.ST_Session_Name
                       }))}
                       required
                       placeholder="Select Session"
                       // defaultValue={sessionOptions[0]}
 
-                      defaultValue={sessionTimes.length > 0 ? { 
-                        label: `${sessionTimes[0].ST_Session_Name} (${sessionTimes[0].ST_Start_Time})`, 
-                        value: sessionTimes[0].ST_Session_Name 
+                      defaultValue={sessionTimes.length > 0 ? {
+                        label: `${sessionTimes[0].ST_Session_Name} (${sessionTimes[0].ST_Start_Time})`,
+                        value: sessionTimes[0].ST_Session_Name
                       } : undefined}
                     />
                     <InputField
@@ -632,17 +637,144 @@ function getTodayInIST() {
         )}
         {currentStep === 1 && (
           <>
-
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
-            <div style={{ marginBottom: '1.5rem', maxWidth: '400px' }}>
-              <DateRangeSelector
-                fromDate={fromDate}
-                toDate={toDate}
-                onFromDateChange={setFromDate}
-                onToDateChange={setToDate}
-                label="Filter by Date Range"
-              />
+
+            {/* Filter Section */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '16px',
+              marginBottom: '1.5rem',
+              padding: '16px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px',
+              border: '1px solid #e9ecef'
+            }}>
+              <div style={{ maxWidth: '400px' }}>
+                <DateRangeSelector
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  onFromDateChange={setFromDate}
+                  onToDateChange={setToDate}
+                  label="Filter by Date Range"
+                />
+              </div>
+
+              <div style = {{marginTop: '2.7em'}}>
+                <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                  Filter by Patient
+                </label>
+                <Select
+                  options={[
+                    { label: 'All Patients', value: '' },
+                    ...patients.map(p => ({
+                      label: `${p.id} - ${p.Name}`,
+                      value: p.id.toString()
+                    }))
+                  ]}
+                  value={patients.length > 0 ?
+                    (selectedPatientFilter ?
+                      { label: `${selectedPatientFilter} - ${patients.find(p => p.id.toString() === selectedPatientFilter)?.Name || 'Unknown'}`, value: selectedPatientFilter } :
+                      { label: 'All Patients', value: '' }
+                    ) : { label: 'All Patients', value: '' }
+                  }
+                  onChange={(option) => setSelectedPatientFilter(option?.value || '')}
+                  placeholder="Select Patient"
+                  isClearable
+                  isSearchable
+                  classNamePrefix="react-select"
+                  className="react-select-container"
+                />
+              </div>
+
+              <div style = {{marginTop: '2.7em'}}>
+                <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                  Filter by Status
+                </label>
+                <Select
+                  options={[
+                    { label: 'All Statuses', value: '' },
+                    { label: 'Scheduled', value: 'Scheduled' },
+                    { label: 'Arrived', value: 'Arrived' },
+                    { label: 'Initiated', value: 'Initiated' },
+                    { label: 'Completed', value: 'Completed' },
+                    { label: 'Cancelled', value: 'Cancelled' },
+                    { label: 'Missed', value: 'Missed' }
+                  ]}
+                  value={selectedStatusFilter ?
+                    { label: selectedStatusFilter, value: selectedStatusFilter } :
+                    { label: 'All Statuses', value: '' }
+                  }
+                  onChange={(option) => setSelectedStatusFilter(option?.value || '')}
+                  placeholder="Select Status"
+                  isClearable
+                  classNamePrefix="react-select"
+                  className="react-select-container"
+                />
+              </div>
+
+              <div style={{marginBottom: '1em', display: 'flex', alignItems: 'end', gap: '8px' }}>
+                <ButtonWithGradient
+                  type="button"
+                  onClick={() => {
+                    setFromDate('');
+                    setToDate('');
+                    setSelectedPatientFilter('');
+                    setSelectedStatusFilter('');
+                  }}
+                  // style={{
+                  //   backgroundColor: '#6c757d',
+                  //   borderColor: '#6c757d',
+                  //   padding: '8px 16px',
+                  //   fontSize: '14px'
+                  // }}
+                >
+                  Clear Filters
+                </ButtonWithGradient>
+              </div>
             </div>
+            {/* Results Summary */}
+            {(() => {
+              const filteredData = assignedSessions.filter(row => {
+                // Date range filter
+                if (fromDate || toDate) {
+                  const rowDate = row.DS_Date;
+                  if (fromDate && rowDate < fromDate) return false;
+                  if (toDate && rowDate > toDate) return false;
+                }
+
+                // Patient filter
+                if (selectedPatientFilter && row.DS_P_ID_FK.toString() !== selectedPatientFilter) {
+                  return false;
+                }
+
+                // Status filter
+                if (selectedStatusFilter) {
+                  const rowStatus = row.computed_status || (row.DS_Status === 0 ? 'Cancelled' : 'Scheduled');
+                  if (rowStatus !== selectedStatusFilter) return false;
+                }
+
+                return true;
+              });
+
+              return (
+                <div style={{
+                  marginBottom: '16px',
+                  padding: '12px',
+                  backgroundColor: '#e3f2fd',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  color: '#1565c0'
+                }}>
+                  <strong>Results: </strong>
+                  Showing {filteredData.length} of {assignedSessions.length} scheduled sessions
+                  {(fromDate || toDate || selectedPatientFilter || selectedStatusFilter) && (
+                    <span> (filtered)</span>
+                  )}
+                </div>
+              );
+            })()}
+
             <Table
               columns={[
                 { key: 'DS_P_ID_FK', header: 'Patient ID' },
@@ -656,129 +788,166 @@ function getTodayInIST() {
               data={(() => {
                 const filteredAndMappedData = assignedSessions
                   .filter(row => {
-                    if (!fromDate && !toDate) return true;
-                    const rowDate = row.DS_Date;
-                    if (fromDate && rowDate < fromDate) return false;
-                    if (toDate && rowDate > toDate) return false;
+                    // Date range filter
+                    if (fromDate || toDate) {
+                      const rowDate = row.DS_Date;
+                      if (fromDate && rowDate < fromDate) return false;
+                      if (toDate && rowDate > toDate) return false;
+                    }
+
+                    // Patient filter
+                    if (selectedPatientFilter && row.DS_P_ID_FK.toString() !== selectedPatientFilter) {
+                      return false;
+                    }
+
+                    // Status filter
+                    if (selectedStatusFilter) {
+                      const rowStatus = row.computed_status || (row.DS_Status === 0 ? 'Cancelled' : 'Scheduled');
+                      if (rowStatus !== selectedStatusFilter) return false;
+                    }
+
                     return true;
                   })
                   .map(row => {
-                  // Debug: Check what fields are available in the row data
-                  if (Math.random() < 0.1) { // Only log occasionally to avoid spam
-                    console.log('Available row fields:', Object.keys(row));
-                    console.log('DS_Time value:', row.DS_Time);
-                    console.log('DS_Added_on value:', row.DS_Added_on);
-                    console.log('DS_Added_On value:', row.DS_Added_On); // Check alternative casing
-                  }
-                  
-                  const sessionDate = new Date(row.DS_Date);
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  
-                  const isFutureDate = sessionDate > today;
-                  const isCompleted = row.computed_status === 'Completed';
-                  const isCancelled = row.computed_status === 'Cancelled' || row.DS_Status === 0;
-                  
-
-                  
-                  // Determine which action to show (exclusive)
-                  let actionComponent = null;
-                  
-                  if (isFutureDate && !isCompleted && !isCancelled) {
-                    // Show Cancel button for future, non-completed, non-cancelled sessions
-                    actionComponent = (
-                      <CancelButton
-                        scheduleId={row.DS_ID_PK}
-                        onCancel={handleCancelSession}
-                        tooltip="Cancel this session"
-                      />
-                    );
-                  } else if (isFutureDate && isCancelled) {
-                    // Show Reassign button for future cancelled sessions
-                    actionComponent = (
-                      <ReassignButton
-                        scheduleId={row.DS_ID_PK}
-                        onReassign={handleReassignSession}
-                        tooltip="Reassign this session"
-                      />
-                    );
-                  }
-                  // If neither condition is met, no action is shown
-                  
-                  // Format date to YYYY-MM-DD
-                  const formatDate = (dateStr: string) => {
-                    if (!dateStr) return '';
-                    const date = new Date(dateStr);
-                    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
-                  };
-
-                  // Format time to HH:MM
-                  const formatTime = (timeStr: string) => {
-                    if (!timeStr) return '';
-                    // Debug time formatting
-                    if (Math.random() < 0.1) {
-                      console.log('Formatting time:', timeStr, 'Type:', typeof timeStr);
+                    // Debug: Check what fields are available in the row data
+                    if (Math.random() < 0.1) { // Only log occasionally to avoid spam
+                      console.log('Available row fields:', Object.keys(row));
+                      console.log('DS_Time value:', row.DS_Time);
+                      console.log('DS_Added_on value:', row.DS_Added_on);
+                      console.log('DS_Added_On value:', row.DS_Added_On); // Check alternative casing
                     }
-                    // Handle different time formats
-                    if (timeStr.includes('T')) {
-                      // If it's a full datetime string like "1970-01-01T12:00:00.000Z"
-                      // const date = new Date(timeStr);
-                      // return date.toTimeString().slice(0, 5); // Returns HH:MM
 
-                      return timeStr.split('T')[1]?.slice(0, 5) || '';
+                    const sessionDate = new Date(row.DS_Date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const isFutureDate = sessionDate > today;
+                    const isCompleted = row.computed_status === 'Completed';
+                    const isCancelled = row.computed_status === 'Cancelled' || row.DS_Status === 0;
 
 
-                    } else if (timeStr.includes(':')) {
-                      // If it's already in HH:MM:SS or HH:MM format
-                      return timeStr.slice(0, 5); // Returns HH:MM
+
+                    // Determine which action to show (exclusive)
+                    let actionComponent = null;
+
+                    if (isFutureDate && !isCompleted && !isCancelled) {
+                      // Show Cancel button for future, non-completed, non-cancelled sessions
+                      actionComponent = (
+                        <CancelButton
+                          scheduleId={row.DS_ID_PK}
+                          onCancel={handleCancelSession}
+                          tooltip="Cancel this session"
+                        />
+                      );
+                    } else if (isFutureDate && isCancelled) {
+                      // Show Reassign button for future cancelled sessions
+                      actionComponent = (
+                        <ReassignButton
+                          scheduleId={row.DS_ID_PK}
+                          onReassign={handleReassignSession}
+                          tooltip="Reassign this session"
+                        />
+                      );
                     }
-                    return timeStr;
-                  };
+                    // If neither condition is met, no action is shown
 
-                  return {
-                    ...row,
-                    // Show patient name - find from patients array
-                    PatientName: (patients.find(p => p.id == row.DS_P_ID_FK)?.Name) || `Patient ${row.DS_P_ID_FK}`,
-                    // Format date properly
-                    DS_Date: formatDate(row.DS_Date),
-                    // Format time properly - ensure we're using the DS_Time field
-                    DS_Time: formatTime(row.DS_Time || row.ds_time || row.time),
-                    computed_status: (
-                      <span style={{
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        color: 'white',
-                        backgroundColor: 
-                          row.computed_status === 'Completed' ? '#4caf50' :
-                          row.computed_status === 'Cancelled' ? '#f44336' :
-                          row.computed_status === 'Initiated' ? '#ff9800' :
-                          row.computed_status === 'Arrived' ? '#2196f3' :
-                          row.computed_status === 'Missed' ? '#9c27b0' :
-                          row.DS_Status === 0 ? '#f44336' : // Fallback for cancelled
-                          '#757575' // Scheduled or default
-                      }}>
-                        {row.computed_status || (row.DS_Status === 0 ? 'Cancelled' : 'Scheduled')}
-                      </span>
-                    ),
-                    actions: actionComponent,
-                    DS_Added_on: new Date(row.DS_Added_on || row.DS_Added_On).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      ...(isMSSQL
-                        ? {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit',
-                          hour12: true,
-                        }
-                        : {}),
-                    }),
-                  };
-                });
-                
+                    // Format date to YYYY-MM-DD
+                    const formatDate = (dateStr: string) => {
+                      if (!dateStr) return '';
+                      const date = new Date(dateStr);
+                      return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+                    };
+
+                    // Format time to HH:MM
+                    const formatTime = (timeStr: string) => {
+                      if (!timeStr) return '';
+                      // Debug time formatting
+                      if (Math.random() < 0.1) {
+                        console.log('Formatting time:', timeStr, 'Type:', typeof timeStr);
+                      }
+                      // Handle different time formats
+                      if (timeStr.includes('T')) {
+                        // If it's a full datetime string like "1970-01-01T12:00:00.000Z"
+                        // const date = new Date(timeStr);
+                        // return date.toTimeString().slice(0, 5); // Returns HH:MM
+
+                        return timeStr.split('T')[1]?.slice(0, 5) || '';
+
+
+                      } else if (timeStr.includes(':')) {
+                        // If it's already in HH:MM:SS or HH:MM format
+                        return timeStr.slice(0, 5); // Returns HH:MM
+                      }
+                      return timeStr;
+                    };
+
+                    return {
+                      ...row,
+                      // Show patient name - find from patients array
+                      PatientName: (patients.find(p => p.id == row.DS_P_ID_FK)?.Name) || `Patient ${row.DS_P_ID_FK}`,
+                      // Format date properly
+                      DS_Date: formatDate(row.DS_Date),
+                      // Format time properly - ensure we're using the DS_Time field
+                      DS_Time: formatTime(row.DS_Time || row.ds_time || row.time),
+                      computed_status: (
+                        <span style={{
+                          // padding: '2px 8px',
+                          // borderRadius: '4px',
+                          // fontSize: '12px',
+                          // fontWeight: 'bold',
+
+                          display: 'inline-flex',
+                          padding: '5px',
+                          width: 'fit-content',
+                          maxHeight: 'fit-content',
+                          borderRadius: '12px',
+                          fontSize: '0.85rem',
+                          fontWeight: '500',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          // border: '1.5px solid silver',
+
+                          color: 'white',
+                          backgroundColor:
+                            // row.computed_status === 'Completed' ? '#4caf50' :
+                            //   row.computed_status === 'Cancelled' ? '#f44336' :
+                            //     row.computed_status === 'Initiated' ? '#ff9800' :
+                            //       row.computed_status === 'Arrived' ? '#2196f3' :
+                            //         row.computed_status === 'Missed' ? '#9c27b0' :
+                            //           row.DS_Status === 0 ? '#f44336' : // Fallback for cancelled
+                            //             '#757575' // Scheduled or default
+
+                            row.computed_status === 'Completed' ? 'rgba(76, 175, 80)' :
+                            row.computed_status === 'Cancelled' ? 'rgba(244, 67, 54)' :
+                            row.computed_status === 'Initiated' ? 'rgba(255, 152, 0)' :
+                            row.computed_status === 'Arrived' ? 'rgba(33, 150, 243)' :
+                            row.computed_status === 'Missed' ? 'rgba(156, 39, 176)' :
+                            row.DS_Status === 0 ? 'rgba(244, 67, 54)' :
+                            'rgba(117, 117, 117)'
+                            
+
+
+                        }}>
+                          {row.computed_status || (row.DS_Status === 0 ? 'Cancelled' : 'Scheduled')}
+                        </span>
+                      ),
+                      actions: actionComponent,
+                      DS_Added_on: new Date(row.DS_Added_on || row.DS_Added_On).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        ...(isMSSQL
+                          ? {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true,
+                          }
+                          : {}),
+                      }),
+                    };
+                  });
+
                 // Debug: Log the first few mapped records to see what data is being passed to the table
                 if (filteredAndMappedData.length > 0) {
                   console.log('Sample mapped data for table:', {
@@ -788,7 +957,7 @@ function getTodayInIST() {
                     allKeys: Object.keys(filteredAndMappedData[0])
                   });
                 }
-                
+
                 return filteredAndMappedData;
               })()}
             />
