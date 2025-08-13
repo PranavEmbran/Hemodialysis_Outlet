@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 // import { Row, Col, Container } from 'react-bootstrap';
+import ScheduleStatusTest from '../components/ScheduleStatusTest';
 
 const Blank: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   return (
@@ -12,7 +13,8 @@ const Blank: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> 
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
         <SectionHeading title="Section Title" subtitle="Section Subtitle" />
-        <div style={{ height: '40vh' }}></div>
+        <ScheduleStatusTest />
+        {/* <div style={{ height: '40vh' }}></div> */}
       </PageContainer>
       <Footer />
     </>

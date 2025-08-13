@@ -486,6 +486,84 @@ export const deleteSessionTime = async (id: string): Promise<boolean> => {
   return true;
 };
 
+// --- Dialysis Schedules Functions ---
+export const updateDialysisScheduleStatus = async (scheduleId: string, status: number): Promise<any> => {
+  await initDB();
+  await db.read();
+  if (!db.data.Dialysis_Schedules) db.data.Dialysis_Schedules = [];
+  const idx = db.data.Dialysis_Schedules.findIndex((ds: any) => ds.DS_ID_PK == scheduleId);
+  if (idx === -1) throw new Error('Schedule not found');
+  db.data.Dialysis_Schedules[idx].DS_Status = status;
+  db.data.Dialysis_Schedules[idx].DS_Modified_on = new Date().toISOString();
+  await db.write();
+  return db.data.Dialysis_Schedules[idx];
+};
+
+export const checkScheduleConflict = async (date: string, time: string, unitId?: string): Promise<boolean> => {
+  await initDB();
+  await db.read();
+  if (!db.data.Dialysis_Schedules) return false;
+  const conflict = db.data.Dialysis_Schedules.some((ds: any) => 
+    ds.DS_Date === date && 
+    ds.DS_Time === time && 
+    ds.DS_Status === 10
+  );
+  return conflict;
+};
+
+export const getScheduleWithRelatedRecords = async (scheduleId?: string): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  
+  const schedules = scheduleId 
+    ? db.data.Dialysis_Schedules?.filter((ds: any) => ds.DS_ID_PK == scheduleId) || []
+    : db.data.Dialysis_Schedules || [];
+  
+  const predialysisRecords = db.data.predialysis_records || [];
+  const startDialysisRecords = db.data.start_dialysis_records || [];
+  const postDialysisRecords = db.data.post_dialysis_records || [];
+  
+  console.log('LowDB - Schedules found:', schedules.length);
+  console.log('LowDB - Sample schedule:', schedules[0]);
+  
+  return schedules.map((ds: any) => {
+    const hasPredialysis = predialysisRecords.some((pdr: any) => 
+      pdr.PreDR_DS_ID_FK == ds.DS_ID_PK && pdr.PreDR_Status !== 0
+    );
+    const hasStartDialysis = startDialysisRecords.some((sdr: any) => 
+      sdr.SDR_DS_ID_FK == ds.DS_ID_PK && sdr.SDR_Status !== 0
+    );
+    const hasPostDialysis = postDialysisRecords.some((podr: any) => 
+      podr.PostDR_DS_ID_FK == ds.DS_ID_PK && podr.PostDR_Status !== 0
+    );
+    
+    let computed_status = 'Scheduled';
+    if (ds.DS_Status === 0) {
+      computed_status = 'Cancelled';
+    } else if (hasPredialysis && hasStartDialysis && hasPostDialysis) {
+      computed_status = 'Completed';
+    } else if (hasPredialysis && hasStartDialysis) {
+      computed_status = 'Initiated';
+    } else if (hasPredialysis) {
+      computed_status = 'Arrived';
+    } else if (new Date(ds.DS_Date) < new Date() && ds.DS_Status === 10) {
+      computed_status = 'Missed';
+    }
+    
+    const result = {
+      ...ds,
+      computed_status,
+      has_predialysis: hasPredialysis ? 1 : null,
+      has_start_dialysis: hasStartDialysis ? 1 : null,
+      has_post_dialysis: hasPostDialysis ? 1 : null
+    };
+    
+    console.log('LowDB - Computed status for schedule', ds.DS_ID_PK, ':', computed_status, 'DS_Status:', ds.DS_Status);
+    
+    return result;
+  });
+};
+
 // --- Dialyzer Types Lookup Functions ---
 export const getDialyzerTypes = async (): Promise<any[]> => {
   await initDB();

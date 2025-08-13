@@ -53,3 +53,7 @@ export const getSchedulingLookup = (service as any).getSchedulingLookup;
 export const addSchedulingLookup = (service as any).addSchedulingLookup;
 export const updateSchedulingLookup = (service as any).updateSchedulingLookup;
 export const deleteSchedulingLookup = (service as any).deleteSchedulingLookup;
+
+export const updateDialysisScheduleStatus = (service as any).updateDialysisScheduleStatus;
+export const checkScheduleConflict = (service as any).checkScheduleConflict;
+export const getScheduleWithRelatedRecords = (service as any).getScheduleWithRelatedRecords;

@@ -28,6 +28,9 @@ import {
   addSchedulingLookup as addSchedulingLookupService,
   updateSchedulingLookup as updateSchedulingLookupService,
   deleteSchedulingLookup as deleteSchedulingLookupService,
+  updateDialysisScheduleStatus as updateDialysisScheduleStatusService,
+  checkScheduleConflict as checkScheduleConflictService,
+  getScheduleWithRelatedRecords as getScheduleWithRelatedRecordsService,
   addPredialysisRecord,
   addStartDialysisRecord,
   addPostDialysisRecord,
@@ -515,6 +518,66 @@ export const deleteSessionTime = async (req: Request, res: Response) => {
     res.json({ message: 'Session time deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete session time' });
+  }
+};
+
+// --- Dialysis Schedules CRUD ---
+export const updateDialysisScheduleStatus = async (req: Request, res: Response) => {
+  try {
+    const { scheduleId } = req.params;
+    const { status } = req.body;
+    
+    if (status === undefined || ![0, 10].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be 0 (cancelled) or 10 (scheduled)' });
+    }
+    
+    const schedule = await updateDialysisScheduleStatusService(scheduleId, status);
+    res.json(schedule);
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Schedule not found') {
+      res.status(404).json({ error: 'Schedule not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to update schedule status' });
+    }
+  }
+};
+
+export const checkScheduleConflict = async (req: Request, res: Response) => {
+  try {
+    const { date, time, unitId } = req.query;
+    
+    if (!date || !time) {
+      return res.status(400).json({ error: 'Date and time are required' });
+    }
+    
+    const hasConflict = await checkScheduleConflictService(
+      date as string, 
+      time as string, 
+      unitId as string
+    );
+    
+    res.json({ hasConflict });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to check schedule conflict' });
+  }
+};
+
+export const getScheduleWithRelatedRecords = async (req: Request, res: Response) => {
+  try {
+    const { scheduleId } = req.params;
+    const schedules = await getScheduleWithRelatedRecordsService(scheduleId);
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get schedule with related records' });
+  }
+};
+
+export const getAllSchedulesWithRelatedRecords = async (req: Request, res: Response) => {
+  try {
+    const schedules = await getScheduleWithRelatedRecordsService();
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get schedules with related records' });
   }
 };
 

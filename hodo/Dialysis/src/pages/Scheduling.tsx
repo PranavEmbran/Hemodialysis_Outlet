@@ -11,6 +11,8 @@ import Table from '../components/Table';
 import DateRangeSelector from '../components/DateRangeSelector';
 import { API_URL } from '../config';
 import { useSessionTimes } from './SessionTimesLookup';
+import CancelButton from '../components/CancelButton';
+import ReassignButton from '../components/ReassignButton';
 
 // const sessionOptions = [
 //   { label: '1st', value: '1st' },
@@ -70,10 +72,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       });
   }, []);
 
-  // Fetch all assigned schedules when switching to view step
+  // Fetch all assigned schedules with related records when switching to view step
   useEffect(() => {
     if (currentStep === 1) {
-      fetch(`${API_URL}/data/Dialysis_Schedules`)
+      fetch(`${API_URL}/data/dialysis_schedules/with-records`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data)) {
@@ -97,8 +99,6 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         })
         .catch(() => setAssignedSessions([]));
     }
-    // Optionally clear on leaving view step
-    // else setAssignedSessions([]);
   }, [currentStep, API_URL]);
   const [patients, setPatients] = useState<any[]>([]);
   type ScheduleRow = {
@@ -176,7 +176,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   const handleSubmit = async (values: typeof initialValues) => {
     setSaveStatus("");
-    console.log('Form values:', values);
+
 
     const { fromDate, tillDate, interval, sessionPreferred, numSessions } = values;
 
@@ -238,7 +238,6 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         const res = await fetch(`${API_URL}/data/Dialysis_Schedules?patientId=${values.patient}`);
         const assigned = await res.json();
         setAssignedSessions(assigned);
-        console.log("&&&assigned:", assigned);
         // Check for conflicts
         // conflicts = rows.filter(row => assigned.some((a: any) => a.DS_Date === row.date && a.DS_Time === row.time));
 
@@ -285,6 +284,110 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     );
   };
 
+  const handleCancelSession = async (scheduleId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/data/dialysis_schedules/${scheduleId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 0 }) // 0 = Cancelled
+      });
+      
+      if (res.ok) {
+        toast.success('Session cancelled successfully!');
+        // Small delay to ensure database is updated
+        setTimeout(async () => {
+          // Refresh the assigned sessions list
+          const updatedRes = await fetch(`${API_URL}/data/dialysis_schedules/with-records`);
+          const updatedData = await updatedRes.json();
+
+          if (Array.isArray(updatedData)) {
+            const sorted = [...updatedData].sort((a, b) => {
+              const dateA = new Date(a.DS_Added_on || a.DS_Date || 0);
+              const dateB = new Date(b.DS_Added_on || b.DS_Date || 0);
+              if (dateA > dateB) return -1;
+              if (dateA < dateB) return 1;
+              if (a.DS_ID_PK && b.DS_ID_PK) {
+                return String(b.DS_ID_PK).localeCompare(String(a.DS_ID_PK));
+              }
+              return 0;
+            });
+            setAssignedSessions(sorted);
+          }
+        }, 500);
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.error || 'Failed to cancel session');
+      }
+    } catch (err) {
+      toast.error('Error cancelling session');
+    }
+  };
+
+  const handleReassignSession = async (scheduleId: string) => {
+    try {
+      // First check if reassignment is possible (future date and no conflicts)
+      const schedule = assignedSessions.find(s => s.DS_ID_PK == scheduleId);
+      if (!schedule) {
+        toast.error('Schedule not found');
+        return;
+      }
+
+      const sessionDate = new Date(schedule.DS_Date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (sessionDate <= today) {
+        toast.error('Cannot reassign past sessions');
+        return;
+      }
+
+      // Check for conflicts
+      const conflictRes = await fetch(
+        `${API_URL}/data/dialysis_schedules/check-conflict?date=${schedule.DS_Date}&time=${schedule.DS_Time}`
+      );
+      const conflictData = await conflictRes.json();
+      
+      if (conflictData.hasConflict) {
+        toast.error('Cannot reassign: Another patient is already scheduled for this time slot');
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/data/dialysis_schedules/${scheduleId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 10 }) // 10 = Scheduled
+      });
+      
+      if (res.ok) {
+        toast.success('Session reassigned successfully!');
+        // Small delay to ensure database is updated
+        setTimeout(async () => {
+          // Refresh the assigned sessions list
+          const updatedRes = await fetch(`${API_URL}/data/dialysis_schedules/with-records`);
+          const updatedData = await updatedRes.json();
+          if (Array.isArray(updatedData)) {
+            const sorted = [...updatedData].sort((a, b) => {
+              const dateA = new Date(a.DS_Added_on || a.DS_Date || 0);
+              const dateB = new Date(b.DS_Added_on || b.DS_Date || 0);
+              if (dateA > dateB) return -1;
+              if (dateA < dateB) return 1;
+              if (a.DS_ID_PK && b.DS_ID_PK) {
+                return String(b.DS_ID_PK).localeCompare(String(a.DS_ID_PK));
+              }
+              return 0;
+            });
+            setAssignedSessions(sorted);
+          }
+        }, 500);
+      } else {
+        const errorData = await res.json();
+        toast.error(errorData.error || 'Failed to reassign session');
+      }
+    } catch (err) {
+      toast.error('Error reassigning session');
+    }
+  };
+
 
 
 
@@ -296,7 +399,19 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       return;
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+
+    // Function to get current date in IST in YYYY-MM-DD format
+function getTodayInIST() {
+  const now = new Date();
+  // IST offset = +5:30 hours = 330 minutes
+  const istOffset = 330; 
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const istTime = new Date(utc + istOffset * 60000);
+  return istTime.toISOString().slice(0, 10);
+}
+
+    // const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayInIST();
     const sessions = selectedRows.map(row => ({
       DS_P_ID_FK: patientId,
       DS_Date: row.date,
@@ -451,7 +566,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
                           const atCapacity = bookedCount >= unitsCount;
 
-                          console.log(`Row ID: ${row.id}, Date: ${row.date}, Time: ${row.time}, bookedCount: ${bookedCount}, unitsCount: ${unitsCount}, atCapacity: ${atCapacity}, isConflicting: ${row.isConflicting}`);
+
 
                           return {
                             ...row,
@@ -517,6 +632,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         )}
         {currentStep === 1 && (
           <>
+
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
             <div style={{ marginBottom: '1.5rem', maxWidth: '400px' }}>
               <DateRangeSelector
@@ -533,39 +649,150 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 { key: 'PatientName', header: 'Patient Name' },
                 { key: 'DS_Date', header: 'Date' },
                 { key: 'DS_Time', header: 'Time' },
+                { key: 'computed_status', header: 'Status' },
                 { key: 'DS_Added_on', header: 'Added On' },
-                // { key: 'Provider_FK', header: 'Provider' },
-                // { key: 'Outlet_FK', header: 'Outlet' }
+                { key: 'actions', header: 'Actions' }
               ]}
-              data={assignedSessions
-                .filter(row => {
-                  if (!fromDate && !toDate) return true;
-                  const rowDate = row.DS_Date;
-                  if (fromDate && rowDate < fromDate) return false;
-                  if (toDate && rowDate > toDate) return false;
-                  return true;
-                })
-                .map(row => ({
-                  ...row,
-                  //Uncomment to show patient name when USE_MSSQL=false
-                  // PatientName: (patients.find(p => p.id === row.DS_P_ID_FK)?.Name) || '',
+              data={(() => {
+                const filteredAndMappedData = assignedSessions
+                  .filter(row => {
+                    if (!fromDate && !toDate) return true;
+                    const rowDate = row.DS_Date;
+                    if (fromDate && rowDate < fromDate) return false;
+                    if (toDate && rowDate > toDate) return false;
+                    return true;
+                  })
+                  .map(row => {
+                  // Debug: Check what fields are available in the row data
+                  if (Math.random() < 0.1) { // Only log occasionally to avoid spam
+                    console.log('Available row fields:', Object.keys(row));
+                    console.log('DS_Time value:', row.DS_Time);
+                    console.log('DS_Added_on value:', row.DS_Added_on);
+                    console.log('DS_Added_On value:', row.DS_Added_On); // Check alternative casing
+                  }
+                  
+                  const sessionDate = new Date(row.DS_Date);
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  
+                  const isFutureDate = sessionDate > today;
+                  const isCompleted = row.computed_status === 'Completed';
+                  const isCancelled = row.computed_status === 'Cancelled' || row.DS_Status === 0;
+                  
 
-                  DS_Added_on: new Date(row.DS_Added_on).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    ...(isMSSQL
-                      ? {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true,
-                      }
-                      : {}),
-                  }),
-                }))
-              }
+                  
+                  // Determine which action to show (exclusive)
+                  let actionComponent = null;
+                  
+                  if (isFutureDate && !isCompleted && !isCancelled) {
+                    // Show Cancel button for future, non-completed, non-cancelled sessions
+                    actionComponent = (
+                      <CancelButton
+                        scheduleId={row.DS_ID_PK}
+                        onCancel={handleCancelSession}
+                        tooltip="Cancel this session"
+                      />
+                    );
+                  } else if (isFutureDate && isCancelled) {
+                    // Show Reassign button for future cancelled sessions
+                    actionComponent = (
+                      <ReassignButton
+                        scheduleId={row.DS_ID_PK}
+                        onReassign={handleReassignSession}
+                        tooltip="Reassign this session"
+                      />
+                    );
+                  }
+                  // If neither condition is met, no action is shown
+                  
+                  // Format date to YYYY-MM-DD
+                  const formatDate = (dateStr: string) => {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+                  };
+
+                  // Format time to HH:MM
+                  const formatTime = (timeStr: string) => {
+                    if (!timeStr) return '';
+                    // Debug time formatting
+                    if (Math.random() < 0.1) {
+                      console.log('Formatting time:', timeStr, 'Type:', typeof timeStr);
+                    }
+                    // Handle different time formats
+                    if (timeStr.includes('T')) {
+                      // If it's a full datetime string like "1970-01-01T12:00:00.000Z"
+                      // const date = new Date(timeStr);
+                      // return date.toTimeString().slice(0, 5); // Returns HH:MM
+
+                      return timeStr.split('T')[1]?.slice(0, 5) || '';
+
+
+                    } else if (timeStr.includes(':')) {
+                      // If it's already in HH:MM:SS or HH:MM format
+                      return timeStr.slice(0, 5); // Returns HH:MM
+                    }
+                    return timeStr;
+                  };
+
+                  return {
+                    ...row,
+                    // Show patient name - find from patients array
+                    PatientName: (patients.find(p => p.id == row.DS_P_ID_FK)?.Name) || `Patient ${row.DS_P_ID_FK}`,
+                    // Format date properly
+                    DS_Date: formatDate(row.DS_Date),
+                    // Format time properly - ensure we're using the DS_Time field
+                    DS_Time: formatTime(row.DS_Time || row.ds_time || row.time),
+                    computed_status: (
+                      <span style={{
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: 
+                          row.computed_status === 'Completed' ? '#4caf50' :
+                          row.computed_status === 'Cancelled' ? '#f44336' :
+                          row.computed_status === 'Initiated' ? '#ff9800' :
+                          row.computed_status === 'Arrived' ? '#2196f3' :
+                          row.computed_status === 'Missed' ? '#9c27b0' :
+                          row.DS_Status === 0 ? '#f44336' : // Fallback for cancelled
+                          '#757575' // Scheduled or default
+                      }}>
+                        {row.computed_status || (row.DS_Status === 0 ? 'Cancelled' : 'Scheduled')}
+                      </span>
+                    ),
+                    actions: actionComponent,
+                    DS_Added_on: new Date(row.DS_Added_on || row.DS_Added_On).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      ...(isMSSQL
+                        ? {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true,
+                        }
+                        : {}),
+                    }),
+                  };
+                });
+                
+                // Debug: Log the first few mapped records to see what data is being passed to the table
+                if (filteredAndMappedData.length > 0) {
+                  console.log('Sample mapped data for table:', {
+                    DS_Time: filteredAndMappedData[0].DS_Time,
+                    DS_Added_on: filteredAndMappedData[0].DS_Added_on,
+                    PatientName: filteredAndMappedData[0].PatientName,
+                    allKeys: Object.keys(filteredAndMappedData[0])
+                  });
+                }
+                
+                return filteredAndMappedData;
+              })()}
             />
+
           </>
         )}
       </PageContainer>

@@ -7,6 +7,7 @@ import {
   getUnits, addUnit, updateUnit, deleteUnit,
   getVascularAccesses, addVascularAccess, updateVascularAccess, deleteVascularAccess,
   getSessionTimes, addSessionTime, updateSessionTime, deleteSessionTime,
+  updateDialysisScheduleStatus, checkScheduleConflict, getScheduleWithRelatedRecords, getAllSchedulesWithRelatedRecords,
   getDialyzerTypes, addDialyzerType, updateDialyzerType, deleteDialyzerType,
   getSchedulingLookup, addSchedulingLookup, updateSchedulingLookup, deleteSchedulingLookup
 } from '../controllers/dataController.js';
@@ -765,5 +766,103 @@ router.put('/session_times', updateSessionTime);
  *         description: Session time not found
  */
 router.delete('/session_times/:id', deleteSessionTime);
+
+/**
+ * @swagger
+ * /api/data/dialysis_schedules/{scheduleId}/status:
+ *   put:
+ *     summary: Update dialysis schedule status
+ *     parameters:
+ *       - in: path
+ *         name: scheduleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The schedule ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: integer
+ *                 enum: [0, 10]
+ *                 description: 0 for cancelled, 10 for scheduled
+ *     responses:
+ *       200:
+ *         description: Schedule status updated successfully
+ *       400:
+ *         description: Invalid status value
+ *       404:
+ *         description: Schedule not found
+ */
+router.put('/dialysis_schedules/:scheduleId/status', updateDialysisScheduleStatus);
+
+/**
+ * @swagger
+ * /api/data/dialysis_schedules/check-conflict:
+ *   get:
+ *     summary: Check for schedule conflicts
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Date in YYYY-MM-DD format
+ *       - in: query
+ *         name: time
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Time in HH:MM format
+ *       - in: query
+ *         name: unitId
+ *         schema:
+ *           type: string
+ *         description: Unit ID (optional)
+ *     responses:
+ *       200:
+ *         description: Conflict check result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 hasConflict:
+ *                   type: boolean
+ */
+router.get('/dialysis_schedules/check-conflict', checkScheduleConflict);
+
+/**
+ * @swagger
+ * /api/data/dialysis_schedules/{scheduleId}/with-records:
+ *   get:
+ *     summary: Get schedule with related records
+ *     parameters:
+ *       - in: path
+ *         name: scheduleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The schedule ID
+ *     responses:
+ *       200:
+ *         description: Schedule with related records
+ */
+router.get('/dialysis_schedules/:scheduleId/with-records', getScheduleWithRelatedRecords);
+
+/**
+ * @swagger
+ * /api/data/dialysis_schedules/with-records:
+ *   get:
+ *     summary: Get all schedules with related records
+ *     responses:
+ *       200:
+ *         description: All schedules with related records and computed status
+ */
+router.get('/dialysis_schedules/with-records', getAllSchedulesWithRelatedRecords);
 
 export default router; 

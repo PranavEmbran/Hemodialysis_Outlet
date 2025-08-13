@@ -79,7 +79,7 @@ export const getPredialysisRecords = async (): Promise<any[]> => {
     `);
     // console.log(result.recordset);
     return result.recordset.map((row: any) => ({
-      
+
       PreDR_ID_PK: row.PreDR_ID_PK || row.ID || row.SA_ID_PK_FK,
       PreDR_DS_ID_FK: row.PreDR_DS_ID_FK,
       PreDR_P_ID_FK: row.PreDR_P_ID_FK,
@@ -89,11 +89,11 @@ export const getPredialysisRecords = async (): Promise<any[]> => {
       PreDR_Vitals_Weight: row.PreDR_Vitals_Weight,
       PreDR_Notes: row.PreDR_Notes,
       date: row.DS_Date
-      ? row.DS_Date.toISOString().split('T')[0]
-      : null,
-    time: row.DS_Time
-      ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
-      : null,
+        ? row.DS_Date.toISOString().split('T')[0]
+        : null,
+      time: row.DS_Time
+        ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
+        : null,
     }));
   } catch (err) {
     console.error('MSSQL getPredialysisRecords error:', err);
@@ -228,15 +228,15 @@ export const addStartDialysisRecord = async (record: any) => {
       const SDR_Notes = record.SDR_Notes ?? '';
 
       // 3. Insert into Start_Dialysis_Records
-console.log('#################### Inserting into Start_Dialysis_Records:', {
-  SDR_DS_ID_FK,
-  SDR_P_ID_FK,
-  SDR_Dialysis_Unit,
-  SDR_Start_Time,
-  SDR_Vascular_Access,
-  SDR_Dialyzer_Type,
-  SDR_Notes,
-});
+      console.log('#################### Inserting into Start_Dialysis_Records:', {
+        SDR_DS_ID_FK,
+        SDR_P_ID_FK,
+        SDR_Dialysis_Unit,
+        SDR_Start_Time,
+        SDR_Vascular_Access,
+        SDR_Dialyzer_Type,
+        SDR_Notes,
+      });
 
       const request = transaction.request();
       await request
@@ -392,22 +392,22 @@ export const addPostDialysisRecord = async (record: any) => {
         //       @PostDR_Outlet_FK
         //     );
         //   `);
-      await request
-        .input('PostDR_DS_ID_FK', sql.BigInt, Number(PostDR_DS_ID_FK))
-        .input('PostDR_P_ID_FK', sql.BigInt, Number(PostDR_P_ID_FK))
-        .input('PostDR_Vitals_BP', sql.Int, PostDR_Vitals_BP)
-        .input('PostDR_Vitals_HeartRate', sql.Int, PostDR_Vitals_HeartRate)
-        .input('PostDR_Vitals_Temperature', sql.Decimal(6, 3), PostDR_Vitals_Temperature)
-        .input('PostDR_Vitals_Weight', sql.Int, PostDR_Vitals_Weight)
-        .input('PostDR_Notes', sql.VarChar(sql.MAX), PostDR_Notes)
-        // .input('PostDR_Status', sql.Int, PostDR_Status)
-        // .input('PostDR_Added_By', sql.VarChar(100), PostDR_Added_By)
-        // .input('PostDR_Added_On', sql.DateTime, PostDR_Added_On)
-        // .input('PostDR_Modified_By', sql.VarChar(100), PostDR_Modified_By)
-        // .input('PostDR_Modified_On', sql.DateTime, PostDR_Modified_On)
-        // .input('PostDR_Provider_FK', sql.BigInt, PostDR_Provider_FK)
-        // .input('PostDR_Outlet_FK', sql.BigInt, PostDR_Outlet_FK)
-        .query(`
+        await request
+          .input('PostDR_DS_ID_FK', sql.BigInt, Number(PostDR_DS_ID_FK))
+          .input('PostDR_P_ID_FK', sql.BigInt, Number(PostDR_P_ID_FK))
+          .input('PostDR_Vitals_BP', sql.Int, PostDR_Vitals_BP)
+          .input('PostDR_Vitals_HeartRate', sql.Int, PostDR_Vitals_HeartRate)
+          .input('PostDR_Vitals_Temperature', sql.Decimal(6, 3), PostDR_Vitals_Temperature)
+          .input('PostDR_Vitals_Weight', sql.Int, PostDR_Vitals_Weight)
+          .input('PostDR_Notes', sql.VarChar(sql.MAX), PostDR_Notes)
+          // .input('PostDR_Status', sql.Int, PostDR_Status)
+          // .input('PostDR_Added_By', sql.VarChar(100), PostDR_Added_By)
+          // .input('PostDR_Added_On', sql.DateTime, PostDR_Added_On)
+          // .input('PostDR_Modified_By', sql.VarChar(100), PostDR_Modified_By)
+          // .input('PostDR_Modified_On', sql.DateTime, PostDR_Modified_On)
+          // .input('PostDR_Provider_FK', sql.BigInt, PostDR_Provider_FK)
+          // .input('PostDR_Outlet_FK', sql.BigInt, PostDR_Outlet_FK)
+          .query(`
           INSERT INTO PostDialysis_Records (
             PostDR_DS_ID_FK,
             PostDR_P_ID_FK,
@@ -523,11 +523,11 @@ export const getPostDialysisRecords = async (): Promise<any[]> => {
       PostDR_Vitals_Weight: row.PostDR_Vitals_Weight,
       PostDR_Notes: row.PostDR_Notes,
       date: row.DS_Date
-      ? row.DS_Date.toISOString().split('T')[0]
-      : null,
-    time: row.DS_Time
-      ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
-      : null,
+        ? row.DS_Date.toISOString().split('T')[0]
+        : null,
+      time: row.DS_Time
+        ? row.DS_Time.toISOString().substring(11, 16) // "HH:mm"
+        : null,
     }));
   } catch (err) {
     console.error('MSSQL getPostDialysisRecords error:', err);
@@ -688,7 +688,7 @@ export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promi
             .input('DS_P_ID_FK', sql.BigInt, DS_P_ID_FK)
             .input('DS_Date', sql.Date, DS_Date)
 
-            
+
             // .input(
             //   'DS_Time',
             //   sql.Time,
@@ -704,15 +704,15 @@ export const addSchedulesAssigned = async (sessions: DialysisSchedules[]): Promi
                   Object.prototype.toString.call(DS_Time) === '[object Date]'
                     ? new Date(DS_Time)
                     : new Date(`1970-01-01T${formattedTime}`);
-            
+
                 // Add 5 hours and 30 minutes
                 baseTime.setHours(baseTime.getHours() + 5);
                 baseTime.setMinutes(baseTime.getMinutes() + 30);
-            
+
                 return baseTime;
               })()
             )
-            
+
 
 
 
@@ -891,20 +891,20 @@ export const updateStartDialysisRecord = async (record: any) => {
         // }
         if (updateFields.SDR_Start_Time !== undefined) {
           let timeValue = updateFields.SDR_Start_Time;
-        
+
           // Ensure full HH:mm:ss format
           if (/^\d{2}:\d{2}$/.test(timeValue)) {
             timeValue = `${timeValue}:00`;
           }
-        
+
           // Use VARCHAR to avoid driver parse issues
           request.input('SDR_Start_Time', sql.VarChar, timeValue);
           setClause.push('SDR_Start_Time = @SDR_Start_Time');
         }
-        
-        
-        
-        
+
+
+
+
 
 
 
@@ -1389,6 +1389,111 @@ export const deleteSessionTime = async (id: string): Promise<boolean> => {
   }
 };
 
+// --- Dialysis Schedules Functions ---
+export const updateDialysisScheduleStatus = async (scheduleId: string, status: number): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('DS_ID_PK', sql.Int, scheduleId)
+      .input('DS_Status', sql.Int, status)
+      .input('DS_Modified_on', sql.DateTime, new Date())
+      .query(`
+        UPDATE Dialysis_Schedules 
+        SET DS_Status = @DS_Status, DS_Modified_on = @DS_Modified_on
+        OUTPUT INSERTED.*
+        WHERE DS_ID_PK = @DS_ID_PK
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Schedule not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating schedule status:', error);
+    throw error;
+  }
+};
+
+export const checkScheduleConflict = async (date: string, time: string, unitId?: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('DS_Date', sql.Date, date)
+      .input('DS_Time', sql.VarChar, time)
+      .query(`
+        SELECT COUNT(*) as count
+        FROM Dialysis_Schedules 
+        WHERE DS_Date = @DS_Date 
+        AND DS_Time = @DS_Time 
+        AND DS_Status = 10
+      `);
+    return result.recordset[0].count > 0;
+  } catch (error) {
+    console.error('Error checking schedule conflict:', error);
+    throw error;
+  }
+};
+
+export const getScheduleWithRelatedRecords = async (scheduleId?: string): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const query = scheduleId
+      ? `
+        SELECT 
+          ds.*,
+          CASE 
+            WHEN ds.DS_Status = 0 THEN 'Cancelled'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL AND sdr.SDR_ID_PK IS NOT NULL AND podr.PostDR_ID_PK IS NOT NULL THEN 'Completed'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL AND sdr.SDR_ID_PK IS NOT NULL THEN 'Initiated'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL THEN 'Arrived'
+            WHEN ds.DS_Date < CAST(GETDATE() AS DATE) AND ds.DS_Status = 10 THEN 'Missed'
+            ELSE 'Scheduled'
+          END as computed_status,
+          pdr.PreDR_ID_PK as has_predialysis,
+          sdr.SDR_ID_PK as has_start_dialysis,
+          podr.PostDR_ID_PK as has_post_dialysis
+        FROM Dialysis_Schedules ds
+        LEFT JOIN PreDialysis_Records pdr ON ds.DS_ID_PK = pdr.PreDR_DS_ID_FK AND pdr.PreDR_Status = 10
+        LEFT JOIN Start_Dialysis_Records sdr ON ds.DS_ID_PK = sdr.SDR_DS_ID_FK AND sdr.SDR_Status = 10
+        LEFT JOIN PostDialysis_Records podr ON ds.DS_ID_PK = podr.PostDR_DS_ID_FK AND podr.PostDR_Status = 10
+        WHERE ds.DS_ID_PK = @DS_ID_PK
+      `
+      : `
+        SELECT 
+          ds.*,
+          CASE 
+            WHEN ds.DS_Status = 0 THEN 'Cancelled'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL AND sdr.SDR_ID_PK IS NOT NULL AND podr.PostDR_ID_PK IS NOT NULL THEN 'Completed'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL AND sdr.SDR_ID_PK IS NOT NULL THEN 'Initiated'
+            WHEN pdr.PreDR_ID_PK IS NOT NULL THEN 'Arrived'
+            WHEN ds.DS_Date < CAST(GETDATE() AS DATE) AND ds.DS_Status = 10 THEN 'Missed'
+            ELSE 'Scheduled'
+          END as computed_status,
+          pdr.PreDR_ID_PK as has_predialysis,
+          sdr.SDR_ID_PK as has_start_dialysis,
+          podr.PostDR_ID_PK as has_post_dialysis
+        FROM Dialysis_Schedules ds
+        LEFT JOIN PreDialysis_Records pdr ON ds.DS_ID_PK = pdr.PreDR_DS_ID_FK AND pdr.PreDR_Status = 10
+        LEFT JOIN Start_Dialysis_Records sdr ON ds.DS_ID_PK = sdr.SDR_DS_ID_FK AND sdr.SDR_Status = 10
+        LEFT JOIN PostDialysis_Records podr ON ds.DS_ID_PK = podr.PostDR_DS_ID_FK AND podr.PostDR_Status = 10
+        ORDER BY ds.DS_Date DESC, ds.DS_Time DESC
+      `;
+
+    console.log('Executing query:', query);
+
+    const request = pool.request();
+    if (scheduleId) {
+      request.input('DS_ID_PK', sql.Int, scheduleId);
+    }
+
+    const result = await request.query(query);
+    console.log('Query result sample:', result.recordset.slice(0, 2));
+    return result.recordset;
+  } catch (error) {
+    console.error('Error getting schedule with related records:', error);
+    throw error;
+  }
+};
+
 export const deleteVascularAccess = async (id: number): Promise<boolean> => {
   try {
     const pool = await sql.connect(config);
@@ -1421,7 +1526,7 @@ export const addDialyzerType = async (type: any): Promise<any> => {
       .input('DTL_Dialyzer_Name', sql.VarChar, type.DTL_Dialyzer_Name)
       .input('DTL_Membrane_Type', sql.VarChar, type.DTL_Membrane_Type)
       .input('DTL_Flux_Type', sql.VarChar, type.DTL_Flux_Type)
-      .input('DTL_Surface_Area', sql.Decimal(4,2), type.DTL_Surface_Area)
+      .input('DTL_Surface_Area', sql.Decimal(4, 2), type.DTL_Surface_Area)
       .query(`
         INSERT INTO Dialyzer_Type_Lookup (DTL_Dialyzer_Name, DTL_Membrane_Type, DTL_Flux_Type, DTL_Surface_Area)
         OUTPUT INSERTED.*
@@ -1443,7 +1548,7 @@ export const updateDialyzerType = async (typeData: any): Promise<any> => {
       .input('DTL_Dialyzer_Name', sql.VarChar, rest.DTL_Dialyzer_Name)
       .input('DTL_Membrane_Type', sql.VarChar, rest.DTL_Membrane_Type)
       .input('DTL_Flux_Type', sql.VarChar, rest.DTL_Flux_Type)
-      .input('DTL_Surface_Area', sql.Decimal(4,2), rest.DTL_Surface_Area)
+      .input('DTL_Surface_Area', sql.Decimal(4, 2), rest.DTL_Surface_Area)
       .query(`
         UPDATE Dialyzer_Type_Lookup
         SET 
@@ -1494,10 +1599,10 @@ export const addSchedulingLookup = async (lookup: any): Promise<any> => {
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('SL_No_of_units', sql.Int, lookup.SL_No_of_units)
-      .input('SL_Working_hrs', sql.Decimal(4,2), lookup.SL_Working_hrs)
+      .input('SL_Working_hrs', sql.Decimal(4, 2), lookup.SL_Working_hrs)
       .input('SL_Working_days', sql.Int, lookup.SL_Working_days)
-      .input('SL_Pre_dialysis_time', sql.Decimal(4,2), lookup.SL_Pre_dialysis_time)
-      .input('SL_Dialysis_Session_Time', sql.Decimal(4,2), lookup.SL_Dialysis_Session_Time)
+      .input('SL_Pre_dialysis_time', sql.Decimal(4, 2), lookup.SL_Pre_dialysis_time)
+      .input('SL_Dialysis_Session_Time', sql.Decimal(4, 2), lookup.SL_Dialysis_Session_Time)
       .query(`
         INSERT INTO Scheduling_Lookup (
           SL_No_of_units,
@@ -1528,10 +1633,10 @@ export const updateSchedulingLookup = async (lookupData: any): Promise<any> => {
     const { id, ...rest } = lookupData;
     const result = await pool.request()
       .input('id', sql.Int, id)
-      .input('SL_Working_hrs', sql.Decimal(4,2), rest.SL_Working_hrs)
+      .input('SL_Working_hrs', sql.Decimal(4, 2), rest.SL_Working_hrs)
       .input('SL_Working_days', sql.Int, rest.SL_Working_days)
-      .input('SL_Pre_dialysis_time', sql.Decimal(4,2), rest.SL_Pre_dialysis_time)
-      .input('SL_Dialysis_Session_Time', sql.Decimal(4,2), rest.SL_Dialysis_Session_Time)
+      .input('SL_Pre_dialysis_time', sql.Decimal(4, 2), rest.SL_Pre_dialysis_time)
+      .input('SL_Dialysis_Session_Time', sql.Decimal(4, 2), rest.SL_Dialysis_Session_Time)
       .query(`
         UPDATE Scheduling_Lookup 
         SET
