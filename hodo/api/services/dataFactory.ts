@@ -39,6 +39,11 @@ export const addVascularAccess = (service as any).addVascularAccess;
 export const updateVascularAccess = (service as any).updateVascularAccess;
 export const deleteVascularAccess = (service as any).deleteVascularAccess;
 
+export const getSessionTimes = (service as any).getSessionTimes;
+export const addSessionTime = (service as any).addSessionTime;
+export const updateSessionTime = (service as any).updateSessionTime;
+export const deleteSessionTime = (service as any).deleteSessionTime;
+
 export const getDialyzerTypes = (service as any).getDialyzerTypes;
 export const addDialyzerType = (service as any).addDialyzerType;
 export const updateDialyzerType = (service as any).updateDialyzerType;

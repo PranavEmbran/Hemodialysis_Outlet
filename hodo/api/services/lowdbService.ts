@@ -446,6 +446,46 @@ export const deleteVascularAccess = async (id: string): Promise<boolean> => {
   return true;
 };
 
+// --- Session Times Lookup Functions ---
+export const getSessionTimes = async (): Promise<any[]> => {
+  await initDB();
+  await db.read();
+  return db.data?.session_times || [];
+};
+
+export const addSessionTime = async (sessionTime: any): Promise<any> => {
+  await initDB();
+  await db.read();
+  if (!db.data.session_times) db.data.session_times = [];
+  if (!sessionTime.ST_ID_PK) sessionTime.ST_ID_PK = Date.now();
+  db.data.session_times.push(sessionTime);
+  await db.write();
+  return sessionTime;
+};
+
+export const updateSessionTime = async (sessionTimeData: any): Promise<any> => {
+  await initDB();
+  await db.read();
+  if (!db.data.session_times) db.data.session_times = [];
+  const { ST_ID_PK, ...rest } = sessionTimeData;
+  const idx = db.data.session_times.findIndex((st: any) => st.ST_ID_PK == ST_ID_PK);
+  if (idx === -1) throw new Error('Session time not found');
+  db.data.session_times[idx] = { ...db.data.session_times[idx], ...rest, ST_ID_PK };
+  await db.write();
+  return db.data.session_times[idx];
+};
+
+export const deleteSessionTime = async (id: string): Promise<boolean> => {
+  await initDB();
+  await db.read();
+  if (!db.data.session_times) db.data.session_times = [];
+  const idx = db.data.session_times.findIndex((st: any) => st.ST_ID_PK == id);
+  if (idx === -1) return false;
+  db.data.session_times.splice(idx, 1);
+  await db.write();
+  return true;
+};
+
 // --- Dialyzer Types Lookup Functions ---
 export const getDialyzerTypes = async (): Promise<any[]> => {
   await initDB();

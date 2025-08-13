@@ -17,6 +17,7 @@ import HD_Master from './pages/Hemodialysis_Master';
 import UnitsManagement, { UnitsProvider } from './pages/UnitsManagement';
 import VascularAccessLookup, { AccessTypesProvider } from './pages/VascularAccessLookup';
 import DialyzerTypeLookup, { DialyzerTypeProvider } from './pages/DialyzerTypeLookup';
+import SessionTimesLookup, { SessionTimesProvider } from './pages/SessionTimesLookup';
 import Predialysis_Record from './pages/Predialysis_Record';
 import Start_Dialysis_Record from './pages/Start_Dialysis_Record';
 import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
       <UnitsProvider>
         <AccessTypesProvider>
           <DialyzerTypeProvider>
+            <SessionTimesProvider>
             <Router>
               <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#d9e0e7' }}>
 
@@ -55,6 +57,7 @@ const App: React.FC = () => {
                       <Route path="/units-management" element={<UnitsManagement sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/vascular-access-lookup" element={<VascularAccessLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/dialyzer-type-lookup" element={<DialyzerTypeLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                      <Route path="/session-times-lookup" element={<SessionTimesLookup sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       {/* <Route path="/predialysis-record" element={<Predialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
                       <Route path="/predialysis-record" element={<Predialysis_Record />} />
                       {/* <Route path="/start-dialysis-record" element={<Start_Dialysis_Record sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} /> */}
@@ -71,6 +74,7 @@ const App: React.FC = () => {
               </div>
               <ToastContainer position="top-right" autoClose={1500} />
             </Router >
+            </SessionTimesProvider>
           </DialyzerTypeProvider>
         </AccessTypesProvider>
       </UnitsProvider>

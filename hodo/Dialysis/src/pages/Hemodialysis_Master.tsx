@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUnits } from './UnitsManagement';
 import { useAccessTypes } from './VascularAccessLookup';
 import { useDialyzerTypes } from './DialyzerTypeLookup';
+import { useSessionTimes } from './SessionTimesLookup';
 import { API_URL } from '../config';
 import { InputField, SelectField } from '../components/forms';
 import { toast } from 'react-toastify';
@@ -340,6 +341,7 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
   const { units } = useUnits();
   const { accesses: accessTypes } = useAccessTypes();
   const { dialyzerTypes } = useDialyzerTypes();
+  const { sessionTimes } = useSessionTimes();
   const [data, setData] = useState(initialSchedulingLookup);
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Record<string, any>>({});
@@ -468,6 +470,13 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                 <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{dialyzerTypes.length}</div>
                 <ButtonWithGradient onClick={() => navigate('/dialyzer-type-lookup')}>
                   Go to Dialyzer Type Lookup
+                </ButtonWithGradient>
+              </div>
+              <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 220 }}>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Session Times</div>
+                <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{sessionTimes.length}</div>
+                <ButtonWithGradient onClick={() => navigate('/session-times-lookup')}>
+                  Go to Session Times Lookup
                 </ButtonWithGradient>
               </div>
             </div>

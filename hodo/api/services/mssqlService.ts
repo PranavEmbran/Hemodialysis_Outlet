@@ -1319,6 +1319,76 @@ export const updateVascularAccess = async (accessData: any): Promise<any> => {
   }
 };
 
+// --- Session Times Lookup Functions ---
+export const getSessionTimes = async (): Promise<any[]> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query('SELECT * FROM Session_Times_Lookup where ST_Status = 10');
+    return result.recordset;
+  } catch (error) {
+    console.error('Error fetching session times:', error);
+    throw error;
+  }
+};
+
+export const addSessionTime = async (sessionTime: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('ST_Session_Name', sql.VarChar, sessionTime.ST_Session_Name)
+      .input('ST_Start_Time', sql.VarChar, sessionTime.ST_Start_Time)
+      .query(`
+        INSERT INTO Session_Times_Lookup (ST_Session_Name, ST_Start_Time)
+        OUTPUT INSERTED.*
+        VALUES (@ST_Session_Name, @ST_Start_Time)
+      `);
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error adding session time:', error);
+    throw error;
+  }
+};
+
+export const updateSessionTime = async (sessionTimeData: any): Promise<any> => {
+  try {
+    const pool = await sql.connect(config);
+    const { ST_ID_PK, ...rest } = sessionTimeData;
+    const result = await pool.request()
+      .input('ST_ID_PK', sql.Int, ST_ID_PK)
+      .input('ST_Session_Name', sql.VarChar, rest.ST_Session_Name)
+      .input('ST_Start_Time', sql.VarChar, rest.ST_Start_Time)
+      .query(`
+        UPDATE Session_Times_Lookup 
+        SET ST_Session_Name = @ST_Session_Name, ST_Start_Time = @ST_Start_Time
+        OUTPUT INSERTED.*
+        WHERE ST_ID_PK = @ST_ID_PK
+      `);
+    if (result.recordset.length === 0) {
+      throw new Error('Session time not found');
+    }
+    return result.recordset[0];
+  } catch (error) {
+    console.error('Error updating session time:', error);
+    throw error;
+  }
+};
+
+export const deleteSessionTime = async (id: string): Promise<boolean> => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('ST_ID_PK', sql.Int, id)
+      .query(`
+        DELETE FROM Session_Times_Lookup 
+        WHERE ST_ID_PK = @ST_ID_PK
+      `);
+    return result.rowsAffected[0] > 0;
+  } catch (error) {
+    console.error('Error deleting session time:', error);
+    throw error;
+  }
+};
+
 export const deleteVascularAccess = async (id: number): Promise<boolean> => {
   try {
     const pool = await sql.connect(config);

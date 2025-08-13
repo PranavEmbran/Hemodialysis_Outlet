@@ -10,12 +10,15 @@ import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
 import DateRangeSelector from '../components/DateRangeSelector';
 import { API_URL } from '../config';
+import { useSessionTimes } from './SessionTimesLookup';
 
-const sessionOptions = [
-  { label: '1st', value: '1st' },
-  { label: '2nd', value: '2nd' },
-  { label: '3rd', value: '3rd' },
-];
+// const sessionOptions = [
+//   { label: '1st', value: '1st' },
+//   { label: '2nd', value: '2nd' },
+//   { label: '3rd', value: '3rd' },
+// ];
+
+// Session options will be dynamically generated from sessionTimes lookup
 const intervalOptions = [
   { label: 'Daily', value: 'daily' },
   { label: 'Alternate Days', value: 'alternate' },
@@ -51,6 +54,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   const [unitsCount, setUnitsCount] = useState<number>(0);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const { sessionTimes } = useSessionTimes();
 
   const [formKey, setFormKey] = useState(0);// Used to force re-render of Formik form to fully reset all fields including custom select inputs
 
@@ -123,7 +127,9 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   const initialValues = {
     patient: '',
     interval: 'daily',
-    sessionPreferred: '1st',
+    // sessionPreferred: '1st',
+
+    sessionPreferred: sessionTimes.length > 0 ? sessionTimes[0].ST_Session_Name : '',
     numSessions: '5',
     fromDate: today,
     tillDate: ''
@@ -201,10 +207,16 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i * (interval === 'alternate' ? 2 : 1));
       if (endDate && date > endDate) break;
+      // time: sessionPreferred === '1st' ? '08:00' : sessionPreferred === '2nd' ? '12:00' : '16:00',
+
+      // Find the selected session time from lookup table
+      const selectedSessionTime = sessionTimes.find(st => st.ST_Session_Name === sessionPreferred);
+      const timeToUse = selectedSessionTime ? selectedSessionTime.ST_Start_Time : '08:00';
+      
       rows.push({
         id: count + 1,
         date: date.toISOString().slice(0, 10),
-        time: sessionPreferred === '1st' ? '08:00' : sessionPreferred === '2nd' ? '12:00' : '16:00',
+        time: timeToUse,
         dayName: getDayName(date.toISOString().slice(0, 10)),
         monthName: getMonthName(date.toISOString().slice(0, 10)),
         nthSession: sessionPreferred,
@@ -358,10 +370,20 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                     <SelectField
                       label="Session Preferred"
                       name="sessionPreferred"
-                      options={sessionOptions}
+                      // options={sessionOptions}
+
+                      options={sessionTimes.map(st => ({ 
+                        label: `${st.ST_Session_Name} (${st.ST_Start_Time})`, 
+                        value: st.ST_Session_Name 
+                      }))}
                       required
                       placeholder="Select Session"
-                      defaultValue={sessionOptions[0]}
+                      // defaultValue={sessionOptions[0]}
+
+                      defaultValue={sessionTimes.length > 0 ? { 
+                        label: `${sessionTimes[0].ST_Session_Name} (${sessionTimes[0].ST_Start_Time})`, 
+                        value: sessionTimes[0].ST_Session_Name 
+                      } : undefined}
                     />
                     <InputField
                       label="Number of Sessions"

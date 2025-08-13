@@ -312,3 +312,68 @@ GO
 
 
 
+
+-- ========================================
+-- Table: Session_Times_Lookup
+-- Purpose: Stores session times for dialysis scheduling
+-- ========================================
+
+IF NOT EXISTS (
+    SELECT 1 FROM sysobjects
+    WHERE name = 'Session_Times_Lookup'
+      AND type = 'U'
+)
+BEGIN
+    CREATE TABLE dbo.Session_Times_Lookup (
+        ST_ID_PK INT IDENTITY(1,1) PRIMARY KEY,
+        ST_Session_Name NVARCHAR(50) NOT NULL,
+        ST_Start_Time NVARCHAR(10) NOT NULL,
+        ST_Status INT DEFAULT 10,
+        ST_Created_Date DATETIME DEFAULT GETDATE(),
+        ST_Modified_Date DATETIME DEFAULT GETDATE()
+    );
+
+    -- Insert default session times
+    INSERT INTO Session_Times_Lookup (ST_Session_Name, ST_Start_Time, ST_Status) VALUES
+    ('1st', '08:00', 10),
+    ('2nd', '12:00', 10),
+    ('3rd', '16:00', 10);
+
+    -- Add indexes for better performance
+    CREATE INDEX IX_Session_Times_Lookup_Status ON Session_Times_Lookup(ST_Status);
+    CREATE INDEX IX_Session_Times_Lookup_Session_Name ON Session_Times_Lookup(ST_Session_Name);
+END
+GO
+
+
+-- ========================================
+-- Script: 00_Session_Times_Lookup.sql
+-- Purpose: Create Session_Times_Lookup table and insert default session times
+-- ========================================
+
+IF OBJECT_ID('dbo.Session_Times_Lookup', 'U') IS NOT NULL
+BEGIN
+    PRINT 'Dropping existing table dbo.Session_Times_Lookup...';
+    DROP TABLE dbo.Session_Times_Lookup;
+END
+GO
+
+PRINT 'Creating table dbo.Session_Times_Lookup...';
+CREATE TABLE dbo.Session_Times_Lookup (
+    ST_ID_PK INT IDENTITY(1,1) PRIMARY KEY,
+    ST_Session_Name NVARCHAR(50) NOT NULL,
+    ST_Start_Time NVARCHAR(10) NOT NULL,
+    ST_Status INT DEFAULT 10,
+    ST_Created_Date DATETIME DEFAULT GETDATE(),
+    ST_Modified_Date DATETIME DEFAULT GETDATE()
+);
+GO
+
+PRINT 'Inserting default session times...';
+INSERT INTO dbo.Session_Times_Lookup (ST_Session_Name, ST_Start_Time, ST_Status) VALUES
+('1st', '08:00', 10),
+('2nd', '12:00', 10),
+('3rd', '16:00', 10);
+GO
+
+PRINT 'Script execution completed successfully.';

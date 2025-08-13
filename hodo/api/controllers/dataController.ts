@@ -16,6 +16,10 @@ import {
   addVascularAccess as addVascularAccessService,
   updateVascularAccess as updateVascularAccessService,
   deleteVascularAccess as deleteVascularAccessService,
+  getSessionTimes as getSessionTimesService,
+  addSessionTime as addSessionTimeService,
+  updateSessionTime as updateSessionTimeService,
+  deleteSessionTime as deleteSessionTimeService,
   getDialyzerTypes as getDialyzerTypesService,
   addDialyzerType as addDialyzerTypeService,
   updateDialyzerType as updateDialyzerTypeService,
@@ -467,6 +471,50 @@ export const deleteDialyzerType = async (req: Request, res: Response) => {
     res.json({ message: 'Dialyzer type deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete dialyzer type' });
+  }
+};
+
+// --- Session Times CRUD ---
+export const getSessionTimes = async (req: Request, res: Response) => {
+  try {
+    const sessionTimes = await getSessionTimesService();
+    res.json(sessionTimes);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch session times' });
+  }
+};
+
+export const addSessionTime = async (req: Request, res: Response) => {
+  try {
+    const sessionTime = await addSessionTimeService(req.body);
+    res.json(sessionTime);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add session time' });
+  }
+};
+
+export const updateSessionTime = async (req: Request, res: Response) => {
+  try {
+    const sessionTime = await updateSessionTimeService(req.body);
+    res.json(sessionTime);
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Session time not found') {
+      res.status(404).json({ error: 'Session time not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to update session time' });
+    }
+  }
+};
+
+export const deleteSessionTime = async (req: Request, res: Response) => {
+  try {
+    const deleted = await deleteSessionTimeService(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Session time not found' });
+    }
+    res.json({ message: 'Session time deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete session time' });
   }
 };
 

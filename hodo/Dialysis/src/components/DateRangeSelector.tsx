@@ -23,7 +23,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const handleFromDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFromDate = e.target.value;
     onFromDateChange(newFromDate);
-    
+
     // If from date is after to date, update to date to match from date
     if (toDate && newFromDate > toDate) {
       onToDateChange(newFromDate);
@@ -33,7 +33,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newToDate = e.target.value;
     onToDateChange(newToDate);
-    
+
     // If to date is before from date, update from date to match to date
     if (fromDate && newToDate < fromDate) {
       onFromDateChange(newToDate);
@@ -58,7 +58,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             max={toDate || undefined}
           />
         </div>
-        <div className="date-range-separator">to</div>
+        <div className="date-range-separator">__</div>
         <div className="date-input-group">
           <label className="date-input-label">To</label>
           <input

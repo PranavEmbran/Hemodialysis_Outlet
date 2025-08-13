@@ -6,6 +6,7 @@ import {
   updatePredialysisRecord, updateStartDialysisRecord, updatePostDialysisRecord,
   getUnits, addUnit, updateUnit, deleteUnit,
   getVascularAccesses, addVascularAccess, updateVascularAccess, deleteVascularAccess,
+  getSessionTimes, addSessionTime, updateSessionTime, deleteSessionTime,
   getDialyzerTypes, addDialyzerType, updateDialyzerType, deleteDialyzerType,
   getSchedulingLookup, addSchedulingLookup, updateSchedulingLookup, deleteSchedulingLookup
 } from '../controllers/dataController.js';
@@ -688,5 +689,81 @@ router.put('/scheduling_lookup', updateSchedulingLookup);
  *         description: Scheduling lookup not found
  */
 router.delete('/scheduling_lookup/:id', deleteSchedulingLookup);
+
+/**
+ * @swagger
+ * /api/data/session_times:
+ *   get:
+ *     summary: Get all session times
+ *     responses:
+ *       200:
+ *         description: List of session times
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SessionTime'
+ */
+router.get('/session_times', getSessionTimes);
+/**
+ * @swagger
+ * /api/data/session_times:
+ *   post:
+ *     summary: Add a session time
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SessionTimeInput'
+ *     responses:
+ *       201:
+ *         description: Session time added
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SessionTime'
+ */
+router.post('/session_times', addSessionTime);
+/**
+ * @swagger
+ * /api/data/session_times:
+ *   put:
+ *     summary: Update a session time
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SessionTimeInput'
+ *     responses:
+ *       200:
+ *         description: Session time updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SessionTime'
+ */
+router.put('/session_times', updateSessionTime);
+/**
+ * @swagger
+ * /api/data/session_times/{id}:
+ *   delete:
+ *     summary: Delete a session time by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The session time ID
+ *     responses:
+ *       200:
+ *         description: Session time deleted
+ *       404:
+ *         description: Session time not found
+ */
+router.delete('/session_times/:id', deleteSessionTime);
 
 export default router; 

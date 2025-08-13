@@ -5,7 +5,7 @@ import '../../styles/form-controls.css';
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement>{
   label: string;
   name: string;
-  type?: 'text' | 'number' | 'email' | 'password' | 'date' | 'datetime-local';
+  type?: 'text' | 'number' | 'email' | 'password' | 'date' | 'datetime-local' | 'time';
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
