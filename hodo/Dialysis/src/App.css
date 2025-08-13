@@ -8,10 +8,10 @@
     background-color: #37a9be;
     color: white !important;
     padding: 0.5rem 1rem;
-    /* margin: 1rem 0 2rem 0; */
-    margin: 1rem 0rem 0rem;
-    /* border-radius: 4px 4px 0 0; */
-    border-radius: 4px;
+    margin: 1rem 0 2rem 0;
+    /* margin: 1rem 0rem 0rem; */
+    border-radius: 4px 4px 0 0;
+    /* border-radius: 4px; */
     font-weight: 600;
   }
 

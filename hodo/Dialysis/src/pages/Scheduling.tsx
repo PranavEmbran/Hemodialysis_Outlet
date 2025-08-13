@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 import Breadcrumb from '../components/Breadcrumb';
@@ -9,6 +8,7 @@ import { Formik, Form } from 'formik';
 import { InputField, SelectField } from '../components/forms';
 import ButtonWithGradient from '../components/ButtonWithGradient';
 import Table from '../components/Table';
+import DateRangeSelector from '../components/DateRangeSelector';
 import { API_URL } from '../config';
 
 const sessionOptions = [
@@ -49,6 +49,8 @@ const steps = [
 const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => void }> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [unitsCount, setUnitsCount] = useState<number>(0);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const [formKey, setFormKey] = useState(0);// Used to force re-render of Formik form to fully reset all fields including custom select inputs
 
@@ -494,6 +496,15 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
         {currentStep === 1 && (
           <>
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
+            <div style={{ marginBottom: '1.5rem', maxWidth: '400px' }}>
+              <DateRangeSelector
+                fromDate={fromDate}
+                toDate={toDate}
+                onFromDateChange={setFromDate}
+                onToDateChange={setToDate}
+                label="Filter by Date Range"
+              />
+            </div>
             <Table
               columns={[
                 { key: 'DS_P_ID_FK', header: 'Patient ID' },
@@ -505,6 +516,13 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 // { key: 'Outlet_FK', header: 'Outlet' }
               ]}
               data={assignedSessions
+                .filter(row => {
+                  if (!fromDate && !toDate) return true;
+                  const rowDate = row.DS_Date;
+                  if (fromDate && rowDate < fromDate) return false;
+                  if (toDate && rowDate > toDate) return false;
+                  return true;
+                })
                 .map(row => ({
                   ...row,
                   //Uncomment to show patient name when USE_MSSQL=false

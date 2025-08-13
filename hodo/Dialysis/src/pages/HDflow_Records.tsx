@@ -165,6 +165,8 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   const [scheduleOptions, setScheduleOptions] = useState<{ value: string; label: string; patientId: string; date: string; time?: string }[]>([]);
   const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [patients, setPatients] = useState<{ id: string; name: string }[]>([]);
   const [predialysisRecords, setPredialysisRecords] = useState<any[]>([]);
   const [startDialysisRecords, setStartDialysisRecords] = useState<any[]>([]);
@@ -285,6 +287,16 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
   };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(e.target.value);
+    setSelectedSchedule('');
+  };
+
+  const handleFromDateChange = (date: string) => {
+    setFromDate(date);
+    setSelectedSchedule('');
+  };
+
+  const handleToDateChange = (date: string) => {
+    setToDate(date);
     setSelectedSchedule('');
   };
 
@@ -456,18 +468,30 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     });
   };
 
-  // Filter records by selected schedule and patient, and add date/time
+  // Filter records by selected schedule, patient, and date range
   let filteredRecords: any[] = [];
   let columns: any[] = [];
+  
+  const applyDateRangeFilter = (recordDate: string) => {
+    if (!fromDate && !toDate) return true;
+    if (fromDate && recordDate < fromDate) return false;
+    if (toDate && recordDate > toDate) return false;
+    return true;
+  };
+
   if (currentStep === 0) {
     columns = predialysisColumns;
     filteredRecords = addDateTimeToRecords(
       predialysisRecords.filter(r => {
         const patient = patients.find(p => p.id === r.PreDR_P_ID_FK);
+        const schedule = schedules.find(s => s.DS_ID_PK === r.PreDR_DS_ID_FK);
+        const recordDate = schedule?.DS_Date || r.date;
+        
         return (
           (selectedSchedule ? r.PreDR_DS_ID_FK === selectedSchedule : true) &&
           (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-          (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.PreDR_DS_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
+          (selectedDate ? (recordDate === selectedDate) : true) &&
+          applyDateRangeFilter(recordDate)
         );
       }),
       r => r.PreDR_DS_ID_FK
@@ -485,11 +509,13 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     filteredRecords = addDateTimeToRecords(
       startDialysisRecords.filter(r => {
         const schedule = schedules.find((s: any) => s.DS_ID_PK === r.SA_ID_PK_FK);
+        const recordDate = schedule?.DS_Date || r.date;
 
         return (
           (selectedSchedule ? r.SA_ID_PK_FK === selectedSchedule : true) &&
           (selectedPatient ? (schedule && schedule.DS_P_ID_FK === selectedPatient) : true) &&
-          (selectedDate ? ((schedule && schedule.DS_Date === selectedDate) || r.date === selectedDate) : true)
+          (selectedDate ? (recordDate === selectedDate) : true) &&
+          applyDateRangeFilter(recordDate)
         );
       }),
       r => r.SA_ID_PK_FK
@@ -523,13 +549,14 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
     filteredRecords = addDateTimeToRecords(
       postDialysisRecords.filter(r => {
         const patient = patients.find(p => p.id === r.PostDR_P_ID_FK);
-
-        console.log("&&&PostDR_DS_ID_FK:", r.PostDR_DS_ID_FK);
+        const schedule = schedules.find(s => s.DS_ID_PK === r.PostDR_DS_ID_FK);
+        const recordDate = schedule?.DS_Date || r.date;
 
         return (
           (selectedSchedule ? r.PostDR_DS_ID_FK === selectedSchedule : true) &&
           (selectedPatient ? (patient && patient.id === selectedPatient) : true) &&
-          (selectedDate ? (schedules.find(s => s.DS_ID_PK === r.PostDR_DS_ID_FK)?.DS_Date === selectedDate || r.date === selectedDate) : true)
+          (selectedDate ? (recordDate === selectedDate) : true) &&
+          applyDateRangeFilter(recordDate)
         );
       }),
       r => r.PostDR_DS_ID_FK
@@ -568,6 +595,11 @@ const HDflow_Records: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =>
           onPatientChange={handlePatientChange}
           selectedDate={selectedDate}
           onDateChange={handleDateChange}
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={handleFromDateChange}
+          onToDateChange={handleToDateChange}
+          showDateRangeFilter={true}
         />
 
         <div style={{ maxWidth: 2000, margin: '0 auto' }}>

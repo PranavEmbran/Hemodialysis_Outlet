@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import ButtonWithGradient from './ButtonWithGradient';
+import React from 'react';
 import { API_URL } from '../config';
 import Breadcrumb from './Breadcrumb';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 import { SelectField, InputField } from './forms';
 import { Formik, Form } from 'formik';
 import { useEffect } from 'react';
+import DateRangeSelector from './DateRangeSelector';
 import './StepperNavigation.css';
 
 interface StepperNavigationProps {
@@ -19,13 +18,18 @@ interface StepperNavigationProps {
   onPatientChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedDate: string;
   onDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  fromDate?: string;
+  toDate?: string;
+  onFromDateChange?: (date: string) => void;
+  onToDateChange?: (date: string) => void;
+  showDateRangeFilter?: boolean;
 }
 
 const steps = [
-  'Predialysis',
-  'Start Dialysis',
+  'Predialysis Data',
+  'Start-Up Data',
   // 'Haemodialysis Details',
-  'Post Dialysis',
+  'Post Dialysis Data',
 ];
 
 
@@ -40,6 +44,11 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   onPatientChange,
   selectedDate,
   onDateChange,
+  fromDate = '',
+  toDate = '',
+  onFromDateChange = () => { },
+  onToDateChange = () => { },
+  showDateRangeFilter = false,
 }) => {
   // --- FILTER PATIENTS BASED ON CASE OPENINGS (DYNAMIC FETCH) ---
   const [caseOpenings, setCaseOpenings] = React.useState<{ DCO_P_ID_FK: string }[]>([]);
@@ -67,24 +76,33 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
   );
   const filteredPatients = patients.filter(p => allowedPatientIds.has(p.id));
 
-  // Filter schedules by patient and date
+  // Filter schedules by patient and date range
   // Sort filtered schedules so the latest date is first
   const filteredSchedules = scheduleOptions
     .filter(opt => {
       const patientMatch = !selectedPatient || opt.patientId === selectedPatient;
-      const dateMatch = !selectedDate || opt.date === selectedDate;
-      return patientMatch && dateMatch;
+      const specificDateMatch = !selectedDate || opt.date === selectedDate;
+
+      // Date range filtering
+      let dateRangeMatch = true;
+      if (fromDate || toDate) {
+        const optDate = opt.date;
+        if (fromDate && optDate < fromDate) dateRangeMatch = false;
+        if (toDate && optDate > toDate) dateRangeMatch = false;
+      }
+
+      return patientMatch && specificDateMatch && dateRangeMatch;
     })
     .sort((a, b) => b.date.localeCompare(a.date));
 
   // console.log('scheduleOptions:', scheduleOptions);
   // console.log('filteredSchedules:', filteredSchedules);
-  
 
 
 
-  
-  
+
+
+
   return (
     <div style={{ margin: '0 auto', marginBottom: 32, marginTop: 0 }}>
 
@@ -131,7 +149,7 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
 
       <div>
         <Breadcrumb
-          steps={steps.map((label, idx) => ({ label }))}
+          steps={steps.map((label) => ({ label }))}
           activeStep={currentStep}
           onStepClick={onStepChange}
         />
@@ -174,8 +192,8 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
             // eslint-disable-next-line
           }, [values.selectedSchedule]);
           return (
-            <Form style={{ width: '50%', display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
-              <div className="flex-grow">
+            <Form style={{ width: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 16, marginBottom: 24 }}>
+              <div style={{ minWidth: '250px', flex: '1 1 250px' }}>
                 <SelectField
                   label="Select Patient"
                   name="selectedPatient"
@@ -185,20 +203,34 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
                   required={false}
                 />
               </div>
-              <div className="flex-grow">
+
+              {/* Only show DateRangeSelector if explicitly enabled */}
+              {showDateRangeFilter && (
+                <div style={{ minWidth: '250px', flex: '1 1 250px' }}>
+                  <DateRangeSelector
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    onFromDateChange={onFromDateChange}
+                    onToDateChange={onToDateChange}
+                    label="Date Range Filter"
+                  />
+                </div>
+              )}
+
+              <div style={{ minWidth: '250px', flex: '1 1 250px' }}>
                 <InputField
-                  label="Select Date"
+                  label="Specific Date"
                   name="selectedDate"
                   type="date"
                   className="form-group"
                   required={false}
                 />
               </div>
-              <div className="flex-grow">
+              
+              <div style={{ minWidth: '250px', flex: '1 1 250px' }}>
                 <SelectField
                   label="Select Schedule"
                   name="selectedSchedule"
-                  // value={values.selectedSchedule}
                   options={filteredSchedules.map(opt => ({ value: opt.value, label: opt.label }))}
                   placeholder="Select Schedule"
                   className="form-group"
