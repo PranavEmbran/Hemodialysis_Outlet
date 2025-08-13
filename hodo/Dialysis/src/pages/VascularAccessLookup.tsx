@@ -117,8 +117,10 @@ const VascularAccessLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar
     ...access,
     actions: (
       <>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <EditButton onClick={() => handleEdit(access)} />
         <DeleteButton onClick={() => handleDelete(access.VAL_Access_ID_PK)} />
+      </div>
       </>
     ),
   }));

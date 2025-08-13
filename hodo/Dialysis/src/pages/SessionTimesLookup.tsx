@@ -120,8 +120,10 @@ const SessionTimesLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
         ...sessionTime,
         actions: (
             <>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <EditButton onClick={() => handleEdit(sessionTime)} />
                 <DeleteButton onClick={() => handleDelete(sessionTime.ST_ID_PK)} />
+            </div>
             </>
         ),
     }));

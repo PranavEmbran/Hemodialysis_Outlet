@@ -178,8 +178,10 @@ const UnitsManagement: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?: ()
     ...unit,
     actions: (
       <>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <EditButton onClick={() => handleEdit(unit)} />
         <DeleteButton onClick={() => handleDelete(unit.Unit_ID_PK)} />
+      </div>
       </>
     ),
   }));

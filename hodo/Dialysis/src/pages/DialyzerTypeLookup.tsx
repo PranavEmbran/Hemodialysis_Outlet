@@ -153,8 +153,10 @@ const DialyzerTypeLookup: React.FC<{ sidebarCollapsed?: boolean; toggleSidebar?:
     ...dialyzer,
     actions: (
       <>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <EditButton onClick={() => handleEdit(dialyzer)} />
         <DeleteButton onClick={() => handleDelete(dialyzer.DTL_ID_PK)} />
+      </div>
       </>
     ),
   }));
