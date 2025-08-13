@@ -121,6 +121,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   // Filter states for step 2
   const [selectedPatientFilter, setSelectedPatientFilter] = useState<string>('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -393,6 +394,41 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     }
   };
 
+  const handleRefreshTable = async () => {
+    setIsRefreshing(true);
+    try {
+      // Refresh assigned sessions data
+      const res = await fetch(`${API_URL}/data/dialysis_schedules/with-records`);
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        // Sort by Added_on descending, then DS_ID_PK descending (if present)
+        const sorted = [...data].sort((a, b) => {
+          // Compare dates (descending)
+          const dateA = new Date(a.DS_Added_on || a.DS_Date || 0);
+          const dateB = new Date(b.DS_Added_on || b.DS_Date || 0);
+          if (dateA > dateB) return -1;
+          if (dateA < dateB) return 1;
+          // If dates equal, compare DS_ID_PK if present
+          if (a.DS_ID_PK && b.DS_ID_PK) {
+            return String(b.DS_ID_PK).localeCompare(String(a.DS_ID_PK));
+          }
+          return 0;
+        });
+        setAssignedSessions(sorted);
+        toast.success('Table refreshed successfully!');
+      } else {
+        setAssignedSessions([]);
+        toast.info('No data found');
+      }
+    } catch (err) {
+      toast.error('Failed to refresh table data');
+      console.error('Refresh error:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
 
 
 
@@ -660,7 +696,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 />
               </div>
 
-              <div style = {{marginTop: '2.7em'}}>
+              <div style={{ marginTop: '2.7em' }}>
                 <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
                   Filter by Patient
                 </label>
@@ -687,7 +723,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 />
               </div>
 
-              <div style = {{marginTop: '2.7em'}}>
+              <div style={{ marginTop: '2.7em' }}>
                 <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
                   Filter by Status
                 </label>
@@ -713,7 +749,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 />
               </div>
 
-              <div style={{marginBottom: '1em', display: 'flex', alignItems: 'end', gap: '8px' }}>
+              <div style={{ marginBottom: '1em', display: 'flex', alignItems: 'end', gap: '8px' }}>
                 <ButtonWithGradient
                   type="button"
                   onClick={() => {
@@ -722,15 +758,43 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                     setSelectedPatientFilter('');
                     setSelectedStatusFilter('');
                   }}
-                  // style={{
-                  //   backgroundColor: '#6c757d',
-                  //   borderColor: '#6c757d',
-                  //   padding: '8px 16px',
-                  //   fontSize: '14px'
-                  // }}
+                // style={{
+                //   backgroundColor: '#6c757d',
+                //   borderColor: '#6c757d',
+                //   padding: '8px 16px',
+                //   fontSize: '14px'
+                // }}
                 >
                   Clear Filters
                 </ButtonWithGradient>
+              <div style={{marginLeft: '1.5em',marginRight: '1.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'end', gap: '8px' }}>
+                  <button
+                    onClick={handleRefreshTable}
+                    disabled={isRefreshing}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer',
+                      padding: 0,
+                      color: '#038ba4',
+                      fontSize: '18px'
+                    }}
+                  >
+                    <i className={`fa-solid fa-arrows-rotate fa-lg ${isRefreshing ? 'fa-spin' : ''}`}></i>
+                    {isRefreshing ? 'Refreshing...' : ''}
+                  </button>
+                </div>
+
+                {/* <i
+                  className={`fa-solid fa-arrows-rotate fa-lg ${isRefreshing ? 'fa-spin' : ''}`}
+                  onClick={handleRefreshTable}
+                  style={{ cursor: 'pointer' }}
+                ></i> */}
+
+
               </div>
             </div>
             {/* Results Summary */}
@@ -905,7 +969,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                           fontWeight: '500',
                           textTransform: 'uppercase',
                           letterSpacing: '0.5px',
-                          // border: '1.5px solid silver',
+                          // border: '1.5px solid silver',  
 
                           color: 'white',
                           backgroundColor:
@@ -918,13 +982,13 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                             //             '#757575' // Scheduled or default
 
                             row.computed_status === 'Completed' ? 'rgba(76, 175, 80)' :
-                            row.computed_status === 'Cancelled' ? 'rgba(244, 67, 54)' :
-                            row.computed_status === 'Initiated' ? 'rgba(255, 152, 0)' :
-                            row.computed_status === 'Arrived' ? 'rgba(33, 150, 243)' :
-                            row.computed_status === 'Missed' ? 'rgba(156, 39, 176)' :
-                            row.DS_Status === 0 ? 'rgba(244, 67, 54)' :
-                            'rgba(117, 117, 117)'
-                            
+                              row.computed_status === 'Cancelled' ? 'rgba(244, 67, 54)' :
+                                row.computed_status === 'Initiated' ? 'rgba(255, 152, 0)' :
+                                  row.computed_status === 'Arrived' ? 'rgba(33, 150, 243)' :
+                                    row.computed_status === 'Missed' ? 'rgba(156, 39, 176)' :
+                                      row.DS_Status === 0 ? 'rgba(244, 67, 54)' :
+                                        'rgba(117, 117, 117)'
+
 
 
                         }}>
