@@ -46,8 +46,8 @@ function getMonthName(dateStr: string) {
 
 
 const steps = [
-  { label: 'Assign Schedule' },
-  { label: 'View Assigned Schedules' }
+  { label: 'View Assigned Schedules' },
+  { label: 'Assign New Schedule' }
 ];
 
 
@@ -75,7 +75,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
   // Fetch all assigned schedules with related records when switching to view step
   useEffect(() => {
-    if (currentStep === 1) {
+    if (currentStep === 0) {
       fetch(`${API_URL}/data/dialysis_schedules/with-records`)
         .then(res => res.json())
         .then(data => {
@@ -501,7 +501,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
           activeStep={currentStep}
           onStepClick={setCurrentStep}
         />
-        {currentStep === 0 && (
+        {currentStep === 1 && (
           <>
             {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
             <Formik key={formKey} initialValues={initialValues} onSubmit={handleSubmit}>
@@ -671,7 +671,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             </Formik>
           </>
         )}
-        {currentStep === 1 && (
+        {currentStep === 0 && (
           <>
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
 
@@ -767,7 +767,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 >
                   Clear Filters
                 </ButtonWithGradient>
-              <div style={{marginLeft: '1.5em',marginRight: '1.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'end', gap: '8px' }}>
+                <div style={{ marginLeft: '1.5em', marginRight: '1.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'end', gap: '8px' }}>
                   <button
                     onClick={handleRefreshTable}
                     disabled={isRefreshing}
@@ -842,6 +842,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             <Table
               columns={[
                 { key: 'DS_P_ID_FK', header: 'Patient ID' },
+                { key: 'DS_ID_PK', header: 'Session ID' },
                 { key: 'PatientName', header: 'Patient Name' },
                 { key: 'DS_Date', header: 'Date' },
                 { key: 'DS_Time', header: 'Time' },
@@ -971,23 +972,42 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                           letterSpacing: '0.5px',
                           // border: '1.5px solid silver',  
 
-                          color: 'white',
-                          backgroundColor:
-                            // row.computed_status === 'Completed' ? '#4caf50' :
-                            //   row.computed_status === 'Cancelled' ? '#f44336' :
-                            //     row.computed_status === 'Initiated' ? '#ff9800' :
-                            //       row.computed_status === 'Arrived' ? '#2196f3' :
-                            //         row.computed_status === 'Missed' ? '#9c27b0' :
-                            //           row.DS_Status === 0 ? '#f44336' : // Fallback for cancelled
-                            //             '#757575' // Scheduled or default
+                          // color: 'white',
+                          // backgroundColor:
+                          //   // row.computed_status === 'Completed' ? '#4caf50' :
+                          //   //   row.computed_status === 'Cancelled' ? '#f44336' :
+                          //   //     row.computed_status === 'Initiated' ? '#ff9800' :
+                          //   //       row.computed_status === 'Arrived' ? '#2196f3' :
+                          //   //         row.computed_status === 'Missed' ? '#9c27b0' :
+                          //   //           row.DS_Status === 0 ? '#f44336' : // Fallback for cancelled
+                          //   //             '#757575' // Scheduled or default
 
-                            row.computed_status === 'Completed' ? 'rgba(76, 175, 80)' :
-                              row.computed_status === 'Cancelled' ? 'rgba(244, 67, 54)' :
-                                row.computed_status === 'Initiated' ? 'rgba(255, 152, 0)' :
-                                  row.computed_status === 'Arrived' ? 'rgba(33, 150, 243)' :
-                                    row.computed_status === 'Missed' ? 'rgba(156, 39, 176)' :
-                                      row.DS_Status === 0 ? 'rgba(244, 67, 54)' :
-                                        'rgba(117, 117, 117)'
+                          //   row.computed_status === 'Completed' ? 'rgba(76, 175, 80)' :
+                          //     row.computed_status === 'Cancelled' ? 'rgba(244, 67, 54)' :
+                          //       row.computed_status === 'Initiated' ? 'rgba(255, 152, 0)' :
+                          //         row.computed_status === 'Arrived' ? 'rgba(33, 150, 243)' :
+                          //           row.computed_status === 'Missed' ? 'rgba(156, 39, 176)' :
+                          //             row.DS_Status === 0 ? 'rgba(244, 67, 54)' :
+                          //               'rgba(117, 117, 117)'
+
+
+                          // Get the base color
+                          ...(() => {
+                            const baseColor =
+                              row.computed_status === 'Completed' ? '#4CAF50' :
+                                row.computed_status === 'Cancelled' ? '#F44336' :
+                                  row.computed_status === 'Initiated' ? '#FF9800' :
+                                    row.computed_status === 'Arrived' ? '#2196F3' :
+                                      row.computed_status === 'Missed' ? '#9C27B0' :
+                                        row.DS_Status === 0 ? '#F44336' :
+                                          '#757575';
+
+                            return {
+                              color: baseColor, // Text color matches border
+                              backgroundColor: `${baseColor}26`, // 15% opacity in hex
+                              border: `1px solid ${baseColor}`
+                            };
+                          })()
 
 
 
