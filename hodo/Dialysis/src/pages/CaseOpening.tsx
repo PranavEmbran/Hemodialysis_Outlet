@@ -194,7 +194,8 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   placeholder="Select Patient"
                   enablePatientSearch={true}
                   onPatientSelect={(patient) => console.log('Selected:', patient)}
-
+                  enablePatientPagination={false}
+                  pageSize={50}
                   
                 />
                 <SelectField

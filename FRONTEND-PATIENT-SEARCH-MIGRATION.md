@@ -9,7 +9,7 @@ This guide shows how to migrate your existing patient selection components to us
 - **File**: `src/components/forms/PatientSearchField.tsx`
 - **Use case**: Dropdown selections with search-as-you-type
 - **Performance**: Loads only 20 results per search
-- **Best for**: 40K+ patient records
+- **Best for**: Thousands patient records
 
 ### 2. `PatientPaginatedField`
 - **File**: `src/components/forms/PatientPaginatedField.tsx`

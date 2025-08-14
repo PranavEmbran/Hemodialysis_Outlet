@@ -8,10 +8,12 @@ Your existing `SelectField` component has been enhanced with patient search func
 ### Enhanced SelectField Features:
 - ✅ **Backward Compatible** - All existing SelectFields work unchanged
 - ✅ **Patient Search Mode** - Add `enablePatientSearch={true}` to enable
+- ✅ **Patient Pagination Mode** - Add `enablePatientPagination={true}` to enable
 - ✅ **Dual Search** - Search by patient name OR patient ID
 - ✅ **Smart Prioritization** - Exact ID matches appear first
+- ✅ **Infinite Scroll** - Paginated mode loads more on scroll
 - ✅ **Debounced Search** - 300ms delay for optimal performance
-- ✅ **Loading States** - Shows "Searching patients..." indicator
+- ✅ **Loading States** - Shows appropriate loading indicators
 - ✅ **Smart Filtering** - Server-side search, not client-side
 - ✅ **Error Handling** - Graceful fallbacks for network issues
 
@@ -20,6 +22,12 @@ Your existing `SelectField` component has been enhanced with patient search func
 - 🆔 **Search by ID**: "123", "P001", "4567" - finds patients with matching IDs
 - 🎯 **Smart Ranking**: Exact ID matches appear first, then name matches
 - ⚡ **Fast Results**: Only searches when you type 2+ characters
+
+### Pagination Functionality:
+- 📄 **Infinite Scroll**: Loads 50 patients per page, scroll for more
+- 📊 **Total Count**: Shows total number of patients available
+- 🔄 **Smooth Loading**: Seamless loading experience
+- 📱 **Mobile Friendly**: Works great on all devices
 
 ## 🚀 Simple Migration
 
@@ -50,12 +58,25 @@ useEffect(() => {
 // Remove the patient fetching code entirely!
 // No useState, no useEffect, no API calls needed
 
-// In your JSX - just add one prop:
+// Option 1: Search Mode (Recommended for dropdowns)
 <SelectField
   label="Select Patient"
   name="patientId"
-  enablePatientSearch={true}  // 👈 This is all you need!
+  enablePatientSearch={true}  // 👈 Enable search functionality
   placeholder="Type patient name or ID to search..."
+  onPatientSelect={(patient) => {
+    console.log('Selected patient:', patient);
+    // Handle patient selection
+  }}
+/>
+
+// Option 2: Pagination Mode (Good for browsing all patients)
+<SelectField
+  label="Browse All Patients"
+  name="patientId"
+  enablePatientPagination={true}  // 👈 Enable pagination functionality
+  placeholder="Select from all patients..."
+  pageSize={50}  // Optional: customize page size
   onPatientSelect={(patient) => {
     console.log('Selected patient:', patient);
     // Handle patient selection

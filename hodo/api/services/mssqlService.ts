@@ -135,7 +135,7 @@ export const getPatientsPage = async (page: number = 1, pageSize: number = 50): 
           PM_Card_PK,
           PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
         FROM PAT_Patient_Master_1
-        ORDER BY PM_LastName, PM_FirstName
+        ORDER BY PM_LastModifiedOn DESC
         OFFSET @offset ROWS
         FETCH NEXT @pageSize ROWS ONLY;
       `);

@@ -11,7 +11,7 @@ interface Patient {
 
 const PatientSearchDemo: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [searchMode, setSearchMode] = useState<'search' | 'traditional'>('search');
+  const [searchMode, setSearchMode] = useState<'search' | 'paginated' | 'traditional'>('search');
 
   const handlePatientSelect = (patient: Patient | null) => {
     setSelectedPatient(patient);
@@ -42,7 +42,16 @@ const PatientSearchDemo: React.FC = () => {
                 checked={searchMode === 'search'}
                 onChange={(e) => setSearchMode(e.target.value as 'search')}
               />
-              Enhanced SelectField with Search (Recommended)
+              Search Mode (Recommended for thousands of records)
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input
+                type="radio"
+                value="paginated"
+                checked={searchMode === 'paginated'}
+                onChange={(e) => setSearchMode(e.target.value as 'paginated')}
+              />
+              Paginated Mode (Browse all patients)
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <input
@@ -51,7 +60,7 @@ const PatientSearchDemo: React.FC = () => {
                 checked={searchMode === 'traditional'}
                 onChange={(e) => setSearchMode(e.target.value as 'traditional')}
               />
-              Traditional SelectField (Limited options)
+              Traditional Mode (Limited options)
             </label>
           </div>
         </div>
@@ -109,6 +118,16 @@ const PatientSearchDemo: React.FC = () => {
                     placeholder="Type patient name or ID to search..."
                     required={true}
                     onPatientSelect={handlePatientSelect}
+                  />
+                ) : searchMode === 'paginated' ? (
+                  <SelectField
+                    label="Browse All Patients"
+                    name="patientId"
+                    enablePatientPagination={true}
+                    placeholder="Select from all patients..."
+                    required={true}
+                    onPatientSelect={handlePatientSelect}
+                    pageSize={50}
                   />
                 ) : (
                   <SelectField
@@ -186,34 +205,50 @@ const PatientSearchDemo: React.FC = () => {
         }}>
           <h5 style={{ marginBottom: '1rem', color: '#495057' }}>Performance Comparison</h5>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
             <div style={{ padding: '1rem', backgroundColor: '#d4edda', borderRadius: '4px' }}>
-              <h6 style={{ color: '#155724', marginBottom: '0.5rem' }}>🔍 Enhanced SelectField with Search</h6>
+              <h6 style={{ color: '#155724', marginBottom: '0.5rem' }}>🔍 Search Mode</h6>
               <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.9rem' }}>
-                <li>Same familiar SelectField component</li>
-                <li>Just add <code>enablePatientSearch=true</code></li>
-                <li><strong>Search by name:</strong> "john", "smith", "mary"</li>
-                <li><strong>Search by ID:</strong> "123", "4567", "P001"</li>
+                <li>Add <code>enablePatientSearch=true</code></li>
+                <li><strong>Search by name:</strong> "john", "smith"</li>
+                <li><strong>Search by ID:</strong> "123", "P001"</li>
                 <li>Loads only 20 results per search</li>
-                <li>Fast response time (&lt;200ms)</li>
-                <li>Ideal for large datasets (40K+ records)</li>
+                <li>Fast response (&lt;200ms)</li>
+                <li>Best for thousands of records</li>
+              </ul>
+            </div>
+            
+            <div style={{ padding: '1rem', backgroundColor: '#cce5ff', borderRadius: '4px' }}>
+              <h6 style={{ color: '#004085', marginBottom: '0.5rem' }}>📄 Paginated Mode</h6>
+              <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.9rem' }}>
+                <li>Add <code>enablePatientPagination=true</code></li>
+                <li>Loads 50 patients per page</li>
+                <li>Scroll to load more</li>
+                <li>Shows total count</li>
+                <li>Good for browsing all patients</li>
+                <li>Infinite scroll experience</li>
               </ul>
             </div>
             
             <div style={{ padding: '1rem', backgroundColor: '#fff3cd', borderRadius: '4px' }}>
-              <h6 style={{ color: '#856404', marginBottom: '0.5rem' }}>📄 Traditional SelectField</h6>
+              <h6 style={{ color: '#856404', marginBottom: '0.5rem' }}>📋 Traditional Mode</h6>
               <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.9rem' }}>
                 <li>Loads all options upfront</li>
                 <li>Slow with large datasets</li>
                 <li>Memory intensive</li>
-                <li>Not suitable for 40K+ records</li>
+                <li>Not suitable for thousands of records</li>
+                <li>Only for small datasets</li>
               </ul>
             </div>
           </div>
           
           <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#cce5ff', borderRadius: '4px' }}>
-            <strong style={{ color: '#004085' }}>💡 Recommendation:</strong> Simply add <code>enablePatientSearch=true</code> to your existing SelectField components. 
-            No need to change your existing code structure!
+            <strong style={{ color: '#004085' }}>💡 Recommendations:</strong>
+            <ul style={{ margin: '0.5rem 0 0 1rem', paddingLeft: 0 }}>
+              <li><strong>Search Mode:</strong> Best for dropdowns where users know patient name/ID</li>
+              <li><strong>Paginated Mode:</strong> Best for browsing/exploring all patients</li>
+              <li><strong>Traditional Mode:</strong> Only for small datasets (&lt;100 records)</li>
+            </ul>
           </div>
         </div>
       </div>
