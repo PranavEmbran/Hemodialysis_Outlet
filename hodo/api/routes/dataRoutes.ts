@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAll, add, deleteById, getPatientsDerivedHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
+  getAll, add, deleteById, getPatientsDerivedHandler, searchPatientsHandler, getPatientsPageHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
   savePredialysisRecord, saveStartDialysisRecord, saveInProcessRecord, savePostDialysisRecord,
   getPredialysisRecords, getStartDialysisRecords, getPostDialysisRecords,
   updatePredialysisRecord, updateStartDialysisRecord, updatePostDialysisRecord,
@@ -75,7 +75,7 @@ router.delete('/:id', deleteById);
  * @swagger
  * /api/data/patients_derived:
  *   get:
- *     summary: Get derived patient data
+ *     summary: Get derived patient data (limited to 50 recent patients)
  *     responses:
  *       200:
  *         description: List of derived patients
@@ -87,6 +87,84 @@ router.delete('/:id', deleteById);
  *                 $ref: '#/components/schemas/Patient'
  */
 router.get('/patients_derived', getPatientsDerivedHandler);
+
+/**
+ * @swagger
+ * /api/data/patients/search:
+ *   get:
+ *     summary: Search patients by name
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         description: Search term (minimum 2 characters)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *         description: Maximum number of results to return
+ *     responses:
+ *       200:
+ *         description: List of matching patients
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Patient'
+ *       400:
+ *         description: Invalid search parameters
+ */
+router.get('/patients/search', searchPatientsHandler);
+
+/**
+ * @swagger
+ * /api/data/patients/page:
+ *   get:
+ *     summary: Get paginated patient data
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *         description: Page number
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Number of patients per page
+ *     responses:
+ *       200:
+ *         description: Paginated patient data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 patients:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Patient'
+ *                 totalCount:
+ *                   type: integer
+ *                   description: Total number of patients
+ *                 hasMore:
+ *                   type: boolean
+ *                   description: Whether there are more pages available
+ *       400:
+ *         description: Invalid pagination parameters
+ */
+router.get('/patients/page', getPatientsPageHandler);
 /**
  * @swagger
  * /api/data/Dialysis_Schedules:

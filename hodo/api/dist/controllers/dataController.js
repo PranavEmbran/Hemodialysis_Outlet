@@ -1,7 +1,9 @@
-import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening, getUnits as getUnitsService, addUnit as addUnitService, updateUnit as updateUnitService, deleteUnit as deleteUnitService, getVascularAccesses as getVascularAccessesService, addVascularAccess as addVascularAccessService, updateVascularAccess as updateVascularAccessService, deleteVascularAccess as deleteVascularAccessService, getDialyzerTypes as getDialyzerTypesService, addDialyzerType as addDialyzerTypeService, updateDialyzerType as updateDialyzerTypeService, deleteDialyzerType as deleteDialyzerTypeService, getSchedulingLookup as getSchedulingLookupService, addSchedulingLookup as addSchedulingLookupService, updateSchedulingLookup as updateSchedulingLookupService, deleteSchedulingLookup as deleteSchedulingLookupService } from '../services/dataFactory.js';
+import { getData, addData, deleteData, getPatientsDerived, getSchedulesAssigned, addSchedulesAssigned, getCaseOpenings, addCaseOpening, getUnits as getUnitsService, addUnit as addUnitService, updateUnit as updateUnitService, deleteUnit as deleteUnitService, getVascularAccesses as getVascularAccessesService, addVascularAccess as addVascularAccessService, updateVascularAccess as updateVascularAccessService, deleteVascularAccess as deleteVascularAccessService, getSessionTimes as getSessionTimesService, addSessionTime as addSessionTimeService, updateSessionTime as updateSessionTimeService, deleteSessionTime as deleteSessionTimeService, getDialyzerTypes as getDialyzerTypesService, addDialyzerType as addDialyzerTypeService, updateDialyzerType as updateDialyzerTypeService, deleteDialyzerType as deleteDialyzerTypeService, getSchedulingLookup as getSchedulingLookupService, addSchedulingLookup as addSchedulingLookupService, updateSchedulingLookup as updateSchedulingLookupService, deleteSchedulingLookup as deleteSchedulingLookupService, updateDialysisScheduleStatus as updateDialysisScheduleStatusService, checkScheduleConflict as checkScheduleConflictService, getScheduleWithRelatedRecords as getScheduleWithRelatedRecordsService, addPredialysisRecord, addStartDialysisRecord, addPostDialysisRecord, updatePredialysisRecord as updatePredialysisRecordService, updateStartDialysisRecord as updateStartDialysisRecordService, updatePostDialysisRecord as updatePostDialysisRecordService } from '../services/dataFactory.js';
+import * as lowdbService from '../services/lowdbService.js';
+const { updateCaseOpening } = lowdbService;
 import * as mssqlService from '../services/mssqlService.js';
 import db from '../db/lowdb.js';
-import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
+// import { addPostDialysisRecord, addPredialysisRecord, addStartDialysisRecord } from '../services/lowdbService.js';
 const useMSSQL = process.env.USE_MSSQL === 'true';
 export const getAll = async (req, res) => {
     try {
@@ -49,6 +51,62 @@ export const getPatientsDerivedHandler = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch patients' });
     }
 };
+// Search patients by name
+export const searchPatientsHandler = async (req, res) => {
+    try {
+        const { q: searchTerm, limit } = req.query;
+        if (!searchTerm || typeof searchTerm !== 'string') {
+            return res.status(400).json({ error: 'Search term (q) is required' });
+        }
+        if (searchTerm.length < 2) {
+            return res.status(400).json({ error: 'Search term must be at least 2 characters' });
+        }
+        const searchLimit = limit ? parseInt(limit, 10) : 20;
+        if (useMSSQL) {
+            const patients = await mssqlService.searchPatients(searchTerm, searchLimit);
+            res.json(patients);
+        }
+        else {
+            // Fallback to regular getPatientsDerived for non-MSSQL
+            const patients = await getPatientsDerived();
+            const filtered = patients.filter((p) => p.Name.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, searchLimit);
+            res.json(filtered);
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to search patients' });
+    }
+};
+// Get paginated patients
+export const getPatientsPageHandler = async (req, res) => {
+    try {
+        const { page, pageSize } = req.query;
+        const pageNum = page ? parseInt(page, 10) : 1;
+        const pageSizeNum = pageSize ? parseInt(pageSize, 10) : 50;
+        if (pageNum < 1 || pageSizeNum < 1 || pageSizeNum > 100) {
+            return res.status(400).json({ error: 'Invalid page or pageSize parameters' });
+        }
+        if (useMSSQL) {
+            const result = await mssqlService.getPatientsPage(pageNum, pageSizeNum);
+            res.json(result);
+        }
+        else {
+            // Fallback for non-MSSQL
+            const patients = await getPatientsDerived();
+            const startIndex = (pageNum - 1) * pageSizeNum;
+            const endIndex = startIndex + pageSizeNum;
+            const paginatedPatients = patients.slice(startIndex, endIndex);
+            res.json({
+                patients: paginatedPatients,
+                totalCount: patients.length,
+                hasMore: endIndex < patients.length
+            });
+        }
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch patients page' });
+    }
+};
 export const getSchedulesAssignedHandler = async (req, res) => {
     try {
         const schedules = await getSchedulesAssigned();
@@ -80,26 +138,72 @@ export const getCaseOpeningsHandler = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch case openings' });
     }
 };
+// Handler to update a case opening
+export const updateCaseOpeningHandler = async (req, res) => {
+    try {
+        const { patientId, caseOpeningId } = req.params;
+        let updated;
+        if (useMSSQL) {
+            // Ensure IDs are numbers for MSSQL
+            updated = await mssqlService.updateCaseOpening({
+                DCO_P_ID_FK: Number(patientId),
+                DCO_ID_PK: Number(caseOpeningId),
+                ...req.body
+            });
+        }
+        else {
+            updated = await updateCaseOpening({ ...req.body, DCO_P_ID_FK: patientId, DCO_ID_PK: caseOpeningId });
+        }
+        res.json(updated);
+    }
+    catch (err) {
+        if (err instanceof Error && err.message === 'Case opening not found') {
+            res.status(404).json({ error: 'Case opening not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update case opening' });
+        }
+    }
+};
 export const addCaseOpeningHandler = async (req, res) => {
     try {
-        const { HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature } = req.body;
-        if (!HCO_ID_PK || !P_ID_FK || !HCO_Blood_Group || !HCO_Case_nature) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        const { DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature } = req.body;
+        if (DCO_P_ID_FK === undefined ||
+            DCO_Blood_Group === undefined ||
+            DCO_Case_Nature === undefined) {
+            return res.status(400).json({ error: 'Missing required fields: DCO_P_ID_FK, DCO_Blood_Group, DCO_Case_Nature' });
         }
-        const newCaseOpening = await addCaseOpening({ HCO_ID_PK, P_ID_FK, HCO_Blood_Group, HCO_Case_nature });
+        // Only pass the allowed fields
+        const newCaseOpening = await addCaseOpening({
+            DCO_P_ID_FK,
+            DCO_Blood_Group,
+            DCO_Case_Nature
+        });
+        // Handle already exists case
+        if ('alreadyExists' in newCaseOpening && newCaseOpening.alreadyExists) {
+            return res.status(200).json(newCaseOpening); // Send with 200 to prevent frontend throwing an error
+        }
         res.status(201).json(newCaseOpening);
     }
     catch (err) {
+        if (err instanceof Error && err.message.startsWith('Missing required fields')) {
+            return res.status(400).json({ error: err.message });
+        }
         res.status(500).json({ error: 'Failed to add case opening' });
     }
 };
 export const savePredialysisRecord = async (req, res) => {
     try {
         const record = req.body;
+        console.log('POST /api/data/predialysis_record called, body:', req.body);
         // Basic validation
-        if (!record.SA_ID_PK_FK || !record.P_ID_FK) {
+        // if (!record.DS_ID_FK_PK || !record.P_ID_FK) {
+        //   return res.status(400).json({ error: 'Missing required fields' });
+        // }
+        if (!record.SA_ID_PK_FK) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
+        // PreDR_ID_PK will be generated in the service if not provided
         const saved = await addPredialysisRecord(record);
         res.status(201).json(saved);
     }
@@ -161,7 +265,11 @@ export const saveInProcessRecord = async (req, res) => {
 export const savePostDialysisRecord = async (req, res) => {
     try {
         const record = req.body;
-        if (!record.SA_ID_FK) {
+        console.log('savePostDialysisRecord called, body:', req.body);
+        // if (!record.SA_ID_FK) {
+        //   return res.status(400).json({ error: 'Missing required fields' });
+        // }
+        if (!record.SA_ID_PK_FK) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         const saved = await addPostDialysisRecord(record);
@@ -221,47 +329,32 @@ export const getPostDialysisRecords = async (req, res) => {
 };
 export const updatePredialysisRecord = async (req, res) => {
     try {
-        const { id, ...rest } = req.body;
-        await db.read();
-        const idx = db.data.predialysis_records.findIndex((r) => r.id === id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Record not found' });
-        db.data.predialysis_records[idx] = { ...db.data.predialysis_records[idx], ...rest };
-        await db.write();
-        res.json(db.data.predialysis_records[idx]);
+        const result = await updatePredialysisRecordService(req.body);
+        res.json(result);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update predialysis record' });
+        console.error('Error updating predialysis record:', err);
+        res.status(500).json({ error: err.message || 'Failed to update predialysis record' });
     }
 };
 export const updateStartDialysisRecord = async (req, res) => {
     try {
-        const { id, ...rest } = req.body;
-        await db.read();
-        const idx = db.data.start_dialysis_records.findIndex((r) => r.id === id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Record not found' });
-        db.data.start_dialysis_records[idx] = { ...db.data.start_dialysis_records[idx], ...rest };
-        await db.write();
-        res.json(db.data.start_dialysis_records[idx]);
+        const result = await updateStartDialysisRecordService(req.body);
+        res.json(result);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update start dialysis record' });
+        console.error('Error updating start dialysis record:', err);
+        res.status(500).json({ error: err.message || 'Failed to update start dialysis record' });
     }
 };
 export const updatePostDialysisRecord = async (req, res) => {
     try {
-        const { id, ...rest } = req.body;
-        await db.read();
-        const idx = db.data.post_dialysis_records.findIndex((r) => r.id === id);
-        if (idx === -1)
-            return res.status(404).json({ error: 'Record not found' });
-        db.data.post_dialysis_records[idx] = { ...db.data.post_dialysis_records[idx], ...rest };
-        await db.write();
-        res.json(db.data.post_dialysis_records[idx]);
+        const result = await updatePostDialysisRecordService(req.body);
+        res.json(result);
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to update post dialysis record' });
+        console.error('Error updating post dialysis record:', err);
+        res.status(500).json({ error: err.message || 'Failed to update post dialysis record' });
     }
 };
 // --- Units CRUD ---
@@ -397,6 +490,103 @@ export const deleteDialyzerType = async (req, res) => {
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to delete dialyzer type' });
+    }
+};
+// --- Session Times CRUD ---
+export const getSessionTimes = async (req, res) => {
+    try {
+        const sessionTimes = await getSessionTimesService();
+        res.json(sessionTimes);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch session times' });
+    }
+};
+export const addSessionTime = async (req, res) => {
+    try {
+        const sessionTime = await addSessionTimeService(req.body);
+        res.json(sessionTime);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to add session time' });
+    }
+};
+export const updateSessionTime = async (req, res) => {
+    try {
+        const sessionTime = await updateSessionTimeService(req.body);
+        res.json(sessionTime);
+    }
+    catch (err) {
+        if (err instanceof Error && err.message === 'Session time not found') {
+            res.status(404).json({ error: 'Session time not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update session time' });
+        }
+    }
+};
+export const deleteSessionTime = async (req, res) => {
+    try {
+        const deleted = await deleteSessionTimeService(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ error: 'Session time not found' });
+        }
+        res.json({ message: 'Session time deleted successfully' });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to delete session time' });
+    }
+};
+// --- Dialysis Schedules CRUD ---
+export const updateDialysisScheduleStatus = async (req, res) => {
+    try {
+        const { scheduleId } = req.params;
+        const { status } = req.body;
+        if (status === undefined || ![0, 10].includes(status)) {
+            return res.status(400).json({ error: 'Invalid status. Must be 0 (cancelled) or 10 (scheduled)' });
+        }
+        const schedule = await updateDialysisScheduleStatusService(scheduleId, status);
+        res.json(schedule);
+    }
+    catch (err) {
+        if (err instanceof Error && err.message === 'Schedule not found') {
+            res.status(404).json({ error: 'Schedule not found' });
+        }
+        else {
+            res.status(500).json({ error: 'Failed to update schedule status' });
+        }
+    }
+};
+export const checkScheduleConflict = async (req, res) => {
+    try {
+        const { date, time, unitId } = req.query;
+        if (!date || !time) {
+            return res.status(400).json({ error: 'Date and time are required' });
+        }
+        const hasConflict = await checkScheduleConflictService(date, time, unitId);
+        res.json({ hasConflict });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to check schedule conflict' });
+    }
+};
+export const getScheduleWithRelatedRecords = async (req, res) => {
+    try {
+        const { scheduleId } = req.params;
+        const schedules = await getScheduleWithRelatedRecordsService(scheduleId);
+        res.json(schedules);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to get schedule with related records' });
+    }
+};
+export const getAllSchedulesWithRelatedRecords = async (req, res) => {
+    try {
+        const schedules = await getScheduleWithRelatedRecordsService();
+        res.json(schedules);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to get schedules with related records' });
     }
 };
 // --- Scheduling Lookup CRUD ---

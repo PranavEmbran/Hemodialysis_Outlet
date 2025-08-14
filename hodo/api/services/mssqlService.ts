@@ -61,6 +61,88 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   }
 };
 
+// Search patients by name - much more efficient for large datasets
+export const searchPatients = async (searchTerm: string, limit: number = 20): Promise<Patient[]> => {
+  console.log('searchPatients called with term:', searchTerm);
+
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('searchTerm', sql.VarChar, `%${searchTerm}%`)
+      .input('limit', sql.Int, limit)
+      .query(`
+        SELECT TOP (@limit)
+          PM_Card_PK,
+          PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
+        FROM PAT_Patient_Master_1
+        WHERE 
+          PM_FirstName LIKE @searchTerm 
+          OR PM_LastName LIKE @searchTerm
+          OR PM_MiddleName LIKE @searchTerm
+          OR (PM_FirstName + ' ' + ISNULL(PM_MiddleName, '') + ' ' + PM_LastName) LIKE @searchTerm
+        ORDER BY 
+          CASE 
+            WHEN PM_FirstName LIKE @searchTerm + '%' THEN 1
+            WHEN PM_LastName LIKE @searchTerm + '%' THEN 2
+            ELSE 3
+          END,
+          PM_LastName, PM_FirstName;
+      `);
+    
+    return result.recordset.map((row: any) => ({
+      id: row.PM_Card_PK,
+      Name: row.P_Name,
+    }));
+  } catch (err) {
+    console.error('MSSQL searchPatients error:', err);
+    throw new Error('Failed to search patients from MSSQL');
+  }
+};
+
+// Paginated patient loading for browsing all patients
+export const getPatientsPage = async (page: number = 1, pageSize: number = 50): Promise<{patients: Patient[], totalCount: number, hasMore: boolean}> => {
+  console.log('getPatientsPage called, page:', page, 'pageSize:', pageSize);
+
+  try {
+    const pool = await sql.connect(config);
+    const offset = (page - 1) * pageSize;
+    
+    // Get total count
+    const countResult = await pool.request().query(`
+      SELECT COUNT(*) as totalCount FROM PAT_Patient_Master_1;
+    `);
+    const totalCount = countResult.recordset[0].totalCount;
+    
+    // Get paginated results
+    const result = await pool.request()
+      .input('offset', sql.Int, offset)
+      .input('pageSize', sql.Int, pageSize)
+      .query(`
+        SELECT 
+          PM_Card_PK,
+          PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
+        FROM PAT_Patient_Master_1
+        ORDER BY PM_LastName, PM_FirstName
+        OFFSET @offset ROWS
+        FETCH NEXT @pageSize ROWS ONLY;
+      `);
+    
+    const patients = result.recordset.map((row: any) => ({
+      id: row.PM_Card_PK,
+      Name: row.P_Name,
+    }));
+    
+    return {
+      patients,
+      totalCount,
+      hasMore: offset + pageSize < totalCount
+    };
+  } catch (err) {
+    console.error('MSSQL getPatientsPage error:', err);
+    throw new Error('Failed to fetch patients page from MSSQL');
+  }
+};
+
 
 
 

@@ -1,12 +1,12 @@
 import type { Request, Response } from 'express';
-import { 
-  getData, 
-  addData, 
-  deleteData, 
-  getPatientsDerived, 
-  getSchedulesAssigned, 
-  addSchedulesAssigned, 
-  getCaseOpenings, 
+import {
+  getData,
+  addData,
+  deleteData,
+  getPatientsDerived,
+  getSchedulesAssigned,
+  addSchedulesAssigned,
+  getCaseOpenings,
   addCaseOpening,
   getUnits as getUnitsService,
   addUnit as addUnitService,
@@ -88,6 +88,69 @@ export const getPatientsDerivedHandler = async (req: Request, res: Response) => 
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch patients' });
+  }
+};
+
+// Search patients by name
+export const searchPatientsHandler = async (req: Request, res: Response) => {
+  try {
+    const { q: searchTerm, limit } = req.query;
+
+    if (!searchTerm || typeof searchTerm !== 'string') {
+      return res.status(400).json({ error: 'Search term (q) is required' });
+    }
+
+    if (searchTerm.length < 2) {
+      return res.status(400).json({ error: 'Search term must be at least 2 characters' });
+    }
+
+    const searchLimit = limit ? parseInt(limit as string, 10) : 20;
+
+    if (useMSSQL) {
+      const patients = await mssqlService.searchPatients(searchTerm, searchLimit);
+      res.json(patients);
+    } else {
+      // Fallback to regular getPatientsDerived for non-MSSQL
+      const patients = await getPatientsDerived();
+      const filtered = patients.filter((p: any) =>
+        p.Name.toLowerCase().includes(searchTerm.toLowerCase())
+      ).slice(0, searchLimit);
+      res.json(filtered);
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to search patients' });
+  }
+};
+
+// Get paginated patients
+export const getPatientsPageHandler = async (req: Request, res: Response) => {
+  try {
+    const { page, pageSize } = req.query;
+    const pageNum = page ? parseInt(page as string, 10) : 1;
+    const pageSizeNum = pageSize ? parseInt(pageSize as string, 10) : 50;
+
+    if (pageNum < 1 || pageSizeNum < 1 || pageSizeNum > 100) {
+      return res.status(400).json({ error: 'Invalid page or pageSize parameters' });
+    }
+
+    if (useMSSQL) {
+      const result = await mssqlService.getPatientsPage(pageNum, pageSizeNum);
+      res.json(result);
+    } else {
+      // Fallback for non-MSSQL
+      const patients = await getPatientsDerived();
+      const startIndex = (pageNum - 1) * pageSizeNum;
+      const endIndex = startIndex + pageSizeNum;
+      const paginatedPatients = patients.slice(startIndex, endIndex);
+
+      res.json({
+        patients: paginatedPatients,
+        totalCount: patients.length,
+        hasMore: endIndex < patients.length
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch patients page' });
   }
 };
 
@@ -526,11 +589,11 @@ export const updateDialysisScheduleStatus = async (req: Request, res: Response) 
   try {
     const { scheduleId } = req.params;
     const { status } = req.body;
-    
+
     if (status === undefined || ![0, 10].includes(status)) {
       return res.status(400).json({ error: 'Invalid status. Must be 0 (cancelled) or 10 (scheduled)' });
     }
-    
+
     const schedule = await updateDialysisScheduleStatusService(scheduleId, status);
     res.json(schedule);
   } catch (err) {
@@ -545,17 +608,17 @@ export const updateDialysisScheduleStatus = async (req: Request, res: Response) 
 export const checkScheduleConflict = async (req: Request, res: Response) => {
   try {
     const { date, time, unitId } = req.query;
-    
+
     if (!date || !time) {
       return res.status(400).json({ error: 'Date and time are required' });
     }
-    
+
     const hasConflict = await checkScheduleConflictService(
-      date as string, 
-      time as string, 
+      date as string,
+      time as string,
       unitId as string
     );
-    
+
     res.json({ hasConflict });
   } catch (err) {
     res.status(500).json({ error: 'Failed to check schedule conflict' });

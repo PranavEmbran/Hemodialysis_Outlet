@@ -24,7 +24,7 @@ import Post_Dialysis_Record from './pages/Post_Dialysis_Record';
 import Records from './pages/HDflow_Records';
 import HDflow_Entry from './pages/HDflow_Entry';
 import InProcess_records from "./pages/InProcess_records";
-
+import PatientSearchDemo from './pages/PatientSearchDemo';
 
 const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -68,6 +68,9 @@ const App: React.FC = () => {
                       <Route path="/post-dialysis-record" element={<Post_Dialysis_Record />} />
                       <Route path="/hdflow-entry" element={<HDflow_Entry sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                       <Route path="/hdflow-records" element={<Records sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
+                    
+                      <Route path="/patient-search-demo" element={<PatientSearchDemo />} />
+                    
                     </Routes>
                   </div>
                 </div>

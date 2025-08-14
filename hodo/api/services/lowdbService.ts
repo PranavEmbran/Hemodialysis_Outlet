@@ -39,6 +39,27 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   return db.data?.patients_derived || [];
 };
 
+// Placeholder functions for compatibility with MSSQL service
+export const searchPatients = async (searchTerm: string, limit: number = 20): Promise<Patient[]> => {
+  const patients = await getPatientsDerived();
+  return patients.filter(p => 
+    p.Name.toLowerCase().includes(searchTerm.toLowerCase())
+  ).slice(0, limit);
+};
+
+export const getPatientsPage = async (page: number = 1, pageSize: number = 50): Promise<{patients: Patient[], totalCount: number, hasMore: boolean}> => {
+  const patients = await getPatientsDerived();
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedPatients = patients.slice(startIndex, endIndex);
+  
+  return {
+    patients: paginatedPatients,
+    totalCount: patients.length,
+    hasMore: endIndex < patients.length
+  };
+};
+
 export interface DialysisSchedules {
   DS_ID_PK: string;
   DS_P_ID_FK: string;

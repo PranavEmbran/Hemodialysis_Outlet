@@ -13,7 +13,12 @@ const defaultData = {
     units: [],
     vascular_access: [],
     dialyzer_types: [],
-    scheduling_lookup: []
+    scheduling_lookup: [],
+    session_times: [
+        { ST_ID_PK: 1, ST_Session_Name: '1st', ST_Start_Time: '08:00' },
+        { ST_ID_PK: 2, ST_Session_Name: '2nd', ST_Start_Time: '12:00' },
+        { ST_ID_PK: 3, ST_Session_Name: '3rd', ST_Start_Time: '16:00' }
+    ]
 };
 // ✅ Pass both adapter and defaultData
 const adapter = new JSONFile(new URL('./db.json', import.meta.url));

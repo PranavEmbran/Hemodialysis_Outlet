@@ -192,6 +192,10 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
                   options={patientOptions}
                   required
                   placeholder="Select Patient"
+                  enablePatientSearch={true}
+                  onPatientSelect={(patient) => console.log('Selected:', patient)}
+
+                  
                 />
                 <SelectField
                   label="Blood Group"
