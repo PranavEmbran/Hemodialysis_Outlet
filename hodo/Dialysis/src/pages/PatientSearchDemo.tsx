@@ -56,6 +56,37 @@ const PatientSearchDemo: React.FC = () => {
           </div>
         </div>
 
+        {/* Search Examples */}
+        {searchMode === 'search' && (
+          <div style={{ 
+            marginBottom: '2rem', 
+            padding: '1rem', 
+            backgroundColor: '#e3f2fd', 
+            borderRadius: '8px',
+            border: '1px solid #2196f3'
+          }}>
+            <h6 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>💡 Search Examples:</h6>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
+              <div>
+                <strong>Search by Name:</strong>
+                <ul style={{ margin: '0.25rem 0 0 1rem', paddingLeft: 0 }}>
+                  <li>"john" - finds John Doe, Johnson, etc.</li>
+                  <li>"smith" - finds John Smith, Mary Smith</li>
+                  <li>"doe" - finds John Doe, Jane Doe</li>
+                </ul>
+              </div>
+              <div>
+                <strong>Search by Patient ID:</strong>
+                <ul style={{ margin: '0.25rem 0 0 1rem', paddingLeft: 0 }}>
+                  <li>"123" - finds patient ID 123, 1234, etc.</li>
+                  <li>"P001" - finds patient ID P001</li>
+                  <li>"4567" - exact or partial ID matches</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Patient Selection Form */}
         <Formik
           initialValues={{
@@ -75,7 +106,7 @@ const PatientSearchDemo: React.FC = () => {
                     label="Search Patient"
                     name="patientId"
                     enablePatientSearch={true}
-                    placeholder="Type patient name to search..."
+                    placeholder="Type patient name or ID to search..."
                     required={true}
                     onPatientSelect={handlePatientSelect}
                   />
@@ -161,6 +192,8 @@ const PatientSearchDemo: React.FC = () => {
               <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.9rem' }}>
                 <li>Same familiar SelectField component</li>
                 <li>Just add <code>enablePatientSearch=true</code></li>
+                <li><strong>Search by name:</strong> "john", "smith", "mary"</li>
+                <li><strong>Search by ID:</strong> "123", "4567", "P001"</li>
                 <li>Loads only 20 results per search</li>
                 <li>Fast response time (&lt;200ms)</li>
                 <li>Ideal for large datasets (40K+ records)</li>

@@ -42,7 +42,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   defaultValue,
   enablePatientSearch = false,
   onPatientSelect,
-  searchPlaceholder = 'Type to search patients...'
+  searchPlaceholder = 'Type patient name or ID to search...'
 }) => {
   const fieldId = id || name;
   const [field, meta] = useField(name);
@@ -144,7 +144,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         {required && <span className="text-danger"> *</span>}
         {enablePatientSearch && (
           <small className="text-muted ms-2">
-            (Type to search from 40K+ patients)
+            (Search by patient name or ID)
           </small>
         )}
       </label>

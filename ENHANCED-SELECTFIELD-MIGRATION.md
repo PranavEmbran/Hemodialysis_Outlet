@@ -8,10 +8,18 @@ Your existing `SelectField` component has been enhanced with patient search func
 ### Enhanced SelectField Features:
 - ✅ **Backward Compatible** - All existing SelectFields work unchanged
 - ✅ **Patient Search Mode** - Add `enablePatientSearch={true}` to enable
+- ✅ **Dual Search** - Search by patient name OR patient ID
+- ✅ **Smart Prioritization** - Exact ID matches appear first
 - ✅ **Debounced Search** - 300ms delay for optimal performance
 - ✅ **Loading States** - Shows "Searching patients..." indicator
 - ✅ **Smart Filtering** - Server-side search, not client-side
 - ✅ **Error Handling** - Graceful fallbacks for network issues
+
+### Search Functionality:
+- 🔍 **Search by Name**: "john", "smith", "mary" - finds patients with matching names
+- 🆔 **Search by ID**: "123", "P001", "4567" - finds patients with matching IDs
+- 🎯 **Smart Ranking**: Exact ID matches appear first, then name matches
+- ⚡ **Fast Results**: Only searches when you type 2+ characters
 
 ## 🚀 Simple Migration
 
@@ -47,7 +55,7 @@ useEffect(() => {
   label="Select Patient"
   name="patientId"
   enablePatientSearch={true}  // 👈 This is all you need!
-  placeholder="Type to search patients..."
+  placeholder="Type patient name or ID to search..."
   onPatientSelect={(patient) => {
     console.log('Selected patient:', patient);
     // Handle patient selection

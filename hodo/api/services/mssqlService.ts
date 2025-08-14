@@ -69,6 +69,7 @@ export const searchPatients = async (searchTerm: string, limit: number = 20): Pr
     const pool = await sql.connect(config);
     const result = await pool.request()
       .input('searchTerm', sql.VarChar, `%${searchTerm}%`)
+      .input('exactTerm', sql.VarChar, searchTerm)
       .input('limit', sql.Int, limit)
       .query(`
         SELECT TOP (@limit)
@@ -76,19 +77,31 @@ export const searchPatients = async (searchTerm: string, limit: number = 20): Pr
           PM_FirstName + ISNULL(' ' + PM_MiddleName, '') + ISNULL(' ' + PM_LastName, '') AS P_Name
         FROM PAT_Patient_Master_1
         WHERE 
-          PM_FirstName LIKE @searchTerm 
+          -- Search by Patient ID (exact match or partial)
+          CAST(PM_Card_PK AS VARCHAR) LIKE @searchTerm
+          -- Search by name fields
+          OR PM_FirstName LIKE @searchTerm 
           OR PM_LastName LIKE @searchTerm
           OR PM_MiddleName LIKE @searchTerm
           OR (PM_FirstName + ' ' + ISNULL(PM_MiddleName, '') + ' ' + PM_LastName) LIKE @searchTerm
         ORDER BY 
           CASE 
-            WHEN PM_FirstName LIKE @searchTerm + '%' THEN 1
-            WHEN PM_LastName LIKE @searchTerm + '%' THEN 2
-            ELSE 3
+            -- Exact Patient ID match gets highest priority
+            WHEN CAST(PM_Card_PK AS VARCHAR) = @exactTerm THEN 0
+            -- Patient ID starts with search term
+            WHEN CAST(PM_Card_PK AS VARCHAR) LIKE @exactTerm + '%' THEN 1
+            -- First name starts with search term
+            WHEN PM_FirstName LIKE @exactTerm + '%' THEN 2
+            -- Last name starts with search term
+            WHEN PM_LastName LIKE @exactTerm + '%' THEN 3
+            -- Patient ID contains search term
+            WHEN CAST(PM_Card_PK AS VARCHAR) LIKE @searchTerm THEN 4
+            -- Other name matches
+            ELSE 5
           END,
           PM_LastName, PM_FirstName;
       `);
-    
+
     return result.recordset.map((row: any) => ({
       id: row.PM_Card_PK,
       Name: row.P_Name,
@@ -100,19 +113,19 @@ export const searchPatients = async (searchTerm: string, limit: number = 20): Pr
 };
 
 // Paginated patient loading for browsing all patients
-export const getPatientsPage = async (page: number = 1, pageSize: number = 50): Promise<{patients: Patient[], totalCount: number, hasMore: boolean}> => {
+export const getPatientsPage = async (page: number = 1, pageSize: number = 50): Promise<{ patients: Patient[], totalCount: number, hasMore: boolean }> => {
   console.log('getPatientsPage called, page:', page, 'pageSize:', pageSize);
 
   try {
     const pool = await sql.connect(config);
     const offset = (page - 1) * pageSize;
-    
+
     // Get total count
     const countResult = await pool.request().query(`
       SELECT COUNT(*) as totalCount FROM PAT_Patient_Master_1;
     `);
     const totalCount = countResult.recordset[0].totalCount;
-    
+
     // Get paginated results
     const result = await pool.request()
       .input('offset', sql.Int, offset)
@@ -126,12 +139,12 @@ export const getPatientsPage = async (page: number = 1, pageSize: number = 50): 
         OFFSET @offset ROWS
         FETCH NEXT @pageSize ROWS ONLY;
       `);
-    
+
     const patients = result.recordset.map((row: any) => ({
       id: row.PM_Card_PK,
       Name: row.P_Name,
     }));
-    
+
     return {
       patients,
       totalCount,

@@ -42,9 +42,31 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
 // Placeholder functions for compatibility with MSSQL service
 export const searchPatients = async (searchTerm: string, limit: number = 20): Promise<Patient[]> => {
   const patients = await getPatientsDerived();
-  return patients.filter(p => 
-    p.Name.toLowerCase().includes(searchTerm.toLowerCase())
-  ).slice(0, limit);
+  const searchLower = searchTerm.toLowerCase();
+  
+  return patients.filter(p => {
+    // Search by patient ID
+    const idMatch = p.id.toString().toLowerCase().includes(searchLower);
+    // Search by patient name
+    const nameMatch = p.Name.toLowerCase().includes(searchLower);
+    
+    return idMatch || nameMatch;
+  })
+  .sort((a, b) => {
+    // Prioritize exact ID matches, then ID starts with, then name matches
+    const aIdExact = a.id.toString().toLowerCase() === searchLower;
+    const bIdExact = b.id.toString().toLowerCase() === searchLower;
+    if (aIdExact && !bIdExact) return -1;
+    if (!aIdExact && bIdExact) return 1;
+    
+    const aIdStarts = a.id.toString().toLowerCase().startsWith(searchLower);
+    const bIdStarts = b.id.toString().toLowerCase().startsWith(searchLower);
+    if (aIdStarts && !bIdStarts) return -1;
+    if (!aIdStarts && bIdStarts) return 1;
+    
+    return a.Name.localeCompare(b.Name);
+  })
+  .slice(0, limit);
 };
 
 export const getPatientsPage = async (page: number = 1, pageSize: number = 50): Promise<{patients: Patient[], totalCount: number, hasMore: boolean}> => {

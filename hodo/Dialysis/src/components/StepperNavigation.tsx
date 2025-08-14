@@ -197,11 +197,10 @@ const StepperNavigation: React.FC<StepperNavigationProps> = ({
                 <SelectField
                   label="Select Patient"
                   name="selectedPatient"
-
                   options={filteredPatients.map(p => ({ value: p.id, label: `${p.name} (${p.id})` }))}
+
                   enablePatientSearch={false}
-                  
-                  placeholder="Type to search patients..."
+                  placeholder="Type patient name or ID to search..."
                   className="form-group"
                   required={false}
                   onPatientSelect={(patient) => {
