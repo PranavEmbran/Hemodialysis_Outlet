@@ -41,7 +41,8 @@ const Dialysis_Workflow_Entry: React.FC<{ sidebarCollapsed: boolean; toggleSideb
     try {
       const [schedules, patientsData, predialysis, startDialysis, postDialysis] = await Promise.all([
         fetch(`${API_URL}/data/Dialysis_Schedules`).then(res => res.json()),
-        fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+        // fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+        fetch(`${API_URL}/data/case_patients_derived`).then(res => res.json()),
         fetch(`${API_URL}/data/predialysis_records`).then(res => res.json()),
         fetch(`${API_URL}/data/start_dialysis_records`).then(res => res.json()),
         fetch(`${API_URL}/data/post_dialysis_records`).then(res => res.json()),

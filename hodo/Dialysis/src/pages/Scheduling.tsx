@@ -14,6 +14,8 @@ import { useSessionTimes } from './SessionTimesLookup';
 import CancelButton from '../components/CancelButton';
 import ReassignButton from '../components/ReassignButton';
 import Select from 'react-select';
+// import Select from 'react-select/base';
+
 
 // const sessionOptions = [
 //   { label: '1st', value: '1st' },
@@ -144,7 +146,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
   useEffect(() => {
     // Fetch both patients and case_openings, then filter
     Promise.all([
-      fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+      // fetch(`${API_URL}/data/patients_derived`).then(res => res.json()),
+      fetch(`${API_URL}/data/case_patients_derived`).then(res => res.json()),
       fetch(`${API_URL}/data/case_openings`).then(res => res.json())
     ]).then(([patientsData, caseOpenings]) => {
       if (Array.isArray(patientsData) && Array.isArray(caseOpenings)) {

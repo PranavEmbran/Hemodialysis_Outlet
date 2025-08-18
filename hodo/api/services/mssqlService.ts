@@ -61,6 +61,44 @@ export const getPatientsDerived = async (): Promise<Patient[]> => {
   }
 };
 
+export const getCasePatientsDerived = async (): Promise<Patient[]> => {
+  console.log('getCasePatientsDerived called');
+
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query(`
+      SELECT 
+        'DCO' + RIGHT('0000' + CAST(DCO.DCO_ID_PK AS VARCHAR), 4) AS DCO_Formatted_ID,
+        DCO.DCO_ID_PK,
+        DCO.DCO_P_ID_FK,
+        DCO.DCO_Added_On,
+        PM.PM_Card_PK,
+        PM.PM_FirstName + ISNULL(' ' + PM.PM_MiddleName, '') + ISNULL(' ' + PM.PM_LastName, '') AS PatientName
+      FROM 
+        Dialysis_Case_Opening DCO
+      JOIN 
+        PAT_Patient_Master_1 PM ON PM.PM_Card_PK = DCO.DCO_P_ID_FK
+      ORDER BY 
+        DCO.DCO_Added_On ASC;
+    `);
+
+    return result.recordset.map((row: any) => ({
+      dcoId: row.DCO_ID_PK,
+      formattedDcoId: row.DCO_Formatted_ID,
+      patientId: row.PM_Card_PK,
+      patientName: row.PatientName,
+      addedOn: row.DCO_Added_On,
+      id: row.PM_Card_PK,
+      Name: row.PatientName,
+    }));
+  } catch (err) {
+    console.error('MSSQL getCasePatientsDerived error:', err);
+    throw new Error('Failed to fetch case patients from MSSQL');
+  }
+};
+
+
+
 // Search patients by name - much more efficient for large datasets
 export const searchPatients = async (searchTerm: string, limit: number = 20): Promise<Patient[]> => {
   console.log('searchPatients called with term:', searchTerm);

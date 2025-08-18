@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAll, add, deleteById, getPatientsDerivedHandler, searchPatientsHandler, getPatientsPageHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
+  getAll, add, deleteById, getPatientsDerivedHandler, getCasePatientsDerivedHandler, searchPatientsHandler, getPatientsPageHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
   savePredialysisRecord, saveStartDialysisRecord, saveInProcessRecord, savePostDialysisRecord,
   getPredialysisRecords, getStartDialysisRecords, getPostDialysisRecords,
   updatePredialysisRecord, updateStartDialysisRecord, updatePostDialysisRecord,
@@ -87,6 +87,25 @@ router.delete('/:id', deleteById);
  *                 $ref: '#/components/schemas/Patient'
  */
 router.get('/patients_derived', getPatientsDerivedHandler);
+
+/**
+ * @swagger
+ * /api/data/case_patients_derived:
+ *   get:
+ *     summary: Get derived case patient data (limited to 50 recent patients)
+ *     responses:
+ *       200:
+ *         description: List of derived case patients
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Patient'
+ */
+router.get('/case_patients_derived', getCasePatientsDerivedHandler);
+
+
 
 /**
  * @swagger

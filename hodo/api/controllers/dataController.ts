@@ -4,6 +4,7 @@ import {
   addData,
   deleteData,
   getPatientsDerived,
+  getCasePatientsDerived,
   getSchedulesAssigned,
   addSchedulesAssigned,
   getCaseOpenings,
@@ -88,6 +89,15 @@ export const getPatientsDerivedHandler = async (req: Request, res: Response) => 
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch patients' });
+  }
+};
+
+export const getCasePatientsDerivedHandler = async (req: Request, res: Response) => {
+  try {
+    const patients = await getCasePatientsDerived();
+    res.json(patients);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch case patients' });
   }
 };
 
