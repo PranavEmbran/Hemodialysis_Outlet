@@ -1,0 +1,17 @@
+
+Pranav@PranavEmbran MINGW64 ~/Desktop/Project Dialysis/DialysisOutlet (master)
+$ git merge responsiveComp
+Merge made by the 'ort' strategy.
+ hodo/Dialysis/src/components/SectionHeading.css |  29 ++++
+ hodo/Dialysis/src/components/Table.tsx          |  16 +-
+ hodo/Dialysis/src/components/breadcrumb.css     |  66 +++++++++
+ hodo/Dialysis/src/pages/Scheduling.tsx          |  91 ++++--------
+ hodo/Dialysis/src/styles/ButtonWithGradient.css |  20 +++
+ hodo/Dialysis/src/styles/Scheduling.css         | 185 ++++++++++++++++++++++++
+ hodo/Dialysis/src/styles/Table.css              | 103 +++++++++++++
+ hodo/Dialysis/src/styles/form-controls.css      |  38 ++++-
+ hodo/Dialysis/src/styles/header.css             |  74 ++++++++++
+ hodo/Dialysis/src/styles/pagecontainer.css      |  19 ++-
+ hodo/api/services/mssqlService.ts               |   2 +
+ 11 files changed, 577 insertions(+), 66 deletions(-)
+ create mode 100644 hodo/Dialysis/src/styles/Scheduling.css
