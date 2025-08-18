@@ -43,15 +43,25 @@ const Table: React.FC<TableProps> = ({ columns, data, actions }) => {
             </tr>
           ) : (
             paginatedData.map((row, idx) => (
-              <tr key={row.id || idx}>
+              <tr 
+                key={row.id || idx}
+                style={row._rowStyle || {}}
+              >
                 {columns.map((col) => (
-                  <td key={col.key}>
+                  <td 
+                    key={col.key}
+                    data-label={col.header}
+                  >
                     {typeof row[col.key] === 'number' 
                       ? row[col.key].toString()
                       : row[col.key]}
                   </td>
                 ))}
-                {actions && <td>{actions(row)}</td>}
+                {actions && (
+                  <td data-label="Actions">
+                    {actions(row)}
+                  </td>
+                )}
               </tr>
             ))
           )}

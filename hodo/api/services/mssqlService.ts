@@ -88,6 +88,8 @@ export const getCasePatientsDerived = async (): Promise<Patient[]> => {
       patientId: row.PM_Card_PK,
       patientName: row.PatientName,
       addedOn: row.DCO_Added_On,
+
+      // required by Patient
       id: row.PM_Card_PK,
       Name: row.PatientName,
     }));

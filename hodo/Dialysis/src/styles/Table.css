@@ -67,6 +67,109 @@
     }
   }
 
+  @media (max-width: 768px) {
+    .table-container {
+      margin: 16px 0;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    
+    .custom-table {
+      font-size: 12px;
+    }
+    
+    .custom-table th, .custom-table td {
+      padding: 8px 4px;
+      font-size: 12px;
+    }
+    
+    .custom-table th {
+      font-size: 11px;
+      font-weight: 700;
+    }
+    
+    /* Hide less important columns on mobile */
+    .custom-table .hide-mobile {
+      display: none;
+    }
+    
+    /* Make action buttons smaller on mobile */
+    .custom-table button {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+    
+    /* Status badges responsive */
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 3px 6px;
+      border-radius: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .custom-table th, .custom-table td {
+      padding: 6px 2px;
+      font-size: 11px;
+    }
+    
+    .custom-table th {
+      font-size: 10px;
+    }
+    
+    /* Stack table content vertically on very small screens */
+    .table-container .custom-table {
+      display: block;
+      width: 100%;
+    }
+    
+    .table-container .custom-table thead,
+    .table-container .custom-table tbody,
+    .table-container .custom-table th,
+    .table-container .custom-table td,
+    .table-container .custom-table tr {
+      display: block;
+    }
+    
+    .table-container .custom-table thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    
+    .table-container .custom-table tr {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background: #fff;
+    }
+    
+    .table-container .custom-table td {
+      border: none;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      padding-left: 50% !important;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    
+    .table-container .custom-table td:before {
+      content: attr(data-label) ": ";
+      position: absolute;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: 600;
+      color: #666;
+    }
+    
+    .table-container .custom-table td:last-child {
+      border-bottom: none;
+    }
+  }
+
 .status-badge {
     display: inline-flex;
     padding: 5px;

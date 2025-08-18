@@ -1,0 +1,185 @@
+/* Scheduling Page Responsive Styles */
+
+/* Form grid responsive behavior */
+.scheduling-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Filter section responsive */
+.scheduling-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Legend responsive */
+.scheduling-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.scheduling-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: fit-content;
+}
+
+.scheduling-legend-color {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Action buttons responsive */
+.scheduling-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  justify-content: flex-start;
+  margin-bottom: 1em;
+}
+
+.scheduling-actions button {
+  min-width: fit-content;
+}
+
+/* Results summary responsive */
+.scheduling-results-summary {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1565c0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .scheduling-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .scheduling-filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .scheduling-legend {
+    gap: 12px;
+    font-size: 13px;
+  }
+  
+  .scheduling-legend-item {
+    gap: 4px;
+  }
+  
+  .scheduling-legend-color {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .scheduling-actions {
+    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .scheduling-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .scheduling-results-summary {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  /* Make select dropdowns more mobile-friendly */
+  .react-select-container .react-select__control {
+    min-height: 44px !important;
+    height: 44px !important;
+  }
+  
+  .react-select-container .react-select__value-container {
+    height: 44px;
+    padding: 0 12px;
+  }
+  
+  .react-select-container .react-select__indicators {
+    height: 44px;
+  }
+  
+  /* Ensure tables don't break layout on mobile */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better spacing for form sections */
+  .blueBar {
+    font-size: 1.1rem;
+    margin: 1rem 0 0.75rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .scheduling-form-grid {
+    gap: 8px;
+  }
+  
+  .scheduling-filters {
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .scheduling-legend {
+    gap: 8px;
+    font-size: 12px;
+  }
+  
+  .scheduling-legend-color {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .scheduling-results-summary {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  /* Stack form elements vertically on very small screens */
+  .scheduling-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Page container responsive adjustments */
+@media (max-width: 768px) {
+  .page-container {
+    margin-left: 15px;
+    margin-right: 15px;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    margin-left: 8px;
+    margin-right: 8px;
+    padding: 0.5rem;
+  }
+}
