@@ -320,11 +320,47 @@
   
   .form-control,
   .form-select {
-    padding: 0.625rem;
+    padding: 0.75rem;
     font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px; /* Better touch target */
   }
   
   .radio-group {
     gap: 0.25rem;
+  }
+  
+  /* Better touch targets for mobile */
+  .form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.15em;
+  }
+  
+  .form-check {
+    min-height: 1.8rem;
+    padding-left: 1.8em;
+  }
+  
+  .form-check-label {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-control,
+  .form-select {
+    padding: 0.875rem;
+    font-size: 16px;
+    min-height: 48px; /* Even better touch target for small screens */
+  }
+  
+  .form-label {
+    font-size: 14px;
+    margin-bottom: 0.4rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.5rem;
   }
 } 

@@ -29,3 +29,32 @@
   color: #5A5A5A;
   margin-bottom: 0;
 }
+
+/* Responsive adjustments for section heading */
+@media (max-width: 768px) {
+  .section-heading-container {
+    padding: 5px 15px;
+  }
+  
+  .section-heading-title {
+    font-size: 1.25rem;
+  }
+  
+  .section-heading-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-heading-container {
+    padding: 5px 10px;
+  }
+  
+  .section-heading-title {
+    font-size: 1.1rem;
+  }
+  
+  .section-heading-subtitle {
+    font-size: 0.9rem;
+  }
+}

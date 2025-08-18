@@ -14,6 +14,7 @@ import { useSessionTimes } from './SessionTimesLookup';
 import CancelButton from '../components/CancelButton';
 import ReassignButton from '../components/ReassignButton';
 import Select from 'react-select';
+import '../styles/Scheduling.css';
 // import Select from 'react-select/base';
 
 
@@ -510,7 +511,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             <Formik key={formKey} initialValues={initialValues} onSubmit={handleSubmit}>
               {({ values, resetForm }) => (
                 <Form>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="scheduling-form-grid">
                     <SelectField
                       label="Patient"
                       name="patient"
@@ -577,17 +578,17 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                       {conflictInfo.message && (
                         <div style={{ color: '#d32f2f', marginBottom: 8, fontWeight: 'bold' }}>{conflictInfo.message}</div>
                       )}
-                      <div style={{ display: 'flex', gap: '20px', marginBottom: '12px', fontSize: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ width: '16px', height: '16px', backgroundColor: '#ffebee', border: '1px solid #d32f2f' }}></div>
+                      <div className="scheduling-legend">
+                        <div className="scheduling-legend-item">
+                          <div className="scheduling-legend-color" style={{ backgroundColor: '#ffebee', border: '1px solid #d32f2f' }}></div>
                           <span>Already booked by this patient</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ width: '16px', height: '16px', backgroundColor: '#fff3e0', border: '1px solid #f57c00' }}></div>
+                        <div className="scheduling-legend-item">
+                          <div className="scheduling-legend-color" style={{ backgroundColor: '#fff3e0', border: '1px solid #f57c00' }}></div>
                           <span>At full capacity</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ width: '16px', height: '16px', backgroundColor: '#ffffff', border: '1px solid #ccc' }}></div>
+                        <div className="scheduling-legend-item">
+                          <div className="scheduling-legend-color" style={{ backgroundColor: '#ffffff', border: '1px solid #ccc' }}></div>
                           <span>Available</span>
                         </div>
                       </div>
@@ -679,17 +680,8 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
             <h4 className="blueBar">Schedules Assigned to Patients</h4>
 
             {/* Filter Section */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '16px',
-              marginBottom: '1.5rem',
-              padding: '16px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
-              border: '1px solid #e9ecef'
-            }}>
-              <div style={{ maxWidth: '400px' }}>
+            <div className="scheduling-filters">
+              <div style={{ width: '100%' }}>
                 <DateRangeSelector
                   fromDate={fromDate}
                   toDate={toDate}
@@ -752,7 +744,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                 />
               </div>
 
-              <div style={{ marginBottom: '1em', display: 'flex', alignItems: 'end', gap: '8px' }}>
+              <div className="scheduling-actions">
                 <ButtonWithGradient
                   type="button"
                   onClick={() => {
@@ -761,43 +753,27 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                     setSelectedPatientFilter('');
                     setSelectedStatusFilter('');
                   }}
-                // style={{
-                //   backgroundColor: '#6c757d',
-                //   borderColor: '#6c757d',
-                //   padding: '8px 16px',
-                //   fontSize: '14px'
-                // }}
                 >
                   Clear Filters
                 </ButtonWithGradient>
-                <div style={{ marginLeft: '1.5em', marginRight: '1.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'end', gap: '8px' }}>
-                  <button
-                    onClick={handleRefreshTable}
-                    disabled={isRefreshing}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      cursor: 'pointer',
-                      padding: 0,
-                      color: '#038ba4',
-                      fontSize: '18px'
-                    }}
-                  >
-                    <i className={`fa-solid fa-arrows-rotate fa-lg ${isRefreshing ? 'fa-spin' : ''}`}></i>
-                    {isRefreshing ? 'Refreshing...' : ''}
-                  </button>
-                </div>
-
-                {/* <i
-                  className={`fa-solid fa-arrows-rotate fa-lg ${isRefreshing ? 'fa-spin' : ''}`}
+                <button
                   onClick={handleRefreshTable}
-                  style={{ cursor: 'pointer' }}
-                ></i> */}
-
-
+                  disabled={isRefreshing}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    padding: '8px',
+                    color: '#038ba4',
+                    fontSize: '16px'
+                  }}
+                >
+                  <i className={`fa-solid fa-arrows-rotate fa-lg ${isRefreshing ? 'fa-spin' : ''}`}></i>
+                  {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                </button>
               </div>
             </div>
             {/* Results Summary */}
@@ -825,14 +801,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
               });
 
               return (
-                <div style={{
-                  marginBottom: '16px',
-                  padding: '12px',
-                  backgroundColor: '#e3f2fd',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  color: '#1565c0'
-                }}>
+                <div className="scheduling-results-summary">
                   <strong>Results: </strong>
                   Showing {filteredData.length} of {assignedSessions.length} scheduled sessions
                   {(fromDate || toDate || selectedPatientFilter || selectedStatusFilter) && (
