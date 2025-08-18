@@ -5,9 +5,9 @@ const service = useMssql
   ? await import('./mssqlService.js')
   : await import('./lowdbService.js');
 
-export const getData = service.getData;
-export const addData = service.addData;
-export const deleteData = service.deleteData;
+// export const getData = service.getData;
+// export const addData = service.addData;
+// export const deleteData = service.deleteData;
 export const getPatientsDerived = (service as any).getPatientsDerived;
 export const getCasePatientsDerived = (service as any).getCasePatientsDerived;
 export const searchPatients = (service as any).searchPatients;

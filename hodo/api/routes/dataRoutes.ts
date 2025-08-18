@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
-  getAll, add, deleteById, getPatientsDerivedHandler, getCasePatientsDerivedHandler, searchPatientsHandler, getPatientsPageHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
+  // getAll, add, deleteById,
+   getPatientsDerivedHandler, getCasePatientsDerivedHandler, searchPatientsHandler, getPatientsPageHandler, getSchedulesAssignedHandler, addSchedulesAssignedHandler, getCaseOpeningsHandler, addCaseOpeningHandler, updateCaseOpeningHandler,
   savePredialysisRecord, saveStartDialysisRecord, saveInProcessRecord, savePostDialysisRecord,
   getPredialysisRecords, getStartDialysisRecords, getPostDialysisRecords,
   updatePredialysisRecord, updateStartDialysisRecord, updatePostDialysisRecord,
@@ -14,123 +15,123 @@ import {
 
 const router = Router();
 
-// ==================== GENERAL DATA ENDPOINTS ====================
+// // ==================== GENERAL DATA ENDPOINTS ====================
 
-/**
- * @swagger
- * /api/data:
- *   get:
- *     tags:
- *       - General Data
- *     summary: Get all data items
- *     description: Retrieve a list of all data items in the system
- *     responses:
- *       200:
- *         description: List of all items retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Item'
- *             example:
- *               - id: "1"
- *                 name: "Sample Item"
- *                 createdAt: "2024-01-01T00:00:00Z"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.get('/', getAll);
+// /**
+//  * @swagger
+//  * /api/data:
+//  *   get:
+//  *     tags:
+//  *       - General Data
+//  *     summary: Get all data items
+//  *     description: Retrieve a list of all data items in the system
+//  *     responses:
+//  *       200:
+//  *         description: List of all items retrieved successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: array
+//  *               items:
+//  *                 $ref: '#/components/schemas/Item'
+//  *             example:
+//  *               - id: "1"
+//  *                 name: "Sample Item"
+//  *                 createdAt: "2024-01-01T00:00:00Z"
+//  *       500:
+//  *         description: Internal server error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Error'
+//  */
+// router.get('/', getAll);
 
-/**
- * @swagger
- * /api/data:
- *   post:
- *     tags:
- *       - General Data
- *     summary: Create a new data item
- *     description: Add a new data item to the system
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ItemInput'
- *           example:
- *             name: "New Item"
- *             description: "Item description"
- *     responses:
- *       201:
- *         description: Item created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Item'
- *             example:
- *               id: "123"
- *               name: "New Item"
- *               description: "Item description"
- *               createdAt: "2024-01-01T00:00:00Z"
- *       400:
- *         description: Invalid input data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.post('/', add);
+// /**
+//  * @swagger
+//  * /api/data:
+//  *   post:
+//  *     tags:
+//  *       - General Data
+//  *     summary: Create a new data item
+//  *     description: Add a new data item to the system
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             $ref: '#/components/schemas/ItemInput'
+//  *           example:
+//  *             name: "New Item"
+//  *             description: "Item description"
+//  *     responses:
+//  *       201:
+//  *         description: Item created successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Item'
+//  *             example:
+//  *               id: "123"
+//  *               name: "New Item"
+//  *               description: "Item description"
+//  *               createdAt: "2024-01-01T00:00:00Z"
+//  *       400:
+//  *         description: Invalid input data
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Error'
+//  *       500:
+//  *         description: Internal server error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Error'
+//  */
+// router.post('/', add);
 
-/**
- * @swagger
- * /api/data/{id}:
- *   delete:
- *     tags:
- *       - General Data
- *     summary: Delete a data item by ID
- *     description: Remove a specific data item from the system using its unique identifier
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The unique identifier of the data item to delete
- *         example: "123"
- *     responses:
- *       200:
- *         description: Item deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Item deleted successfully"
- *       404:
- *         description: Item not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.delete('/:id', deleteById);
+// /**
+//  * @swagger
+//  * /api/data/{id}:
+//  *   delete:
+//  *     tags:
+//  *       - General Data
+//  *     summary: Delete a data item by ID
+//  *     description: Remove a specific data item from the system using its unique identifier
+//  *     parameters:
+//  *       - in: path
+//  *         name: id
+//  *         required: true
+//  *         schema:
+//  *           type: string
+//  *         description: The unique identifier of the data item to delete
+//  *         example: "123"
+//  *     responses:
+//  *       200:
+//  *         description: Item deleted successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               type: object
+//  *               properties:
+//  *                 message:
+//  *                   type: string
+//  *                   example: "Item deleted successfully"
+//  *       404:
+//  *         description: Item not found
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Error'
+//  *       500:
+//  *         description: Internal server error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/Error'
+//  */
+// router.delete('/:id', deleteById);
 
 
 // ==================== PATIENT MANAGEMENT ENDPOINTS ====================

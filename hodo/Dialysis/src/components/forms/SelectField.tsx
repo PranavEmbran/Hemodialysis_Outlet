@@ -254,9 +254,16 @@ const SelectField: React.FC<SelectFieldProps> = ({
         }
         noOptionsMessage={({ inputValue }) => {
           if (enablePatientSearch) {
-            return inputValue && inputValue.length < 2
+            if(inputValue){
+              // return inputValue && inputValue.length < 2
+              return inputValue.length < 2
               ? 'Type at least 2 characters to search'
               : 'No patients found';
+            }
+            else{
+              return 'Type at least 2 characters to search';
+            }
+            
           }
           if (enablePatientPagination) {
             return 'No patients available';

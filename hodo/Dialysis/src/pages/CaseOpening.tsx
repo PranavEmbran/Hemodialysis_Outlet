@@ -185,51 +185,54 @@ const CaseOpening: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => vo
         >
           {({ isSubmitting, resetForm, values }) => (
             <Form style={{ height: 320, margin: '0rem auto', padding: '24px', background: 'none', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}>
-                <SelectField
-                  label="Select Patient"
-                  name="DCO_P_ID_FK"
-                  options={patientOptions}
-                  required
-                  placeholder="Select Patient"
-                  enablePatientSearch={true}
-                  onPatientSelect={(patient) => console.log('Selected:', patient)}
-                  enablePatientPagination={false}
-                  pageSize={50}
-                  
-                />
-                <SelectField
-                  label="Blood Group"
-                  name="DCO_Blood_Group"
-                  options={bloodGroupOptions}
-                  required
-                  placeholder="Select Blood Group"
-                />
-                <RadioGroupField
-                  label="Case Nature"
-                  name="DCO_Case_Nature"
-                  options={caseNatureOptions}
-                  required
-                  className="horizontal-radio-group"
-                />
-              </div>
-              {/* <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}> */}
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
-                <ButtonWithGradient
-                  type="button"
-                  // onClick={() => resetForm({ values: getInitialValues() })}
-                  onClick={regenerateForm}
-                  className="btn-outline redButton"
-                >
-                  Reset
-                </ButtonWithGradient>
-                <ButtonWithGradient
-                  type="submit"
-                  processing={isSubmitting}
-                  className=""
-                >
-                  Submit
-                </ButtonWithGradient>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, minmax(280px, 1fr))', gap: 16 }}>
+                {/* <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}> */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', rowGap: '16px' }}>
+                  <SelectField
+                    label="Select Patient"
+                    name="DCO_P_ID_FK"
+                    options={patientOptions}
+                    required
+                    placeholder="Select Patient"
+                    enablePatientSearch={true}
+                    onPatientSelect={(patient) => console.log('Selected:', patient)}
+                    enablePatientPagination={false}
+                    pageSize={50}
+
+                  />
+                  <SelectField
+                    label="Blood Group"
+                    name="DCO_Blood_Group"
+                    options={bloodGroupOptions}
+                    required
+                    placeholder="Select Blood Group"
+                  />
+                  <RadioGroupField
+                    label="Case Nature"
+                    name="DCO_Case_Nature"
+                    options={caseNatureOptions}
+                    required
+                    className="horizontal-radio-group"
+                  />
+                </div>
+                {/* <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 24 }}> */}
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'left', marginTop: 24 }}>
+                  <ButtonWithGradient
+                    type="button"
+                    // onClick={() => resetForm({ values: getInitialValues() })}
+                    onClick={regenerateForm}
+                    className="btn-outline redButton"
+                  >
+                    Reset
+                  </ButtonWithGradient>
+                  <ButtonWithGradient
+                    type="submit"
+                    processing={isSubmitting}
+                    className=""
+                  >
+                    Submit
+                  </ButtonWithGradient>
+                </div>
               </div>
 
             </Form>

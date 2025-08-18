@@ -10,7 +10,12 @@ const options = {
     },
     servers: [
       {
+        url: 'http://192.168.50.73:5000',
+        description: 'Remote server'
+      },
+      {
         url: 'http://localhost:5000',
+        description: 'Local server'
       },
     ],
   },

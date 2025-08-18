@@ -24,20 +24,30 @@ const config = {
   },
 };
 
-export const getData = async (): Promise<Item[]> => {
-  // TODO: Implement MSSQL logic
-  throw new Error('MSSQL service not implemented yet');
-};
+// export const getData = async (): Promise<Item[]> => {
+//   // TODO: Implement MSSQL logic
+//   try {
+    
+//     return [{
+//       id: "1",
+//       name: 'test',
+//       value: 1
+//     }];
+//   } catch (err) {
+//     console.error('MSSQL getData error:', err);
+//     throw new Error('MSSQL service not implemented yet');
+// }
+// };
 
-export const addData = async (item: Omit<Item, 'id'>): Promise<Item> => {
-  // TODO: Implement MSSQL logic
-  throw new Error('MSSQL service not implemented yet');
-};
+// export const addData = async (item: Omit<Item, 'id'>): Promise<Item> => {
+//   // TODO: Implement MSSQL logic
+//   throw new Error('MSSQL service not implemented yet');
+// };
 
-export const deleteData = async (id: string): Promise<boolean> => {
-  // TODO: Implement MSSQL logic
-  throw new Error('MSSQL service not implemented yet');
-};
+// export const deleteData = async (id: string): Promise<boolean> => {
+//   // TODO: Implement MSSQL logic
+//   throw new Error('MSSQL service not implemented yet');
+// };
 
 export const getPatientsDerived = async (): Promise<Patient[]> => {
   console.log('getPatientsDerived called');
