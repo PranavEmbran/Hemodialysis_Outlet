@@ -15,6 +15,7 @@ import { useSessionTimes } from './SessionTimesLookup';
 import { API_URL } from '../config';
 import { InputField, SelectField } from '../components/forms';
 import { toast } from 'react-toastify';
+import '../styles/HemodialysisMaster.css';
 
 // Mock data for Scheduling_Lookup
 const initialSchedulingLookup = [
@@ -163,8 +164,8 @@ const UnitsManager: React.FC = () => {
   }));
 
   return (
-    <div style={{ minWidth: 350, flex: 1, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
-      <h3 style={{ textAlign: 'center', marginBottom: 16 }}>Units Management</h3>
+    <div className="hd-master-form-container">
+      <h3 className="hd-master-form-title">Units Management</h3>
       <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
         <div className="form-group">
           <label>Unit Name *</label>
@@ -219,7 +220,7 @@ const UnitsManager: React.FC = () => {
           />
           {errors.Unit_Technitian_Assigned && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.Unit_Technitian_Assigned}</div>}
         </div>
-        <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
+        <div className="hd-master-form-buttons">
           <ButtonWithGradient type="submit">
             {editId !== null ? 'Update' : 'Save'}
           </ButtonWithGradient>
@@ -305,8 +306,8 @@ const VascularAccessLookup: React.FC = () => {
   }));
 
   return (
-    <div style={{ minWidth: 350, flex: 1, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24 }}>
-      <h3 style={{ textAlign: 'center', marginBottom: 16 }}>Vascular Access Lookup</h3>
+    <div className="hd-master-form-container">
+      <h3 className="hd-master-form-title">Vascular Access Lookup</h3>
       <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
         <div className="form-group">
           <label>Access Type *</label>
@@ -320,7 +321,7 @@ const VascularAccessLookup: React.FC = () => {
           />
           {errors.VAL_Access_Type && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.VAL_Access_Type}</div>}
         </div>
-        <div style={{ textAlign: 'center', marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
+        <div className="hd-master-form-buttons">
           <ButtonWithGradient type="submit">
             {editId !== null ? 'Update' : 'Save'}
           </ButtonWithGradient>
@@ -399,20 +400,18 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       <PageContainer>
         <SectionHeading title="Dialysis Master" subtitle="Dialysis Master" />
-        <div style={{ marginTop: 24 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-start' }}>
+        <div className="hd-master-container">
             {/* Scheduling Master Table (left) */}
-            {/* <div style={{ flex: 1, minWidth: 350 }}> */}
-            <div style={{ flex: '0 0 auto', minWidth: 350 }}>
-
+            <div className="hd-master-scheduling">
               {data.map((row: Record<string, any>) => (
-                <table key={row.id} style={{ minWidth: 320, borderCollapse: 'collapse', boxShadow: '0 2px 8px #eee', borderRadius: 8, marginBottom: 24, background: '#fff' }}>
+                <div className="hd-master-table-wrapper">
+                  <table key={row.id} className="hd-master-scheduling-table">
                   <tbody>
-                    <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 10, textAlign: 'center' }}>Scheduling Master</p>
+                    <p className="hd-master-scheduling-title">Scheduling Master</p>
                     {rowLabels.map(({ key, label }) => (
                       <tr key={key}>
-                        <td style={{ fontWeight: 500, padding: '10px 16px', borderBottom: '1px solid #f0f0f0', width: 160 }}>{label}</td>
-                        <td style={{ padding: '10px 16px', borderBottom: '1px solid #f0f0f0' }}>
+                        <td className="hd-master-table-cell-label">{label}</td>
+                        <td className="hd-master-table-cell-value">
                           {key === 'SL_No_of_units' ? (
                             <>
                               {/* Always show units.length, disable editing */}
@@ -424,7 +423,7 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                               value={editValues[key]}
                               onChange={handleInputChange}
                               type="number"
-                              style={{ width: 120 }}
+                              className="hd-master-table-input"
                             />
                           ) : (
                             row[key]
@@ -433,12 +432,12 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                       </tr>
                     ))}
                     <tr>
-                      <td style={{ fontWeight: 500, padding: '10px 16px', width: 160 }}>Actions</td>
-                      <td style={{ padding: '10px 16px' }}>
+                      <td className="hd-master-table-cell-label">Actions</td>
+                      <td className="hd-master-table-cell-value">
                         {editRowId === row.id ? (
-                          <div style={{ display: 'flex', gap: 8 }}>
-                            <button onClick={() => handleSave(row.id)} style={{ padding: '4px 12px', borderRadius: 4, background: '#4caf50', color: '#fff', border: 'none', cursor: 'pointer' }}>Save</button>
-                            <button onClick={handleCancel} style={{ padding: '4px 12px', borderRadius: 4, background: '#f44336', color: '#fff', border: 'none', cursor: 'pointer' }}>Cancel</button>
+                          <div className="hd-master-action-buttons">
+                            <button onClick={() => handleSave(row.id)} className="hd-master-action-btn hd-master-save-btn">Save</button>
+                            <button onClick={handleCancel} className="hd-master-action-btn hd-master-cancel-btn">Cancel</button>
                           </div>
                         ) : (
                           <EditButton onClick={() => handleEdit(row)} />
@@ -446,41 +445,41 @@ const Schedule_Master: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () =
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                  </table>
+                </div>
               ))}
             </div>
             {/* Cards (right, horizontal) */}
-            <div style={{ minWidth: 240, display: 'flex', flexDirection: 'row', gap: 24 }}>
-              <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 220 }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Total Number of Units</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{units.length}</div>
+            <div className="hd-master-cards">
+              <div className="hd-master-card">
+                <div className="hd-master-card-title">Total Number of Units</div>
+                <div className="hd-master-card-number">{units.length}</div>
                 <ButtonWithGradient onClick={() => navigate('/units-management')}>
                   Go to Units Management
                 </ButtonWithGradient>
               </div>
-              <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 220 }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Access Types</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{accessTypes.length}</div>
+              <div className="hd-master-card">
+                <div className="hd-master-card-title">Access Types</div>
+                <div className="hd-master-card-number">{accessTypes.length}</div>
                 <ButtonWithGradient onClick={() => navigate('/vascular-access-lookup')}>
                   Go to Vascular Access Lookup
                 </ButtonWithGradient>
               </div>
-              <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 220 }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Dialyzer Types</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{dialyzerTypes.length}</div>
+              <div className="hd-master-card">
+                <div className="hd-master-card-title">Dialyzer Types</div>
+                <div className="hd-master-card-number">{dialyzerTypes.length}</div>
                 <ButtonWithGradient onClick={() => navigate('/dialyzer-type-lookup')}>
                   Go to Dialyzer Type Lookup
                 </ButtonWithGradient>
               </div>
-              <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #eee', padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 220 }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Session Times</div>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#000000', marginBottom: 16 }}>{sessionTimes.length}</div>
+              <div className="hd-master-card">
+                <div className="hd-master-card-title">Session Times</div>
+                <div className="hd-master-card-number">{sessionTimes.length}</div>
                 <ButtonWithGradient onClick={() => navigate('/session-times-lookup')}>
                   Go to Session Times Lookup
                 </ButtonWithGradient>
               </div>
             </div>
-          </div>
         </div>
       </PageContainer>
       <Footer />
