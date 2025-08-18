@@ -1,0 +1,97 @@
+Prompt:
+
+You are an expert in backend API documentation using Swagger (OpenAPI 3.0).  
+I have a `dataRoutes.ts` file containing my Express routes.  
+
+### Task:
+- Ensure **Swagger JSDoc annotations** are complete, consistent, and well-structured.  
+- Follow OpenAPI 3.0 standards.  
+- Each route should have:
+  - `@swagger` block
+  - Path, method (GET, POST, PUT, DELETE, etc.)
+  - `tags` for grouping
+  - `summary` and `description`
+  - `parameters` (query, path, header, body as applicable)
+  - `requestBody` schema when needed
+  - `responses` (200, 400, 404, 500 at minimum, with proper JSON schema references)
+- Ensure request/response JSON examples are provided wherever meaningful.
+- Maintain **orderly grouping of endpoints** by resource in the documentation.
+
+### Example Style:
+```ts
+/**
+ * @swagger
+ * /api/data/{id}:
+ *   get:
+ *     tags:
+ *       - Data
+ *     summary: Get data by ID
+ *     description: Retrieve a single data record using its unique ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The unique identifier of the data record
+ *     responses:
+ *       200:
+ *         description: Data record retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Data'
+ *       404:
+ *         description: Data record not found
+ *       500:
+ *         description: Internal server error
+ */
+
+
+Result:
+
+Summary of Swagger Documentation Enhancements
+🏷️ Organized by Resource Groups
+General Data - Basic CRUD operations
+Patients - Patient management and search
+Dialysis Schedules - Schedule creation and management
+Case Management - Case opening and updates
+Dialysis Records - Treatment records (pre, start, in-process, post)
+Units Management - Dialysis unit management
+Vascular Access Management - Access type management
+Dialyzer Management - Dialyzer type management
+Scheduling Configuration - System configuration
+Session Time Management - Time slot management
+📋 Complete OpenAPI 3.0 Compliance
+Each endpoint now includes:
+
+✅ Tags for logical grouping
+✅ Summary and detailed description
+✅ Parameters with validation rules and examples
+✅ Request body schemas with examples
+✅ Response schemas for all status codes (200, 201, 400, 404, 500)
+✅ JSON examples for requests and responses
+✅ Error handling with consistent error schema references
+🔍 Enhanced Parameter Documentation
+Query parameters with validation (min/max, patterns, enums)
+Path parameters with clear descriptions and examples
+Request body schemas with realistic examples
+Optional vs required parameter distinctions
+📊 Comprehensive Response Coverage
+Success responses (200, 201) with detailed schemas
+Client error responses (400, 404) with error schemas
+Server error responses (500) with consistent error handling
+Meaningful response examples for better API understanding
+🎯 Advanced Features Documented
+Filtering capabilities (by patient, date, status)
+Pagination support for large datasets
+Conflict checking for scheduling
+Status management for schedules
+Related record retrieval with computed status
+📝 Professional Documentation Standards
+Consistent naming conventions
+Clear, actionable descriptions
+Proper HTTP method usage
+RESTful endpoint organization
+Schema references for reusability
+The documentation is now production-ready and will generate comprehensive, user-friendly API documentation that developers can easily understand and integrate with. Each endpoint is thoroughly documented with examples, making it easy for frontend developers and API consumers to understand the expected request/response formats.
