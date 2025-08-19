@@ -17,7 +17,7 @@ const CancelButton: React.FC<CancelButtonProps> = ({
   const handleClick = () => {
     if (disabled) return;
     
-    const confirmed = window.confirm('Are you sure you want to cancel this session? This action cannot be undone.');
+    const confirmed = window.confirm('Are you sure you want to cancel this session?');
     if (confirmed) {
       onCancel(scheduleId);
     }
@@ -39,7 +39,8 @@ const CancelButton: React.FC<CancelButtonProps> = ({
         opacity: disabled ? 0.6 : 1
       }}
     >
-      Cancel
+      &#x2716;
+      {/* Cancel */}
     </button>
   );
 };
