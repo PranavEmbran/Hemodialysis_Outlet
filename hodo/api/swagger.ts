@@ -14,6 +14,10 @@ const options = {
         description: 'Remote server'
       },
       {
+        url: 'https://nfmxngzc-5000.inc1.devtunnels.ms',
+        description: 'Remote server'
+      },
+      {
         url: 'http://localhost:5000',
         description: 'Local server'
       },
