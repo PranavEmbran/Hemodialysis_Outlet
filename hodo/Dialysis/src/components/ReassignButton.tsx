@@ -17,7 +17,7 @@ const ReassignButton: React.FC<ReassignButtonProps> = ({
   const handleClick = () => {
     if (disabled) return;
     
-    const confirmed = window.confirm('Are you sure you want to reassign this session? This will make it available for scheduling again.');
+    const confirmed = window.confirm('Are you sure you want to reassign this session?');
     if (confirmed) {
       onReassign(scheduleId);
     }
@@ -39,7 +39,8 @@ const ReassignButton: React.FC<ReassignButtonProps> = ({
         opacity: disabled ? 0.6 : 1
       }}
     >
-      Reassign
+      &#x21bb;
+      {/* Reassign */}
     </button>
   );
 };
