@@ -15,7 +15,7 @@ const options = {
       },
       {
         url: 'https://nfmxngzc-5000.inc1.devtunnels.ms',
-        description: 'Remote server'
+        description: 'Dev Tunnel Endpoint'
       },
       {
         url: 'http://localhost:5000',
