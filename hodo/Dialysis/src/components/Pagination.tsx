@@ -42,10 +42,10 @@ const Pagination: React.FC<PaginationProps> = ({
       </div>
 
       <div className="pagination-buttons">
-        <button onClick={() => setPage(1)} disabled={page === 1} title="First Page">
+        <button type="button" onClick={() => setPage(1)} disabled={page === 1} title="First Page">
           <ChevronsLeft size={16} style={{ verticalAlign: 'middle' }} />
         </button>
-        <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} title="Previous Page">
+        <button type="button" onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} title="Previous Page">
           <ChevronLeft size={16} style={{ verticalAlign: 'middle' }} />
           
         </button>
@@ -53,6 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({
         {pageNumbers.map((p) =>
           p === 1 || p === totalPages || Math.abs(p - page) <= 1 ? (
             <button
+              type="button"
               key={p}
               onClick={() => setPage(p)}
               className={p === page ? 'active' : ''}
@@ -64,10 +65,11 @@ const Pagination: React.FC<PaginationProps> = ({
           ) : null
         )}
 
-        <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} title="Next Page">
+{/* type="button" prevents default form submission; ensures this button only handles onClick */}
+        <button type="button" onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} title="Next Page">
           <ChevronRight size={16} style={{ verticalAlign: 'middle' }} />
         </button>
-        <button onClick={() => setPage(totalPages)} disabled={page === totalPages} title="Last Page">
+        <button type="button" onClick={() => setPage(totalPages)} disabled={page === totalPages} title="Last Page">
           <ChevronsRight size={16} style={{ verticalAlign: 'middle' }} />
         </button>
       </div>

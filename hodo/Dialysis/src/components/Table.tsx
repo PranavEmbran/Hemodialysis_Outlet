@@ -66,13 +66,9 @@ const Table: React.FC<TableProps> = ({
                 <td colSpan={columns.length + (actions ? 2 : 1)} style={{ textAlign: 'center' }}>No data found.</td>
               </tr>
             ) : (
-              paginatedData.map((row, idx) => (
+              paginatedData.map((row) => (
                 <tr
-                  key={
-                    getRowKey
-                      ? getRowKey(row)
-                      : row.id || idx
-                  }
+                  key={getRowKey ? getRowKey(row) : row.id}
                   style={row._rowStyle || {}}
                 >
                   {columns.map((col) => (
