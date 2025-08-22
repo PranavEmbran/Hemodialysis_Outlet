@@ -284,15 +284,35 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     setSelectedRows([]);
   };
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]); // <-- Add this state
+
+  // Helper to generate a unique key for a schedule row
+  const getRowKey = (row: Record<string, any>) =>
+    `${row.date}_${row.time}_${row.nthSession}`;
+
   const handleRowSelect = (row: any) => {
     // Prevent selection if the session is already booked by this patient OR at capacity
     if (row.isConflicting || row.atCapacity) return;
-    setSelectedRows(prev =>
-      prev.some(r => r.id === row.id)
-        ? prev.filter(r => r.id !== row.id)
-        : [...prev, row]
+    const key = getRowKey(row);
+    setSelectedRowKeys(prev =>
+      prev.includes(key)
+        ? prev.filter(k => k !== key)
+        : [...prev, key]
     );
   };
+
+  // Update selectedRows whenever selectedRowKeys or scheduleRows change
+  useEffect(() => {
+    setSelectedRows(
+      scheduleRows.filter(row => selectedRowKeys.includes(getRowKey(row)))
+    );
+  }, [selectedRowKeys, scheduleRows]);
+
+  // When scheduleRows are regenerated (e.g., after Generate Schedule), clear selection and reset page
+  useEffect(() => {
+    setSelectedRowKeys([]);
+    setScheduleTablePage(1);
+  }, [scheduleRows]);
 
   const handleCancelSession = async (scheduleId: string) => {
     try {
@@ -494,6 +514,10 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
     }
   };
 
+  // Add pagination state for the Schedule Table
+  const [scheduleTablePage, setScheduleTablePage] = useState(1);
+  const [scheduleTableRowsPerPage, setScheduleTableRowsPerPage] = useState(10);
+
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
@@ -613,6 +637,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
 
 
 
+                          const key = getRowKey(row);
                           return {
                             ...row,
                             booked: `${bookedCount} / ${unitsCount}`,
@@ -621,7 +646,7 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <input
                                   type="checkbox"
-                                  checked={selectedRows.some(r => r.id === row.id)}
+                                  checked={selectedRowKeys.includes(key)}
                                   onChange={() => handleRowSelect(row)}
                                   disabled={row.isConflicting || atCapacity}
                                 />
@@ -640,6 +665,13 @@ const Scheduling: React.FC<{ sidebarCollapsed: boolean; toggleSidebar: () => voi
                                 : {},
                           };
                         })}
+                        // Pass pagination and selection props for persistence
+                        page={scheduleTablePage}
+                        rowsPerPage={scheduleTableRowsPerPage}
+                        setPage={setScheduleTablePage}
+                        setRowsPerPage={setScheduleTableRowsPerPage}
+                        getRowKey={getRowKey}
+                        selectedRowKeys={selectedRowKeys}
                       />
 
                       {selectedRows.length > 0 && (
